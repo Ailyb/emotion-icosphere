@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emotion Icosphere - Real-Time Emotion Visualization</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      overflow: hidden;
+    }
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+    #ui-overlay {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .ui-card {
+      pointer-events: auto;
+      background: rgba(20, 20, 30, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+    h1 {
+      margin: 0 0 12px 0;
+      font-size: 20px;
+      color: #ffffff;
+    }
+    p {
+      margin: 0 0 14px 0;
+      font-size: 14px;
+      color: #b0b0c0;
+      line-height: 1.5;
+    }
+    .prompt-box {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      max-width: 90vw;
+      pointer-events: auto;
+    }
+    .prompt-input {
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      font-size: 16px;
+      outline: none;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .prompt-input:focus {
+      border-color: #4a90e2;
+    }
+    .status {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 12px;
+      padding: 8px 12px;
+      background: rgba(20, 20, 30, 0.8);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      pointer-events: none;
+    }
+    .status.connected { color: #4ade80; }
+    .status.disconnected { color: #f87171; }
+    .emotion-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .emotion-item {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .emotion-bar {
+      height: 6px;
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .emotion-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      width: 0%;
+      transition: width 0.1s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="canvas-container"></div>
+
+  <div id="ui-overlay">
+    <div class="ui-card">
+      <h1>🧠 Emotion Icosphere</h1>
+      <p>
+        Watch a local open-weight LLM's internal emotion directions fire across
+        an icosphere in real time. Each colored region represents emotion
+        activation detected in the residual stream at layer 18.
+      </p>
+      <div class="emotion-grid" id="emotion-grid"></div>
+    </div>
+  </div>
+
+  <div class="prompt-box">
+    <input
+      type="text"
+      id="prompt-input"
+      class="prompt-input"
+      placeholder="Type a prompt and press Enter to watch emotions fire..."
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="status disconnected" id="status">Disconnected</div>
+
+  <!-- Three.js via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+
+  <script>
+    // ========== Configuration ==========
+    const CONFIG = {
+      wsUrl: 'ws://localhost:8000/ws',
+      nsub: 3,
+      radius: 2,
+      cellCount: 1280, // icosphere nsub=3 cell count
+      decayRate: 0.92,
+      emotionNames: [
+        'joy', 'sadness', 'fear', 'anger',
+        'surprise', 'disgust', 'calm', 'love'
+      ],
+      emotionColors: {
+        joy: 0xFFD700,
+        sadness: 0x4A90E2,
+        fear: 0x9B59B6,
+        anger: 0xE74C3C,
+        surprise: 0xF39C12,
+        disgust: 0x27AE60,
+        calm: 0x1ABC9C,
+        love: 0xFF69B4
+      }
+    };
+
+    // ========== State ==========
+    let scene, camera, renderer, icosahedron, sphereMesh;
+    let ws;
+    let currentIntensities = new Float32Array(CONFIG.cellCount).fill(0);
+    let targetIntensities = new Float32Array(CONFIG.cellCount).fill(0);
+    let emotionBars = {};
+    let isConnected = false;
+
+    // ========== Three.js Setup ==========
+    function initThree() {
+      const container = document.getElementById('canvas-container');
+
+      // Scene
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x05050a);
+      scene.fog = new THREE.Fog(0x05050a, 10, 50);
+
+      // Camera
+      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(0, 0, 6);
+
+      // Renderer
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      container.appendChild(renderer.domElement);
+
+      // Ambient light
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+      scene.add(ambientLight);
+
+      // Point light for bloom-like effect
+      const pointLight = new THREE.PointLight(0xffffff, 1);
+      pointLight.position.set(5, 5, 5);
+      scene.add(pointLight);
+
+      // Create icosphere geometry
+      const geometry = new THREE.IcosahedronGeometry(CONFIG.radius, CONFIG.nsub);
+
+      // Create buffer for per-cell colors
+      const positions = geometry.attributes.position;
+      const colors = new Float32Array(positions.count * 3);
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      // Material with vertex colors
+      const material = new THREE.MeshStandardMaterial({
+        vertexColors: true,
+        roughness: 0.4,
+        metalness: 0.1,
+        flatShading: true
+      });
+
+      sphereMesh = new THREE.Mesh(geometry, material);
+      scene.add(sphereMesh);
+
+      // Add wireframe overlay
+      const wireframeGeo = new THREE.WireframeGeometry(geometry);
+      const wireframeMat = new THREE.LineBasicMaterial({ color: 0x333333, transparent: true, opacity: 0.3 });
+      const wireframe = new THREE.LineSegments(wireframeGeo, wireframeMat);
+      scene.add(wireframe);
+
+      // Handle resize
+      window.addEventListener('resize', onWindowResize);
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // ========== Emotion Grid UI ==========
+    function initEmotionGrid() {
+      const grid = document.getElementById('emotion-grid');
+      CONFIG.emotionNames.forEach((emotion, idx) => {
+        const item = document.createElement('div');
+        item.className = 'emotion-item';
+        item.innerHTML = `
+          <span style="font-weight:600">${emotion.charAt(0).toUpperCase() + emotion.slice(1)}</span>
+          <div class="emotion-bar">
+            <div class="emotion-fill" id="fill-${emotion}" style="background: #${CONFIG.emotionColors[emotion].toString(16).padStart(6,'0')}"></div>
+          </div>
+        `;
+        grid.appendChild(item);
+        emotionBars[emotion] = document.getElementById(`fill-${emotion}`);
+      });
+    }
+
+    function updateEmotionScores(scores) {
+      CONFIG.emotionNames.forEach(emotion => {
+        const score = scores[emotion] || 0;
+        const bar = emotionBars[emotion];
+        if (bar) {
+          // Clamp to [0, 1] for display width
+          const displayValue = Math.max(0, Math.min(1, score));
+          bar.style.width = `${displayValue * 100}%`;
+        }
+      });
+    }
+
+    // ========== Icosphere Update ==========
+    function updateIcosphere(intensities) {
+      if (!sphereMesh) return;
+
+      const geometry = sphereMesh.geometry;
+      const colors = geometry.attributes.color;
+
+      // Map intensities to colors
+      // Each cell (triangle) gets a color based on its intensity
+      // We color the vertices - simpler approach: color each vertex by average cell intensity
+      
+      const position = geometry.attributes.position;
+      const colorArray = colors.array;
+
+      // For simplicity, assign colors per vertex based on nearest cell
+      // In production, use cell-based coloring via custom shader
+      for (let i = 0; i < position.count; i++) {
+        const intensity = intensities[i % CONFIG.cellCount] || 0;
+        const colorValue = intensity; // 0 to 1
+
+        // Color gradient: dark purple -> blue -> green -> yellow -> red
+        // Based on intensity value
+        const r = Math.min(1, colorValue * 1.5);
+        const g = Math.min(1, colorValue * 0.8);
+        const b = Math.min(1, colorValue * 1.2);
+
+        colorArray[i * 3] = r;
+        colorArray[i * 3 + 1] = g;
+        colorArray[i * 3 + 2] = b;
+      }
+
+      colors.needsUpdate = true;
+    }
+
+    // ========== WebSocket ==========
+    function connectWebSocket() {
+      ws = new WebSocket(CONFIG.wsUrl);
+
+      ws.onopen = () => {
+        isConnected = true;
+        document.getElementById('status').textContent = 'Connected';
+        document.getElementById('status').className = 'status connected';
+        console.log('WebSocket connected');
+      };
+
+      ws.onclose = () => {
+        isConnected = false;
+        document.getElementById('status').textContent = 'Disconnected';
+        document.getElementById('status').className = 'status disconnected';
+        console.log('WebSocket disconnected');
+        // Reconnect after delay
+        setTimeout(connectWebSocket, 2000);
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event);
+          
+          // Update emotion scores UI
+          if (data.emotion_scores) {
+            updateEmotionScores(data.emotion_scores);
+          }
+
+          // Update facet intensities
+          if (data.facet_intensities) {
+            targetIntensities = new Float32Array(data.facet_intensities);
+          }
+
+          console.log('Received:', data.emotion_scores);
+        } catch (e) {
+          console.error('Error parsing WebSocket message:', e);
+        }
+      };
+    }
+
+    // ========== Animation Loop ==========
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Apply decay to current intensities toward target
+      for (let i = 0; i < CONFIG.cellCount; i++) {
+        currentIntensities[i] = currentIntensities[i] * CONFIG.decayRate + 
+                                targetIntensities[i] * (1 - CONFIG.decayRate);
+      }
+
+      // Update sphere colors
+      updateIcosphere(currentIntensities);
+
+      // Rotate sphere slowly
+      if (sphereMesh) {
+        sphereMesh.rotation.y += 0.005;
+        sphereMesh.rotation.x += 0.002;
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    // ========== Input Handling ==========
+    const input = document.getElementById('prompt-input');
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && isConnected) {
+        const prompt = input.value.trim();
+        if (prompt) {
+          sendPrompt(prompt);
+          input.value = '';
+        }
+      }
+    });
+
+    function sendPrompt(prompt) {
+      const message = {
+        prompt: prompt,
+        max_tokens: 30,
+        temperature: 0.7,
+        stream: true
+      };
+      ws.send(JSON.stringify(message));
+      console.log('Sent:', prompt);
+    }
+
+    // ========== Initialize ==========
+    function init() {
+      initThree();
+      initEmotionGrid();
+      connectWebSocket();
+      animate();
+    }
+
+    init();
+  </script>
+</body>
+</html>
