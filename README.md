@@ -11,30 +11,42 @@ Based on:
 - **EmotionScope** — open-weight replication + live probing + fluid orb visualization
 - Open-model replications on Gemma-2 / Apertus family
 
+## Current Status (2026-11-06)
+
+| Component | Status |
+|-----------|--------|
+| 8 Validated Emotion Vectors | ✅ Contrastive construction, diagonal dominance confirmed |
+| Similarity-Aware Facet Mapping | ✅ PCA-based, 1280 facets |
+| REST API (`/score`) | ✅ Working |
+| WebSocket Streaming | ⚠️ Known bug in `stream_emotion_tokens()` |
+| Three.js Frontend | ✅ Ready |
+| Static Visualization | ✅ PyVista render |
+
 ## Project Structure
 
 ```
 emotion-icosphere/
 ├── README.md
+├── PROJECT_STATUS.md          # Detailed handoff document
 ├── requirements.txt
-├── config.py                    # model, layer(s), nsub, emotion→facet map, decay, etc.
-├── geometry_prototype.py        # Step 1: icosphere generation & inspection
-├── capture_hidden_state.py      # Step 2: model inference + residual-stream capture
-├── emotion_vectors.py           # Step 3: emotion vector construction + validation
-├── score_emotions.py            # Step 3/4: cosine similarity scoring
-├── static_visualization.py      # Step 4: static PyVista render
-├── backend.py                   # Step 5: FastAPI + WebSocket server
+├── config.py
+├── geometry_prototype.py
+├── capture_hidden_state.py
+├── emotion_vectors.py
+├── build_emotion_vectors.py
+├── score_emotions.py
+├── facet_mapping.py
+├── static_visualization.py
+├── backend.py                 # FastAPI + WebSocket (needs WebSocket fix)
 ├── frontend/
-│   └── index.html               # Step 5: Three.js frontend
+│   └── index.html
 ├── data/
-│   ├── hidden_states/           # captured residual-stream vectors
-│   └── emotion_vectors/         # validated emotion vectors + metadata
+│   ├── hidden_states/
+│   └── emotion_vectors/       # 8 validated vectors + validation artifacts
 ├── notes/
-│   ├── research_baseline.md     # Step 0: literature summaries & model choice
-│   ├── geometry_decision.md     # Step 1: nsub & facet mapping decision
-│   ├── validation_results.md    # Step 3: emotion vector validation
-│   └── performance.md           # Step 6: latency, FPS, memory notes
-└── scripts/                     # helpers for steering, batch evaluation, etc.
+│   ├── research_baseline.md
+│   └── geometry_decision.md
+└── scripts/
 ```
 
 ## Quick Start
@@ -52,60 +64,53 @@ pip install -r requirements.txt
 python backend.py
 ```
 
-This loads `mlx-community/Llama-3.2-3B-Instruct` at 4-bit quantization and starts a FastAPI server on `http://localhost:8000`.
+Loads `mlx-community/Llama-3.2-3B-Instruct` (4-bit) and starts FastAPI on `http://localhost:8000`.
 
-### 3. Open the Frontend
+### 3. Start Frontend Server
 
-Open `frontend/index.html` in your browser. The page will connect to the WebSocket at `ws://localhost:8000/ws`.
+```bash
+python -m http.server 8080
+```
 
-### 4. Use the Demo
+Open `http://127.0.0.1:8080/frontend/index.html` in browser.
 
-Type a prompt in the input box and press Enter. Watch the icosphere light up as emotion scores stream in real time.
+### 4. Test REST Endpoint (Works Now)
 
-## Implementation Steps
-
-| Step | File | Status | Description |
-|------|------|--------|-------------|
-| 0 | `notes/research_baseline.md` | ✅ | Literature review, model selection |
-| 1 | `geometry_prototype.py` | ✅ | Icosphere generation (nsub=3, 1280 cells) |
-| 1 | `notes/geometry_decision.md` | ✅ | nsub=3 chosen, facet mapping scheme |
-| 2 | `capture_hidden_state.py` | ✅ | mlx-lm residual stream capture (layer 18) |
-| 3 | `emotion_vectors.py` | ✅ | Emotion vector construction + validation |
-| 3 | `score_emotions.py` | ✅ | Cosine similarity scoring |
-| 4 | `static_visualization.py` | ✅ | PyVista static render with cell intensities |
-| 5 | `backend.py` | ✅ | FastAPI + WebSocket streaming backend |
-| 5 | `frontend/index.html` | ✅ | Three.js frontend with decay animation |
-| 6 | — | ⬜ | Optional steering demo |
-| 7 | — | ⬜ | Polish, packaging, README write-up |
+```bash
+curl -X POST http://localhost:8000/score \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "I am so happy today!", "max_tokens": 5}'
+```
 
 ## Configuration (`config.py`)
 
-| Setting | Value | Description |
-|---------|-------|-------------|
-| `MODEL_NAME` | `mlx-community/Llama-3.2-3B-Instruct` | Small instruction-tuned open model |
-| `CAPTURE_LAYER_INDEX` | `18` | Mid-to-late layer for emotion capture |
-| `EMOTION_POOLING` | `last_token` | Last-token residual stream pooling |
-| `ICOSPHERE_NSUB` | `3` | Icosphere subdivision (1280 cells) |
-| `EMOTION_NAMES` | 8 core emotions | joy, sadness, fear, anger, surprise, disgust, calm, love |
+| Setting | Value |
+|---------|-------|
+| `MODEL_NAME` | `mlx-community/Llama-3.2-3B-Instruct` |
+| `CAPTURE_LAYER_INDEX` | `18` |
+| `EMOTION_POOLING` | `last_token` |
+| `ICOSPHERE_NSUB` | `3` (1280 cells) |
+| `EMOTION_NAMES` | joy, sadness, fear, anger, surprise, disgust, calm, love |
 
 ## Key Design Decisions
 
-1. **Model:** Llama-3.2-3B-Instruct at 4-bit — fits comfortably in 64 GB unified memory on Mac Pro M4
-2. **Capture Layer:** Layer 18 (mid-to-late decoder block) for emotion signal
-3. **Pooling:** Last-token residual stream — matches literature standard for emotion vectors
-4. **Icosphere:** nsub=3 → 1280 cells — good balance between granularity and visual distinctness
-5. **Mapping:** Cells distributed across emotions equally (simplified); similarity-aware mapping planned
-6. **Decay:** Exponential decay (~200ms half-life) for the "firing" effect
+1. **Model:** Llama-3.2-3B-Instruct at 4-bit — fits in 64 GB unified memory
+2. **Capture Layer:** Layer 18 (mid-to-late decoder block)
+3. **Pooling:** Last-token residual stream
+4. **Icosphere:** nsub=3 → 1280 cells
+5. **Mapping:** PCA on emotion vectors → 2D → spherical projection → nearest-facet assignment
+6. **Decay:** Exponential (0.8/frame) for "firing" effect
 
-## Future Work
+## Next Steps
 
-- **Step 3:** Construct validated emotion vectors using contrastive construction (emotion vs neutral stories)
-- **Step 6:** Implement activation steering (add α × emotion_vector to residual stream)
-- **Step 7:** Package as installable Python package + browser demo; add scientific caveats in UI
+1. **Fix WebSocket streaming** in `backend.py` — `stream_generate` passes unsupported kwargs to `generate_step`
+2. **Live demo** — test with frontend once WebSocket works
+3. **Steering demo** — add `α × emotion_vector` to residual stream during generation
+4. **Polish** — validation plots, performance metrics, scientific caveats in UI
 
 ## Scientific Caveats
 
-- Activations can decouple from surface text — the sphere shows internal state, not necessarily what the model says
+- Activations can decouple from surface text — sphere shows internal state, not necessarily what the model says
 - The sphere is a similarity-preserving projection, not a literal brain map
 - Results are model- and layer-specific
 - Emotion vectors are model-specific; validate before trusting visualization

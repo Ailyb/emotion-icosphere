@@ -20,7 +20,6 @@ from pydantic import BaseModel
 import numpy as np
 import mlx.core as mx
 from mlx_lm import load
-from mlx_lm.generate import stream_generate
 from mlx_lm.sample_utils import make_sampler
 import uvicorn
 
@@ -260,12 +259,9 @@ async def websocket_endpoint(websocket: WebSocket):
 async def stream_emotion_tokens(prompt: str, max_tokens: int, temperature: float):
     """
     Generator that streams tokens with emotion scores.
-    Yields JSON-serializable dicts for each token.
+    Runs model forward pass on main thread (no asyncio.to_thread).
     """
     current_text = prompt
-    
-    # Create sampler once
-    sampler = make_sampler(temp=temperature)
     
     for token_idx in range(max_tokens):
         # Capture residual stream at current state
@@ -298,30 +294,41 @@ async def stream_emotion_tokens(prompt: str, max_tokens: int, temperature: float
             "timestamp": time.time()
         }
         
-        # Get next token using stream_generate with sampler (runs in thread to avoid blocking)
+        # Generate next token using simple forward pass (on main thread)
         try:
-            def gen_one():
-                return list(stream_generate(
-                    model,
-                    tokenizer,
-                    current_text,
-                    max_tokens=1,
-                    sampler=sampler
-                ))
-            gen_responses = await asyncio.to_thread(gen_one)
-            next_token = ""
-            if gen_responses:
-                next_token = gen_responses[0].text
+            # Encode current text
+            tokens = tokenizer.encode(current_text)
+            input_ids = mx.array([tokens])
+            
+            # Run full forward pass
+            logits = model(input_ids)
+            
+            # Get logits for last token
+            last_logits = logits[0, -1, :]  # Shape: [vocab_size]
+            
+            # Apply temperature
+            if temperature > 0:
+                last_logits = last_logits / temperature
+            
+            # Sample
+            sampler = make_sampler(temp=temperature)
+            next_token = sampler(last_logits)
+            
+            # Detokenize
+            detokenizer = tokenizer.detokenizer
+            detokenizer.add_token(int(next_token.item()))
+            next_token_text = detokenizer.last_segment
+            
         except Exception as e:
             logger.error(f"Generation error: {e}")
             break
         
-        response_data["token"] = next_token
-        current_text += next_token
+        response_data["token"] = next_token_text
+        current_text += next_token_text
         
         yield response_data
         
-        # Small delay for visual effect
+        # Small delay for visual effect (yields to event loop)
         await asyncio.sleep(0.1)
 
 
