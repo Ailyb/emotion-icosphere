@@ -19,8 +19,15 @@ Based on:
 | Similarity-Aware Facet Mapping | ✅ PCA-based, 1280 facets distributed by emotion similarity |
 | REST API (`/score`) | ✅ Working |
 | WebSocket Streaming | ✅ **Working** — direct model forward pass + sampler |
-| Three.js Frontend | ✅ Ready (WebSocket URL: `ws://127.0.0.1:8000/ws`) |
+| Three.js Frontend | ✅ **Fully Functional** — WebSocket message parsing fixed |
 | Static Visualization | ✅ PyVista render |
+
+### Recent Fix (2026-11-06)
+**Bug Fixed:** WebSocket message parsing in `frontend/index.html`
+- **Issue:** `JSON.parse(event)` was used instead of `JSON.parse(event.data)`
+- **Result:** Frontend received WebSocket messages but couldn't parse them, so emotion bars and icosphere didn't update
+- **Fix:** Changed line 326 in `frontend/index.html` from `JSON.parse(event)` to `JSON.parse(event.data)`
+- **Status:** ✅ **Demo now fully functional** — type a prompt, press Enter, watch real-time emotion visualization
 
 ## Project Structure
 
@@ -165,6 +172,7 @@ Facet distribution (PCA-based):
 | WebSocket fails | Check browser Console (F12) for errors |
 | Frontend 404 | Run `python -m http.server 8080` from project directory |
 | Model download fails | Check internet, retry (resumes automatically) |
+| **Emotion bars/icosphere don't update** | **Fixed in v1.1** — was `JSON.parse(event)` bug, now `JSON.parse(event.data)` |
 
 ## Browser Compatibility
 

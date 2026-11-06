@@ -323,7 +323,7 @@
 
       ws.onmessage = (event) => {
         try {
-          const data = JSON.parse(event);
+          const data = JSON.parse(event.data);
           
           // Update emotion scores UI
           if (data.emotion_scores) {
