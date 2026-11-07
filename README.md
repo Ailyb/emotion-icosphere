@@ -115,7 +115,8 @@ http://127.0.0.1:8080/frontend/index.html
 1. Type a prompt: `"I am so happy and excited today!"`
 2. Press **Enter**
 3. Watch the icosphere glow with similarity-aware emotion regions
-4. Emotion bars on left update in real-time
+4. Read the generated continuation in the compact strip above the prompt field
+5. Toggle **Auto contrast** to adapt the emotion bars and sphere brightness to a rolling baseline; this changes display contrast only, not model scores
 
 ### 6. Test REST Endpoint (Alternative)
 

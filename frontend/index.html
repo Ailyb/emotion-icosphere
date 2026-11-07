@@ -56,6 +56,7 @@
     }
     .prompt-input {
       width: 100%;
+      box-sizing: border-box;
       padding: 16px 20px;
       border-radius: 8px;
       border: none;
@@ -87,6 +88,30 @@
       gap: 10px;
       margin-top: 10px;
     }
+    .emotion-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+      color: #d7d7e0;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .contrast-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #b0b0c0;
+      font-weight: 400;
+      cursor: pointer;
+    }
+    .contrast-control input {
+      accent-color: #69e6c1;
+      width: 14px;
+      height: 14px;
+      margin: 0;
+    }
     .emotion-item {
       font-size: 12px;
       display: flex;
@@ -106,6 +131,37 @@
       width: 0%;
       transition: width 0.1s ease;
     }
+    .response-panel {
+      display: none;
+      max-height: 112px;
+      overflow: auto;
+      margin-bottom: 8px;
+      padding: 9px 13px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      background: rgba(15, 17, 24, 0.86);
+      backdrop-filter: blur(8px);
+      color: #e8e9ed;
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+    .response-panel.visible { display: block; }
+    .response-meta {
+      margin-bottom: 3px;
+      color: #8dceb9;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .response-panel.error .response-meta { color: #ff9a8f; }
+    @media (max-width: 640px) {
+      #ui-overlay { top: 12px; left: 12px; right: 12px; }
+      .ui-card { padding: 14px; }
+      .emotion-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .prompt-box { bottom: 18px; width: calc(100vw - 24px); max-width: 600px; }
+      .status { top: 12px; right: 12px; }
+    }
   </style>
 </head>
 <body>
@@ -120,11 +176,22 @@
         an icosphere in real time. Each colored region represents emotion
         activation detected in the residual stream at layer 18.
       </p>
+      <div class="emotion-toolbar">
+        <span>Emotion signal</span>
+        <label class="contrast-control" for="contrast-toggle">
+          <input type="checkbox" id="contrast-toggle" />
+          Auto contrast
+        </label>
+      </div>
       <div class="emotion-grid" id="emotion-grid"></div>
     </div>
   </div>
 
   <div class="prompt-box">
+    <div class="response-panel" id="response-panel" aria-live="polite">
+      <div class="response-meta" id="response-meta">Generating</div>
+      <div id="generated-response"></div>
+    </div>
     <input
       type="text"
       id="prompt-input"
@@ -143,10 +210,14 @@
     // ========== Configuration ==========
     const CONFIG = {
       wsUrl: 'ws://127.0.0.1:8000/ws',
-      nsub: 3,
+      nsub: 7,
       radius: 2,
       cellCount: 1280, // icosphere nsub=3 cell count
       decayRate: 0.92,
+      baselineRate: 0.06,
+      baselineFloor: 0.08,
+      contrastNoiseFloor: 0.025,
+      contrastRange: 1.8,
       emotionNames: [
         'joy', 'sadness', 'fear', 'anger',
         'surprise', 'disgust', 'calm', 'love'
@@ -168,8 +239,16 @@
     let ws;
     let currentIntensities = new Float32Array(CONFIG.cellCount).fill(0);
     let targetIntensities = new Float32Array(CONFIG.cellCount).fill(0);
+    let lastFacetIntensities = new Float32Array(CONFIG.cellCount).fill(0);
     let emotionBars = {};
     let isConnected = false;
+    let isGenerating = false;
+    let useAutoContrast = false;
+    let lastEmotionScores = {};
+    let facetEmotionByIndex = new Array(CONFIG.cellCount).fill(null);
+    let emotionBaselines = Object.fromEntries(
+      CONFIG.emotionNames.map(emotion => [emotion, CONFIG.baselineFloor])
+    );
 
     // ========== Three.js Setup ==========
     function initThree() {
@@ -218,15 +297,21 @@
       sphereMesh = new THREE.Mesh(geometry, material);
       scene.add(sphereMesh);
 
+      CONFIG.emotionNames.forEach(emotion => {
+        emotionColors[emotion] = new THREE.Color(CONFIG.emotionColors[emotion]);
+      });
+
       // Add wireframe overlay
       const wireframeGeo = new THREE.WireframeGeometry(geometry);
       const wireframeMat = new THREE.LineBasicMaterial({ color: 0x333333, transparent: true, opacity: 0.3 });
       const wireframe = new THREE.LineSegments(wireframeGeo, wireframeMat);
-      scene.add(wireframe);
+      sphereMesh.add(wireframe);
 
       // Handle resize
       window.addEventListener('resize', onWindowResize);
     }
+
+    const emotionColors = {};
 
     function onWindowResize() {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -252,15 +337,66 @@
     }
 
     function updateEmotionScores(scores) {
+      lastEmotionScores = scores;
       CONFIG.emotionNames.forEach(emotion => {
-        const score = scores[emotion] || 0;
+        const score = Math.max(0, Number(scores[emotion]) || 0);
+        emotionBaselines[emotion] += (score - emotionBaselines[emotion]) * CONFIG.baselineRate;
+      });
+      updateEmotionBars();
+      updateFacetTargets();
+    }
+
+    function updateEmotionBars() {
+      CONFIG.emotionNames.forEach(emotion => {
+        const score = Math.max(0, Number(lastEmotionScores[emotion]) || 0);
+        const displayValue = getDisplayIntensity(score, emotion);
         const bar = emotionBars[emotion];
         if (bar) {
-          // Clamp to [0, 1] for display width
-          const displayValue = Math.max(0, Math.min(1, score));
           bar.style.width = `${displayValue * 100}%`;
         }
       });
+    }
+
+    function getDisplayIntensity(rawValue, emotion) {
+      const value = Math.max(0, Number(rawValue) || 0);
+      if (!useAutoContrast) return Math.min(1, value);
+      if (value <= CONFIG.contrastNoiseFloor) return 0;
+      const baseline = Math.max(emotionBaselines[emotion] || 0, CONFIG.baselineFloor);
+      const normalized = value / (baseline * CONFIG.contrastRange);
+      return Number.isFinite(normalized) ? Math.max(0, Math.min(1, normalized)) : 0;
+    }
+
+    function updateFacetTargets() {
+      targetIntensities = Float32Array.from(lastFacetIntensities, (rawValue, facetIndex) => {
+        const emotion = facetEmotionByIndex[facetIndex];
+        return emotion ? getDisplayIntensity(rawValue, emotion) : 0;
+      });
+    }
+
+    async function loadFacetMapping() {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/facet_mapping');
+        if (!response.ok) throw new Error(`Mapping request failed: ${response.status}`);
+        const data = await response.json();
+        let assignments = data.facet_assignments;
+        if (!assignments || !Object.keys(assignments).length) {
+          const localResponse = await fetch('../data/emotion_vectors/facet_mapping.json');
+          if (!localResponse.ok) throw new Error(`Local mapping request failed: ${localResponse.status}`);
+          const localData = await localResponse.json();
+          assignments = localData.facet_mapping;
+        }
+        Object.entries(assignments || {}).forEach(([emotion, indices]) => {
+          if (!CONFIG.emotionColors[emotion] || !Array.isArray(indices)) return;
+          indices.forEach(index => {
+            if (Number.isInteger(index) && index >= 0 && index < CONFIG.cellCount) {
+              facetEmotionByIndex[index] = emotion;
+            }
+          });
+        });
+        updateFacetTargets();
+      } catch (error) {
+        console.error('Unable to load emotion facet assignments:', error);
+      }
     }
 
     // ========== Icosphere Update ==========
@@ -274,24 +410,26 @@
       // Each cell (triangle) gets a color based on its intensity
       // We color the vertices - simpler approach: color each vertex by average cell intensity
       
-      const position = geometry.attributes.position;
       const colorArray = colors.array;
 
-      // For simplicity, assign colors per vertex based on nearest cell
-      // In production, use cell-based coloring via custom shader
-      for (let i = 0; i < position.count; i++) {
-        const intensity = intensities[i % CONFIG.cellCount] || 0;
-        const colorValue = intensity; // 0 to 1
+      for (let vertexIndex = 0; vertexIndex < colors.count; vertexIndex++) {
+        const facetIndex = Math.floor(vertexIndex / 3);
+        const emotion = facetEmotionByIndex[facetIndex];
+        const color = emotionColors[emotion];
+        const intensity = intensities[facetIndex] || 0;
+        const brightness = intensity > 0
+          ? 0.08 + intensity * 1.2
+          : 0.025;
 
-        // Color gradient: dark purple -> blue -> green -> yellow -> red
-        // Based on intensity value
-        const r = Math.min(1, colorValue * 1.5);
-        const g = Math.min(1, colorValue * 0.8);
-        const b = Math.min(1, colorValue * 1.2);
-
-        colorArray[i * 3] = r;
-        colorArray[i * 3 + 1] = g;
-        colorArray[i * 3 + 2] = b;
+        if (color) {
+          colorArray[vertexIndex * 3] = Math.min(1, color.r * brightness);
+          colorArray[vertexIndex * 3 + 1] = Math.min(1, color.g * brightness);
+          colorArray[vertexIndex * 3 + 2] = Math.min(1, color.b * brightness);
+        } else {
+          colorArray[vertexIndex * 3] = 0.012;
+          colorArray[vertexIndex * 3 + 1] = 0.016;
+          colorArray[vertexIndex * 3 + 2] = 0.025;
+        }
       }
 
       colors.needsUpdate = true;
@@ -312,6 +450,7 @@
         isConnected = false;
         document.getElementById('status').textContent = 'Disconnected';
         document.getElementById('status').className = 'status disconnected';
+        if (isGenerating) finishResponse('Connection lost before generation completed.', true);
         console.log('WebSocket disconnected');
         // Reconnect after delay
         setTimeout(connectWebSocket, 2000);
@@ -324,6 +463,19 @@
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
+
+          if (data.event === 'complete') {
+            finishResponse('Complete');
+            return;
+          }
+          if (data.event === 'error') {
+            finishResponse(data.message || 'Generation failed.', true);
+            return;
+          }
+
+          if (data.token) {
+            document.getElementById('generated-response').textContent += data.token;
+          }
           
           // Update emotion scores UI
           if (data.emotion_scores) {
@@ -332,10 +484,10 @@
 
           // Update facet intensities
           if (data.facet_intensities) {
-            targetIntensities = new Float32Array(data.facet_intensities);
+            lastFacetIntensities = new Float32Array(data.facet_intensities);
+            updateFacetTargets();
           }
 
-          console.log('Received:', data.emotion_scores);
         } catch (e) {
           console.error('Error parsing WebSocket message:', e);
         }
@@ -366,8 +518,8 @@
 
     // ========== Input Handling ==========
     const input = document.getElementById('prompt-input');
-    input.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter' && isConnected) {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && isConnected && !isGenerating) {
         const prompt = input.value.trim();
         if (prompt) {
           sendPrompt(prompt);
@@ -377,6 +529,14 @@
     });
 
     function sendPrompt(prompt) {
+      if (!isConnected || isGenerating) return;
+      isGenerating = true;
+      input.disabled = true;
+      const responsePanel = document.getElementById('response-panel');
+      responsePanel.classList.add('visible');
+      responsePanel.classList.remove('error');
+      document.getElementById('response-meta').textContent = 'Generating';
+      document.getElementById('generated-response').textContent = '';
       const message = {
         prompt: prompt,
         max_tokens: 30,
@@ -387,10 +547,30 @@
       console.log('Sent:', prompt);
     }
 
+    function finishResponse(message, isError = false) {
+      isGenerating = false;
+      input.disabled = false;
+      document.getElementById('response-meta').textContent = isError ? 'Error' : message;
+      document.getElementById('response-panel').classList.toggle('error', isError);
+      if (isError) {
+        const response = document.getElementById('generated-response');
+        response.textContent = response.textContent
+          ? `${response.textContent}\n${message}`
+          : message;
+      }
+    }
+
+    document.getElementById('contrast-toggle').addEventListener('change', event => {
+      useAutoContrast = event.target.checked;
+      if (Object.keys(lastEmotionScores).length) updateEmotionBars();
+      updateFacetTargets();
+    });
+
     // ========== Initialize ==========
     function init() {
       initThree();
       initEmotionGrid();
+      loadFacetMapping();
       connectWebSocket();
       animate();
     }

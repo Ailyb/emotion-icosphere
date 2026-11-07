@@ -247,8 +247,15 @@ async def websocket_endpoint(websocket: WebSocket):
             logger.info(f"Received prompt: {prompt[:50]}...")
             
             # Stream generation token by token
-            async for token_data in stream_emotion_tokens(prompt, max_tokens, temperature):
-                await websocket.send_text(json.dumps(token_data))
+            try:
+                async for token_data in stream_emotion_tokens(prompt, max_tokens, temperature):
+                    await websocket.send_text(json.dumps(token_data))
+            except Exception as e:
+                logger.exception("Prompt processing error")
+                await websocket.send_text(json.dumps({
+                    "event": "error",
+                    "message": str(e)
+                }))
                 
     except WebSocketDisconnect:
         logger.info("WebSocket client disconnected")
@@ -321,7 +328,11 @@ async def stream_emotion_tokens(prompt: str, max_tokens: int, temperature: float
             
         except Exception as e:
             logger.error(f"Generation error: {e}")
-            break
+            yield {
+                "event": "error",
+                "message": "Text generation failed. Check the backend log for details."
+            }
+            return
         
         response_data["token"] = next_token_text
         current_text += next_token_text
@@ -330,6 +341,8 @@ async def stream_emotion_tokens(prompt: str, max_tokens: int, temperature: float
         
         # Small delay for visual effect (yields to event loop)
         await asyncio.sleep(0.1)
+
+    yield {"event": "complete"}
 
 
 # ==================== REST API Endpoints ====================
@@ -346,9 +359,10 @@ async def list_emotions():
 
 @app.get("/facet_mapping")
 async def get_facet_mapping():
-    """Get the current facet mapping for debugging."""
+    """Get facet assignments and counts for the visualization."""
     return {
         "facet_mapping": {e: len(v) for e, v in FACET_MAPPING.items()},
+        "facet_assignments": FACET_MAPPING,
         "total_facets": sum(len(v) for v in FACET_MAPPING.values())
     }
 
