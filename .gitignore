@@ -44,3 +44,4 @@ data/emotion_vectors/*.png
 # claude_tests large data files (exceed GitHub 100MB limit)
 claude_tests/data/**/*.npz
 claude_tests/data/**/*.png
+graphify-out/
