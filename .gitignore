@@ -41,3 +41,6 @@ data/emotion_vectors/*.png
 
 # Model cache (downloaded automatically)
 ~/.cache/huggingface/
+# claude_tests large data files (exceed GitHub 100MB limit)
+claude_tests/data/**/*.npz
+claude_tests/data/**/*.png

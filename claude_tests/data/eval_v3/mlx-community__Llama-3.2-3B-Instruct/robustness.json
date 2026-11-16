@@ -1,0 +1,78 @@
+{
+  "style": {
+    "dry, understated first-person account": {
+      "n_train": 399,
+      "n_test": 54,
+      "test_f1": 0.6735918402585068,
+      "hardset_f1": 0.6004802804312609
+    },
+    "plain report-style account where the feeling shows only in what the person decides or does": {
+      "n_train": 406,
+      "n_test": 52,
+      "test_f1": 0.7463684463684463,
+      "hardset_f1": 0.5325396825396825
+    },
+    "reflective paragraph in which the writer reasons about what to do next": {
+      "n_train": 411,
+      "n_test": 42,
+      "test_f1": 0.5931808931808933,
+      "hardset_f1": 0.5430050542279644
+    },
+    "short dialogue between two people (use quotation marks)": {
+      "n_train": 406,
+      "n_test": 50,
+      "test_f1": 0.7222185222185222,
+      "hardset_f1": 0.5078363951927171
+    },
+    "text-message exchange between two people": {
+      "n_train": 411,
+      "n_test": 49,
+      "test_f1": 0.7260332260332261,
+      "hardset_f1": 0.5354014027990636
+    },
+    "third-person narrative focused on one person's actions and choices": {
+      "n_train": 407,
+      "n_test": 50,
+      "test_f1": 0.6072966507177033,
+      "hardset_f1": 0.5416247756117036
+    }
+  },
+  "writer": {},
+  "curve": {
+    "0.1": {
+      "n_train": 54,
+      "test_f1_mean": 0.5309586881181084,
+      "test_f1_sd": 0.04027167564558289,
+      "hardset_f1_mean": 0.40022214791100075,
+      "hardset_f1_sd": 0.05443217394851787
+    },
+    "0.2": {
+      "n_train": 99,
+      "test_f1_mean": 0.5223957644055381,
+      "test_f1_sd": 0.08271684449536915,
+      "hardset_f1_mean": 0.43106808762133264,
+      "hardset_f1_sd": 0.042284223813827765
+    },
+    "0.4": {
+      "n_train": 195,
+      "test_f1_mean": 0.689130579532159,
+      "test_f1_sd": 0.041289145573612025,
+      "hardset_f1_mean": 0.48987248760179886,
+      "hardset_f1_sd": 0.019294192887067116
+    },
+    "0.7": {
+      "n_train": 342,
+      "test_f1_mean": 0.7204584897577674,
+      "test_f1_sd": 0.012567414781200404,
+      "hardset_f1_mean": 0.5321109966386716,
+      "hardset_f1_sd": 0.05972775737812694
+    },
+    "1.0": {
+      "n_train": 488,
+      "test_f1_mean": 0.7214614905791376,
+      "test_f1_sd": 0.0,
+      "hardset_f1_mean": 0.5419307955405231,
+      "hardset_f1_sd": 0.0
+    }
+  }
+}

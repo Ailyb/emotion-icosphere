@@ -1,0 +1,21 @@
+{
+  "pooled": {
+    "emotion_accuracy_8way": 0.5616438356164384,
+    "emotional_vs_neutral_auc": 0.8334534967555876
+  },
+  "mean_z": {
+    "emotion_accuracy_8way": 0.547945205479452,
+    "emotional_vs_neutral_auc": 0.8255227108868061
+  },
+  "max_z": {
+    "emotion_accuracy_8way": 0.5616438356164384,
+    "emotional_vs_neutral_auc": 0.9271809661139149
+  },
+  "late_mean_z": {
+    "emotion_accuracy_8way": 0.589041095890411,
+    "emotional_vs_neutral_auc": 0.8118240807498198
+  },
+  "onset_fraction_median": 0.2857142857142857,
+  "onset_reached_share": 0.8904109589041096,
+  "true_emotion_top_token_share_mean": 0.40639057164366965
+}

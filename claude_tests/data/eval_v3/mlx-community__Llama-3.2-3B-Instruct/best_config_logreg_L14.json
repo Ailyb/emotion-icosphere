@@ -1,0 +1,17 @@
+{
+  "model": "mlx-community/Llama-3.2-3B-Instruct",
+  "method": "logreg",
+  "layer": 14,
+  "cfg": {
+    "var_frac": 0.8,
+    "C": 0.003
+  },
+  "tau": 1.70610134601593,
+  "val_f1": 0.7635213551880219,
+  "plateau_layers": [
+    10,
+    12,
+    14
+  ],
+  "skip": 4
+}
