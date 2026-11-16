@@ -22,7 +22,7 @@ A public hobby/research project. It extracts linear "emotion" probe directions f
 - `backend.py` (KV-cached live server; MLX streams are thread-bound: generate on the main thread), `frontend/index.html`
 - `run_merged.sh` merged-corpus pipeline (`SKIP_EVAL=1` to resume; `DRY=1` to print)
 - Tests (model-free, synthetic): test_probes_synthetic.py, test_bundle_synthetic.py, test_v3_synthetic.py, test_confusion.py, test_hf_loader.py. Run all before and after any change: `for t in test_*.py; do python $t || break; done`
-- Obsolete, safe to delete after confirming with Justin: emotion_vectors.py, capture_hidden_state.py, score_emotions.py, config.py, geometry_prototype.py. README claims ("validated", "internal emotional state", 810 faces vs 1280) need rewriting.
+- Obsolete top-level files (emotion_vectors.py, capture_hidden_state.py, score_emotions.py, config.py, geometry_prototype.py) were deleted on 2026-11-16; recover from commit e6ad62f if needed. The top-level demo `backend.py` still uses the old contrastive vectors; see the root README.
 
 ## Conventions
 - Layer L = output of decoder block L (old "18" == new "17"). Mean-pool passage states, skip first 4 tokens.
@@ -32,7 +32,13 @@ A public hobby/research project. It extracts linear "emotion" probe directions f
 - Long jobs (model extraction, corpus generation) are run by Justin or in background; tell him the exact command and what file to send back.
 
 ## Privacy / safety
-`.claude/settings.json` denies Read on hardset/own_voice data. Deny rules don't stop subprocesses (python scripts read them legitimately for aggregate scoring), so the rule above is the real control: only aggregate outputs leave the machine. Keep data/ out of git (.gitignore); own_voice stays local.
+`.claude/settings.json` denies Read on hardset/own_voice data. Deny rules don't stop subprocesses (python scripts read them legitimately for aggregate scoring), so the rule above is the real control: only aggregate outputs leave the machine.
+
+Git policy for `data/` (the repo is PUBLIC):
+- DO commit and push small (<~5 MB each) text outputs: corpora (`data/corpus/*.jsonl`, synthetic/GoEmotions only), aggregate reports and configs (`report_*.md/json`, `robustness*.md/json`, `confusion_*.md`, `best_config*.json`), probe metadata.
+- NEVER commit or push: `*.npz` (hidden-state caches, hundreds of MB), `*.png`, anything over ~5 MB, `data/hardset/` (hardset.jsonl, own_voice*.jsonl), or `errors_*.md` (they quote test passages). These are in `.gitignore`; keep it that way.
+- Before every `git add`, run `git status --short` and check for the above. Ask Justin before any push that adds a new top-level data directory.
+- The hardset/own_voice/errors files were committed to the public remote by mistake before this rule existed (commit 242e2dd and later); they are now untracked but remain in git history.
 
 ## Current state / next
 See docs/ROADMAP.md "Now". Merged pipeline has been resumed and FINDINGS/README updated (items 1-2). Next: item 3 (second-writer corpus) and 4 (length-aware calibration); confirm with Justin before deleting the obsolete files.

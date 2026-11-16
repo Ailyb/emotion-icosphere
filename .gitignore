@@ -45,3 +45,6 @@ data/emotion_vectors/*.png
 claude_tests/data/**/*.npz
 claude_tests/data/**/*.png
 graphify-out/
+# Test-only / private data: never commit (see claude_tests/CLAUDE.md)
+claude_tests/data/hardset/
+claude_tests/data/**/errors_*.md

@@ -41,12 +41,7 @@ emotion-icosphere/
 ├── README.md
 ├── PROJECT_STATUS.md          # Detailed handoff document
 ├── requirements.txt
-├── config.py
-├── geometry_prototype.py
-├── capture_hidden_state.py
-├── emotion_vectors.py
 ├── build_emotion_vectors.py
-├── score_emotions.py
 ├── facet_mapping.py
 ├── static_visualization.py
 ├── backend.py                 # FastAPI + WebSocket (FIXED)
@@ -131,15 +126,14 @@ curl -X POST http://127.0.0.1:8000/score \
   -d '{"prompt": "I am so happy today!", "max_tokens": 5}'
 ```
 
-## Configuration (`config.py`)
+## Configuration (constants in `backend.py`)
 
 | Setting | Value | Description |
 |---------|-------|-------------|
 | `MODEL_NAME` | `mlx-community/Llama-3.2-3B-Instruct` | 4-bit quantized, Apple Silicon optimized |
 | `CAPTURE_LAYER_INDEX` | `18` | Mid-to-late layer for emotion signal |
 | `EMOTION_POOLING` | `last_token` | Last-token residual stream pooling |
-| `ICOSPHERE_NSUB` | `3` | Icosphere subdivision (1280 cells) |
-| `EMOTION_NAMES` | 8 core emotions | joy, sadness, fear, anger, surprise, disgust, calm, love |
+| `NUM_FACETS` | `1280` | nsub=3 icosphere cell count |
 
 ## Key Design Decisions
 
