@@ -98,6 +98,30 @@ print(f"robustness: {len(style)} style folds, {len(writer)} writer folds, curve 
 assert len(style) == 3 and len(writer) == 2
 assert "Learning curve" in rb.render(best, style, writer, curve)
 
+# ---- 5b. regression: a held-out group owns the ONLY training examples of one emotion
+import copy
+rows2 = copy.deepcopy(rows)
+for i, r in enumerate(rows2):
+    if (r["split"] == "train" and r["category"] == "calm") or (r["split"] != "train" and i % 2 == 0):
+        r["writer"] = "w_calm"
+cfg_ = dict(best["cfg"], method=best["method"]); hc_ = np.array([r["category"] for r in hrows])
+sk = {}
+got = rb.leave_one_group_out(Xc[5], Xh[5], rows2, hc_, E, 5, cfg_, "writer", skipped=sk)
+assert "w_calm" in sk and "calm" in sk["w_calm"] and "w_calm" not in got, (sk, list(got))
+assert len(got) >= 1, "valid folds must still run"
+sk2 = {}
+got2 = rb.leave_one_group_out(Xc[5], Xh[5], rows2, hc_, E, 5, cfg_, "writer", skipped=sk2, allow_partial=True)
+assert "w_calm" in got2 and "calm" in got2["w_calm"]["note"] and "w_calm" not in sk2
+md2 = rb.render(best, {}, got2, curve, {}, sk)
+assert "Folds NOT run" in md2 and "partial" in md2
+for m_ in ("meandiff", "lda", "logreg"):
+    try:
+        est.fit_directions(Xc[5][tr & (cat != "calm")], cat[tr & (cat != "calm")], E, 5, method=m_)
+        raise AssertionError("expected ValueError for " + m_)
+    except ValueError as e_:
+        assert "calm" in str(e_), e_
+print("missing-class regression ok (skipped:", sk["w_calm"][:60], ")")
+
 # ---- 6. API corpus generator against a fake OpenAI-compatible server
 class H_(BaseHTTPRequestHandler):
     n = 0

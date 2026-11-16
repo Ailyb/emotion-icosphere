@@ -126,6 +126,9 @@ def fit_probes(X: np.ndarray, cats, emotions: List[str], layer: int, var_frac: f
     """
     X = np.asarray(X, dtype=np.float64)
     cats = np.asarray(cats)
+    missing = [e for e in emotions if not (cats == e).any()]
+    if missing:
+        raise ValueError(f"no training examples for emotion(s) {missing}; labels present: {sorted(set(cats.tolist()))}")
     neutral = X[cats == NEUTRAL]
     if len(neutral) < 5:
         raise ValueError("need >=5 neutral training texts for baseline/calibration")

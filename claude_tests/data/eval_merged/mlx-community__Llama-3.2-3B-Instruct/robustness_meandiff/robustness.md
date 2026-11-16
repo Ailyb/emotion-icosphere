@@ -18,8 +18,11 @@ Mean test F1 0.618, worst 0.284.
 
 | held-out writer | n test | test F1 | hand-written F1 |
 |---|---|---|---|
-| llama-3.2-3b | 297 | 0.015 | 0.020 |
+| llama-3.2-3b * | 265 | 0.329 | 0.462 |
 | reddit-goemotions | 320 | 0.284 | 0.493 |
+
+(* = partial fold)
+- `llama-3.2-3b`: partial: no training data for ['calm']; those rows excluded
 
 ## Learning curve (stratified subsamples of TRAIN)
 

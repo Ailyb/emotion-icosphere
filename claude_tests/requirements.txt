@@ -1,0 +1,7 @@
+numpy
+scikit-learn
+fastapi
+uvicorn[standard]
+websockets
+mlx
+mlx-lm

@@ -33,18 +33,48 @@ def _fit_eval(Xl, Xhl, cat, hcat, tr, cal, va, te, emotions, layer, cfg):
             "hardset_f1": f1_9(hcat, probe_predict(ps, Xhl, tau))}
 
 
-def leave_one_group_out(Xl, Xhl, rows, hcat, emotions, layer, cfg, field, default="unknown"):
+def leave_one_group_out(Xl, Xhl, rows, hcat, emotions, layer, cfg, field, default="unknown",
+                        skipped=None, allow_partial=False):
+    """Hold out each group of `field`. Infeasible folds are never silent: they are recorded in `skipped`
+    (dict group -> reason). If a fold's training data lacks some emotion(s): by default the fold is skipped;
+    with allow_partial=True it runs on the emotions that ARE present (test and hand-written rows of the
+    missing emotions are dropped) and the result carries a `note`."""
     cat = np.array([r["category"] for r in rows]); spl = np.array([r["split"] for r in rows])
     grp = np.array([r.get(field, default) for r in rows])
+    hcat = np.asarray(hcat)
     res = {}
+    skip = lambda g, why: skipped.__setitem__(g, why) if skipped is not None else None
     for g in sorted(set(grp)):
         tr = (spl == "train") & (grp != g)
         te = np.isin(spl, ["val", "test"]) & (grp == g)
         cal = (spl == "val") & (cat == NEUTRAL) & (grp != g)
         va = (spl == "val") & (grp != g)                      # threshold chosen on groups the model has not been tested on
         if te.sum() < 10 or tr.sum() < 30 or cal.sum() < 5 or len(set(cat[te])) < 3:
+            skip(g, f"too few rows (train {int(tr.sum())}, test {int(te.sum())}, neutral calibration {int(cal.sum())})")
             continue
-        res[g] = _fit_eval(Xl, Xhl, cat, hcat, tr, cal, va, te, emotions, layer, cfg)
+        present = set(cat[tr].tolist())
+        missing = [e for e in emotions if e not in present]
+        emo_f, note, hm = emotions, None, np.ones(len(hcat), bool)
+        if missing:
+            if not allow_partial:
+                skip(g, f"training data lacks emotion(s): {missing}")
+                continue
+            emo_f = [e for e in emotions if e in present]
+            drop = np.isin(cat, missing)
+            te, va = te & ~drop, va & ~drop
+            hm = ~np.isin(hcat, missing)
+            note = f"partial: no training data for {missing}; those rows excluded"
+            if te.sum() < 10:
+                skip(g, f"after dropping {missing}, only {int(te.sum())} test rows remain")
+                continue
+        try:
+            out = _fit_eval(Xl, Xhl[hm], cat, hcat[hm], tr, cal, va, te, emo_f, layer, cfg)
+        except ValueError as e:
+            skip(g, f"fit failed: {e}")
+            continue
+        if note:
+            out["note"] = note
+        res[g] = out
     return res
 
 
@@ -68,18 +98,24 @@ def learning_curve(Xl, Xhl, rows, hcat, emotions, layer, cfg, fracs=(0.1, 0.2, 0
     return out
 
 
-def render(best, style, writer, curve):
+def render(best, style, writer, curve, skipped_style=None, skipped_writer=None):
     L = [f"# Robustness ({best['method']} @ layer {best['layer']}, cfg {best['cfg']})", "",
          "## Leave-one-writing-style-out", "", "| held-out style | n test | test F1 | hand-written F1 (this fold's model) |", "|---|---|---|---|"]
-    L += [f"| {g} | {v['n_test']} | {v['test_f1']:.3f} | {v['hardset_f1']:.3f} |" for g, v in style.items()]
+    L += [f"| {g}{' *' if v.get('note') else ''} | {v['n_test']} | {v['test_f1']:.3f} | {v['hardset_f1']:.3f} |" for g, v in style.items()]
     if style:
         L.append(f"\nMean test F1 {np.mean([v['test_f1'] for v in style.values()]):.3f}, worst {min(v['test_f1'] for v in style.values()):.3f}.")
     L += ["", "## Leave-one-writer-out", ""]
     if writer:
         L += ["| held-out writer | n test | test F1 | hand-written F1 |", "|---|---|---|---|"]
-        L += [f"| {g} | {v['n_test']} | {v['test_f1']:.3f} | {v['hardset_f1']:.3f} |" for g, v in writer.items()]
+        L += [f"| {g}{' *' if v.get('note') else ''} | {v['n_test']} | {v['test_f1']:.3f} | {v['hardset_f1']:.3f} |" for g, v in writer.items()]
     else:
         L.append("Only one writer in this corpus (or too few rows per writer). Add text from another model: see probekit_corpus_api.py.")
+    notes = [f"- `{g}`: {v['note']}" for d in (style, writer) for g, v in d.items() if v.get("note")]
+    if notes:
+        L += ["", "(* = partial fold)"] + notes
+    sk = [f"- {kind} `{g}`: {why}" for kind, d in (("style", skipped_style), ("writer", skipped_writer)) for g, why in (d or {}).items()]
+    if sk:
+        L += ["", "## Folds NOT run (and why)", ""] + sk
     L += ["", "## Learning curve (stratified subsamples of TRAIN)", "", "| fraction | n train | test-hard F1 | hand-written F1 |", "|---|---|---|---|"]
     L += [f"| {f:.1f} | {v['n_train']} | {v['test_f1_mean']:.3f} ± {v['test_f1_sd']:.3f} | {v['hardset_f1_mean']:.3f} ± {v['hardset_f1_sd']:.3f} |"
           for f, v in curve.items()]
@@ -101,6 +137,7 @@ def main():
     ap.add_argument("--cache-dir", default=None)
     ap.add_argument("--out", default=None)
     ap.add_argument("--reps", type=int, default=5)
+    ap.add_argument("--allow-partial", action="store_true", help="run folds whose training data lacks some emotion on the emotions present (labelled partial)")
     a = ap.parse_args()
     from build_emotion_vectors import slug
     from probekit_eval_v3 import load_states
@@ -117,12 +154,18 @@ def main():
     hcat = np.array([r["category"] for r in hrows])
     for r in rows:
         r.setdefault("writer", "llama-3.2-3b")
-    style = leave_one_group_out(Xl, Xhl, rows, hcat, emotions, layer, cfg, "style")
-    writer = leave_one_group_out(Xl, Xhl, rows, hcat, emotions, layer, cfg, "writer") if len({r["writer"] for r in rows}) > 1 else {}
+    train_present = {r["category"] for r in rows if r["split"] == "train"}
+    lacking = [e for e in emotions + [NEUTRAL] if e not in train_present]
+    if lacking:
+        raise SystemExit(f"the TRAIN split has no examples for {lacking}; fix the corpus before running robustness")
+    sk_style, sk_writer = {}, {}
+    style = leave_one_group_out(Xl, Xhl, rows, hcat, emotions, layer, cfg, "style", skipped=sk_style, allow_partial=a.allow_partial)
+    multi_writer = len({r["writer"] for r in rows}) > 1
+    writer = leave_one_group_out(Xl, Xhl, rows, hcat, emotions, layer, cfg, "writer", skipped=sk_writer, allow_partial=a.allow_partial) if multi_writer else {}
     curve = learning_curve(Xl, Xhl, rows, hcat, emotions, layer, cfg, reps=a.reps)
-    md = render(best, style, writer, curve)
+    md = render(best, style, writer, curve, sk_style, sk_writer)
     (out / "robustness.md").write_text(md); print(md)
-    (out / "robustness.json").write_text(json.dumps({"style": style, "writer": writer, "curve": {str(k): v for k, v in curve.items()}}, indent=2))
+    (out / "robustness.json").write_text(json.dumps({"style": style, "writer": writer, "skipped_style": sk_style, "skipped_writer": sk_writer, "curve": {str(k): v for k, v in curve.items()}}, indent=2))
 
 
 if __name__ == "__main__":

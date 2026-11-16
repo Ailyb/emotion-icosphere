@@ -1,10 +1,14 @@
 # Emotion Icosphere
 
-Real-time emotion visualization on an icosphere brain — streaming a local open-weight LLM's internal emotional state as glowing regions firing across a geodesic sphere.
+Real-time visualization of emotion-concept probe activations from a local open-weight LLM, shown as glowing regions on a geodesic sphere.
+
+> **Read this first.** The probes are linear read-outs of residual-stream activations that correlate with emotion-concept text. They are not the model's feelings or "internal emotional state". Measured accuracy, limits and negative results are in [`claude_tests/docs/FINDINGS.md`](claude_tests/docs/FINDINGS.md). Short version (Llama-3.2-3B-Instruct, 9-way, chance ~0.11): on a 92-passage hand-written test set the best probe scores macro-F1 0.72 (accuracy 67/92, 95% CI 0.63-0.81) vs 0.23 for a lexical TF-IDF baseline, and is not distinguishable from a classifier trained on the same hidden states. It is weak on informal reddit-style text when trained without it (F1 ~0.24-0.28), and short-text reliability is untested.
 
 ## Overview
 
-This project captures residual-stream activations from a local open-weight LLM (via mlx-lm / Hugging Face), scores them against validated emotion direction vectors using cosine similarity, maps those scores to facets on an icosphere in a similarity-aware way, and animates glow intensity with decay to produce a "firing" effect.
+This project captures residual-stream activations from a local open-weight LLM (via mlx-lm / Hugging Face), scores them against emotion direction vectors, maps those scores to facets on an icosphere in a similarity-aware way, and animates glow intensity with decay to produce a "firing" effect.
+
+**Two code paths exist.** The top-level `backend.py` (this demo) still uses the original contrastive vectors (layer 18, last-token pooling, cosine similarity), which have only been checked for self-consistency, not against a baseline. The evaluated probes (mean-pooled, z-scored against neutral text, layer 14) live in `claude_tests/` (`probekit_*.py`); `claude_tests/backend.py` loads them. Only the latter is covered by the results above.
 
 Based on:
 - **Anthropic (April 2026):** "Emotion Concepts and their Function in a Large Language Model" — linear emotion vectors in the residual stream
@@ -15,7 +19,8 @@ Based on:
 
 | Component | Status |
 |-----------|--------|
-| 8 Validated Emotion Vectors | ✅ Contrastive construction, diagonal dominance confirmed |
+| 8 emotion vectors (demo) | ⚠️ Contrastive construction; diagonal dominance only, no baseline comparison |
+| Evaluated probes (`claude_tests/`) | ✅ Tested vs lexical baseline and native LR; see FINDINGS.md |
 | Similarity-Aware Facet Mapping | ✅ PCA-based, 1280 facets distributed by emotion similarity |
 | REST API (`/score`) | ✅ Working |
 | WebSocket Streaming | ✅ **Working** — direct model forward pass + sampler |
@@ -49,7 +54,7 @@ emotion-icosphere/
 │   └── index.html
 ├── data/
 │   ├── hidden_states/
-│   └── emotion_vectors/       # 8 validated vectors + validation artifacts
+│   └── emotion_vectors/       # 8 contrastive vectors + self-consistency artifacts
 ├── notes/
 │   ├── research_baseline.md
 │   └── geometry_decision.md
@@ -145,9 +150,9 @@ curl -X POST http://127.0.0.1:8000/score \
 5. **Mapping:** PCA on 8 emotion vectors → 2D → spherical projection → nearest-facet assignment
 6. **Decay:** Exponential (0.8/frame) for "firing" effect
 
-## Emotion Vector Validation
+## Emotion Vector Self-Consistency Checks (demo vectors)
 
-All 8 vectors pass validation:
+These checks show the vectors are internally consistent. They do not show the vectors track emotion beyond word choice; that test (against a lexical baseline) is in FINDINGS.md and applies to the `claude_tests/` probes.
 - ✅ **Diagonal dominance** — each emotion most similar to itself
 - ✅ **Clustering** — 3 clusters: {anger, disgust, love}, {surprise, calm}, {joy, sadness, fear}
 - ✅ **PCA** — 40.8% variance explained in 2D (valence-arousal geometry)
@@ -231,10 +236,12 @@ python facet_mapping.py
 
 ## Scientific Caveats
 
-- Activations can decouple from surface text — sphere shows internal state, not necessarily what the model says
+- The sphere shows emotion-concept probe activations, not feelings or an internal emotional state; nothing here shows the model has either
+- Probes are coarse and style-sensitive: informal text outside the training style is much worse, and very short text is unreliable (e.g. a neutral short sentence scored sadness z +4.9)
+- Love is the weakest class in own-voice tests (0-2 of 5 depending on estimator); per-class n=5, so wide uncertainty
 - The sphere is a similarity-preserving projection, not a literal brain map
-- Results are model- and layer-specific
-- Emotion vectors are model-specific; validate before trusting visualization
+- Results are from one model (Llama-3.2-3B-Instruct, 4-bit) and one layer plateau; vectors are model-specific
+- Test sets are small (n=92 hand-written); see FINDINGS.md for CIs
 
 ## License
 

@@ -27,6 +27,9 @@ def fit_directions(X, cats, emotions, layer, method="meandiff", var_frac=0.8, ma
                    C=0.03, shrinkage="auto") -> ProbeSet:
     X = np.asarray(X, dtype=np.float64)
     cats = np.asarray(cats)
+    missing = [e for e in emotions if not (cats == e).any()]
+    if missing:
+        raise ValueError(f"no training examples for emotion(s) {missing}; labels present: {sorted(set(cats.tolist()))}")
     neutral = X[cats == NEUTRAL]
     if len(neutral) < 5:
         raise ValueError("need >=5 neutral training passages")
