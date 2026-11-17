@@ -36,24 +36,29 @@ def load(paths):
     return out
 
 
-def overlap(test_texts, corpus_texts, n=5):
-    """Return aggregate stats: exact matches and max-containment histogram. No texts leave this function."""
+def containments(test_texts, corpus_texts, n=5):
+    """Per test text: max over corpus passages of |shingles(test) & shingles(corpus)| / |shingles(test)| (0 if < n words)."""
     cw = [norm(t) for t in corpus_texts]
-    exact = {" ".join(w) for w in cw}
     index = defaultdict(set)                      # shingle -> corpus passage indices
     for i, w in enumerate(cw):
         for s in shingles(w, n):
             index[s].add(i)
-    n_exact, maxc = 0, []
+    out = []
     for t in test_texts:
-        w = norm(t)
-        n_exact += " ".join(w) in exact
-        sh = shingles(w, n)
+        sh = shingles(norm(t), n)
         hits = defaultdict(int)
         for s in sh:
             for i in index.get(s, ()):
                 hits[i] += 1
-        maxc.append(max(hits.values()) / len(sh) if hits and sh else 0.0)
+        out.append(max(hits.values()) / len(sh) if hits and sh else 0.0)
+    return out
+
+
+def overlap(test_texts, corpus_texts, n=5):
+    """Return aggregate stats: exact matches and max-containment histogram. No texts leave this function."""
+    exact_set = {" ".join(norm(t)) for t in corpus_texts}
+    n_exact = sum(" ".join(norm(t)) in exact_set for t in test_texts)
+    maxc = containments(test_texts, corpus_texts, n)
     return {"n_test": len(test_texts), "n_corpus": len(corpus_texts), "exact": n_exact,
             **{f"containment>={t}": sum(c >= t for c in maxc) for t in THRESHOLDS},
             "max_containment": round(max(maxc), 3) if maxc else 0.0, "any_shared_5gram": sum(c > 0 for c in maxc)}

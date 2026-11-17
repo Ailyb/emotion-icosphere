@@ -48,3 +48,6 @@ graphify-out/
 # Test-only / private data: never commit (see claude_tests/CLAUDE.md)
 claude_tests/data/hardset/
 claude_tests/data/**/errors_*.md
+
+# Third-party raw datasets (re-downloadable; see manifests)
+claude_tests/data/external/

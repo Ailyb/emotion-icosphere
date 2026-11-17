@@ -20,6 +20,8 @@ A public hobby/research project. It extracts linear "emotion" probe directions f
 - `adversarial_filter.py` marks `hard` passages; `probekit_hardset.py` hand-written set + own-voice template
 - `probekit_eval_v2.py`, `probekit_eval_v3.py` sweeps/selection/reports; `probekit_robustness.py`; `probekit_confusion.py`; `probekit_stream_check.py`; `make_config.py`; `probekit_build_v3.py`
 - `backend.py` (KV-cached live server; MLX streams are thread-bound: generate on the main thread), `frontend/index.html`
+- `probekit_testset.py` frozen GoEmotions test set + rebuilt human train corpus + leakage check + `load_frozen()` (hash-verified); `probekit_testset_counts.py` label-agreement counts; `probekit_l0_baseline.py` bag-of-embeddings baseline; `probekit_tfidf_gate.py` / `probekit_corpus_audit.py` / `probekit_overlap.py` corpus QA
+- `corpus_human_goemotions.jsonl` is RETIRED (overlaps the frozen test set); use `corpus_human_goemotions_train.jsonl`
 - `run_merged.sh` merged-corpus pipeline (`SKIP_EVAL=1` to resume; `DRY=1` to print)
 - Tests (model-free, synthetic): test_probes_synthetic.py, test_bundle_synthetic.py, test_v3_synthetic.py, test_confusion.py, test_hf_loader.py. Run all before and after any change: `for t in test_*.py; do python $t || break; done`
 - Obsolete top-level files (emotion_vectors.py, capture_hidden_state.py, score_emotions.py, config.py, geometry_prototype.py) were deleted on 2026-11-16; recover from commit e6ad62f if needed. The top-level demo `backend.py` still uses the old contrastive vectors; see the root README.

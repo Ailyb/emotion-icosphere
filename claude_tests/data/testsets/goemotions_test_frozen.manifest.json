@@ -1,0 +1,88 @@
+{
+ "dataset": "GoEmotions (Demszky et al. 2020), original release, Apache-2.0",
+ "source_files_sha256": {
+  "dev.tsv": "575489c079c9de1097062a01738f998590d6b7ead66dd1c9fd1d2ba01fd8bc62",
+  "emotions.txt": "45c3ef86782d2a4d7fedcd6d8c111aa0d0e94720689bd164fac94fefb4495a89",
+  "goemotions_1.csv": "cac049036bad5d68d1081f72b65f2cc51e4df82af05e3e22cfa747051cac1af3",
+  "goemotions_2.csv": "f699ecc5aa425c1720c1d02475f1e41815244b680bd75b282eb770d2c76cd84d",
+  "goemotions_3.csv": "467f1e7191af00f2e76cc7f425885c2dc304bea8aff284b10e8c460d22f2e1af",
+  "test.tsv": "0587b2dd8b27b97352adbfc3fb083d46005c8946657fdc2b1ca8b1cc7f1f8be4",
+  "train.tsv": "1c254a142be5c00e80d819b9ae1bbd36d94b2eeb8f4b1271846508d57e57d9c5"
+ },
+ "split": "official TEST (test.tsv)",
+ "n_source_items": 5427,
+ "label_rule": "official single label (test.tsv has exactly one label id), mapped identity to 8 classes; multi-label and other classes dropped",
+ "classes": [
+  "joy",
+  "sadness",
+  "fear",
+  "anger",
+  "surprise",
+  "disgust",
+  "love",
+  "neutral"
+ ],
+ "length_filter": "none",
+ "text_cleaning": "probekit_corpus_hf.clean_text",
+ "dedup": "normalized text duplicates within test dropped; texts also in official train/dev dropped; items with >= 50% of their word 5-grams inside one official train/dev passage dropped",
+ "neutral_cap": 151,
+ "neutral_cap_rule": "seeded sample, size = largest non-neutral class",
+ "seed": 0,
+ "drops": {
+  "unmapped_label": 2270,
+  "multi_label": 837,
+  "text_also_in_official_train_or_dev": 46,
+  "near_duplicate_of_official_train_or_dev": 15,
+  "neutral_over_cap": 1419
+ },
+ "n": 840,
+ "class_counts": {
+  "joy": 91,
+  "anger": 128,
+  "neutral": 151,
+  "surprise": 84,
+  "sadness": 98,
+  "fear": 63,
+  "love": 151,
+  "disgust": 74
+ },
+ "subtype_counts": {
+  "no_emotion_lexicon_match": 403,
+  "negation": 10,
+  "emotion_word_neutral": 6
+ },
+ "subtype_rules": {
+  "negation": "emotion-lexicon match with a negator in the 3 words before it",
+  "emotion_word_neutral": "neutral item containing an emotion-lexicon match",
+  "no_emotion_lexicon_match": "emotion-labelled item with no lexicon match"
+ },
+ "lexicon": "probekit_corpus_v2.STEM_RE2",
+ "agreement_covariate": "agree = share of raters whose label set contains the label",
+ "testset_file": "goemotions_test_frozen.jsonl",
+ "testset_sha256": "f47b22ae79d391116559e68b6887822083b8b0a547bdcd712c58411e6a44f44f",
+ "calibration_ids_file": "goemotions_calibration_ids.json",
+ "calibration_ids_sha256": "14fb04fa62329b234593d08129035c3fc6918b978a3bd6dddced792eb5b83d83",
+ "calibration_n": 3000,
+ "human_train_corpus": "data/corpus/corpus_human_goemotions_train.jsonl",
+ "human_train_corpus_sha256": "baae95bbaa1e6326a932e5b30947b17f09b1d076ef8db848b03c96c410edf4fc",
+ "human_train_class_counts": {
+  "train|anger": 80,
+  "train|disgust": 80,
+  "train|fear": 80,
+  "train|joy": 80,
+  "train|love": 80,
+  "train|neutral": 80,
+  "train|sadness": 80,
+  "train|surprise": 80,
+  "val|anger": 20,
+  "val|disgust": 20,
+  "val|fear": 20,
+  "val|joy": 20,
+  "val|love": 20,
+  "val|neutral": 20,
+  "val|sadness": 20,
+  "val|surprise": 20
+ },
+ "code_version": "3ff516d00f3fb6092f21387e7dd1d0a89fc475e7",
+ "script": "probekit_testset.py"
+}
