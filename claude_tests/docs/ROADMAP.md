@@ -1,5 +1,7 @@
 # Roadmap
 
+> **Superseded by `claude_tests/PLAN_v2.md` (v2.1) for planning.** The items below are kept as history; follow PLAN_v2.md's task order (T0a -> T2 -> T0 -> T1 -> T3 -> T4 -> T5 -> T6 -> T7).
+
 ## Now (in order)
 1. DONE (2026-11-16): merged pipeline resumed. Result: hand-written gap to native LR closed (+0.044, CI includes 0), sadness 3/5 not 0/5; writer shift NOT fixed (held-out reddit F1 0.24-0.28); learning curve flat. No ablation isolates the effect of human data.
 2. DONE except deletion: FINDINGS.md and README updated to match. Still to do: delete obsolete files (ask Justin).

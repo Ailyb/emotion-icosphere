@@ -1,6 +1,6 @@
 # Emotion Icosphere / probekit — project guide for Claude Code
 
-Read this first, then docs/ROADMAP.md (what to do) and docs/FINDINGS.md (what we know). Work WITH Justin: he is the owner, runs the Mac (M4 MacBook Pro, Apple Silicon, MLX), and decides direction. Propose, then do; keep him informed in short summaries.
+Read this first, then PLAN_v2.md (what to do; supersedes docs/ROADMAP.md), docs/FINDINGS.md (what we know) and docs/CLAIMS.md (what may be claimed). Work WITH Justin: he is the owner, runs the Mac (M4 MacBook Pro, Apple Silicon, MLX), and decides direction. Propose, then do; keep him informed in short summaries.
 
 ## What this is
 A public hobby/research project. It extracts linear "emotion" probe directions from a local open-weight LLM's residual stream (default `mlx-community/Llama-3.2-3B-Instruct`), scores text/tokens as z-scores against neutral text, and visualizes them live on an icosphere (FastAPI + WebSocket backend, Three.js frontend). Inspired by Anthropic's April 2026 paper "Emotion Concepts and their Function in a Large Language Model".
@@ -41,4 +41,4 @@ Git policy for `data/` (the repo is PUBLIC):
 - The hardset/own_voice/errors files were committed to the public remote by mistake before this rule existed (commit 242e2dd and later); they are now untracked but remain in git history.
 
 ## Current state / next
-See docs/ROADMAP.md "Now". Merged pipeline has been resumed and FINDINGS/README updated (items 1-2). Next: item 3 (second-writer corpus) and 4 (length-aware calibration); confirm with Justin before deleting the obsolete files.
+See PLAN_v2.md. Done: merged pipeline resumed, FINDINGS/README updated, obsolete files deleted, Qwen second-writer corpus generated (`data/corpus/corpus_v3_qwen3.8-27b.jsonl`, 1002 passages). T0a gate on it FAILED (TF-IDF 8-way macro-F1 0.708, 95% CI 0.678-0.741 vs gate <0.7): treat it as an "easy" stratum until a harder one is generated. Next per plan: T2 (frozen human test set; counts first), then T0.

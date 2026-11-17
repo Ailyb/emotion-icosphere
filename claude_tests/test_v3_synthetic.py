@@ -125,8 +125,9 @@ print("missing-class regression ok (skipped:", sk["w_calm"][:60], ")")
 # ---- 6. API corpus generator against a fake OpenAI-compatible server
 class H_(BaseHTTPRequestHandler):
     n = 0
+    last = {}
     def do_POST(self):
-        _ = self.rfile.read(int(self.headers["Content-Length"])); H_.n += 1
+        H_.last = json.loads(self.rfile.read(int(self.headers["Content-Length"]))); H_.n += 1
         txt = (f"Priya sorted the invoices by date and filed them in the grey cabinet while the printer warmed up. "
                f"She checked the totals twice, labeled folder number {H_.n}, and carried the stack to the front desk.")
         body = json.dumps({"choices": [{"message": {"content": txt}}]}).encode()
@@ -144,6 +145,12 @@ with tempfile.TemporaryDirectory() as d:
     api.main()   # resume: should add 5 more, not duplicate
     got2 = [json.loads(l) for l in out.read_text().splitlines()]
     assert len(got2) == 10 and len({g["id"] for g in got2}) == 10
+    assert H_.last["max_tokens"] == 300 and "reasoning_effort" not in H_.last   # defaults unchanged
+    out2 = Path(d) / "c2.jsonl"
+    sys.argv = ["x", "--api-base", f"http://127.0.0.1:{srv.server_port}/v1", "--api-model", "fake", "--topics", "ext",
+                "--samples", "1", "--max-new", "1", "--max-tokens", "1234", "--no-think", "--out", str(out2)]
+    api.main()
+    assert H_.last["max_tokens"] == 1234 and H_.last["reasoning_effort"] == "none", H_.last
 srv.shutdown()
 assert len(api.SPLITS_EXT) == 24 and not (set(api.SPLITS_EXT) & set(api.SPLITS))
 print("ALL V3 TESTS PASSED")
