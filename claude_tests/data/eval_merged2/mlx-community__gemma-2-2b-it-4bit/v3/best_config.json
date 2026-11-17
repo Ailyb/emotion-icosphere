@@ -1,0 +1,17 @@
+{
+  "model": "mlx-community/gemma-2-2b-it-4bit",
+  "method": "lda",
+  "layer": 14,
+  "cfg": {
+    "var_frac": 0.5,
+    "shrinkage": "auto",
+    "method": "lda"
+  },
+  "tau": 1.7395052194595337,
+  "val_f1": 0.7196338114871039,
+  "plateau_layers": [
+    14,
+    16
+  ],
+  "skip": 4
+}

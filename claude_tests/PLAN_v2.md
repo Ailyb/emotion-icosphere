@@ -84,6 +84,13 @@ Owner key: **[J]** = Justin's hands (model runs, decisions), **[A]** = agent onl
 - Accept: synthetic tests where a purely lexical signal gives ~0 gain over L0; report printed with paired-bootstrap CIs.
 - Change course if: probe - L0 CI includes 0 on the T2 frozen test sets. Then the writeup is a pure negative result.
 
+## T3 PRE-REGISTRATION (2026-11-17, before any calibration result). RESULT 2026-11-17: FAILED the strict bounds for RAW and RECAL on both models; no length qualifies at |z| > 3; descriptive per-length alarm thresholds in docs/FINDINGS.md
+- Data: reserve A (3000 neutral GoEmotions-TRAIN ids, `goemotions_calibration_ids.json`) topped up by reserve B (further free neutral TRAIN ids, disjoint from probe training, the human pool, reserve A and the frozen test texts) so every word-length bucket has n >= 700 where the data allows. Buckets by word count: 1-2, 3-4, 5-7, 8-11, 12-19, 20+ (word count is a proxy for the plan's token buckets).
+- Probe under test: the T0c probe (layer 16, lda, trained on merged2 TRAIN without calm, calibrated on VAL neutral) on Llama-3.2-3B.
+- Measure: share of neutral passages with |z| > 3 per emotion, and per passage (max |z| over the 7 emotions), per bucket, with Clopper-Pearson 95% upper bounds. RAW = the existing calibration. RECAL = per-bucket mean/sd recalibration estimated by 5-fold cross-validation over the calibration set (each passage is scored with a calibration that never saw it).
+- Acceptance (plan T3): upper bound <= 2% per emotion and <= 5% per passage in every bucket with n >= 500. Fallback rule fixed now: if RECAL still fails in a bucket, or a bucket has n < 500, scores below that bucket's lower edge are suppressed and the minimum length is stated as a limit.
+- Exploratory only (labelled as such): effect of RECAL on frozen-set macro-F1.
+
 ## T3 [A] Length-aware calibration
 - Blocker: only 38 held-out neutral passages exist; zero exceedances in 38 cannot bound the rate below ~8%.
 - Inputs: >= 500 neutral human texts per length bucket (GoEmotions TRAIN neutral-unanimous for short buckets; one window per longer neutral passage, so samples stay independent).
@@ -102,6 +109,11 @@ Owner key: **[J]** = Justin's hands (model runs, decisions), **[A]** = agent onl
 - Accept: per corpus, TF-IDF / L0 / probe / native LR with CIs and n; classes missing from a corpus are skipped and reported.
 - Change course if: TF-IDF is well below the probe there. Then drop the comparative claim; ship toolkit + own results.
 
+## T6 PRE-REGISTRATION (2026-11-17, written before any Gemma result existed). RESULT 2026-11-17: R1, R2 (same sign), R3 and R4 hold; claim holds on two model families (see docs/FINDINGS.md)
+- Model: `mlx-community/gemma-2-2b-it-4bit` (Google Gemma-2 2B, instruction-tuned, 4-bit; different family from Llama and Qwen; 26 blocks, hidden 2304). Chosen for family, size class (2.6B vs 3B), identical quantization, and because Gemma Scope SAEs (CC-BY-4.0, trained on the pretrained base model) exist for T8(f). Not chosen on any outcome. Extractor fixed for Gemma's embedding scale (x sqrt(hidden)=48); causality check PASS (masked 2e-4 vs unmasked 8.7e-2), fidelity vs the model's own forward PASS (5.7e-4).
+- Protocol: identical to Llama (same corpora, splits, selection on VAL-hard only, frozen GoEmotions set, external sources, TF-IDF at equal data, bag-of-embeddings). No Gemma-specific tuning.
+- Replication criteria fixed now: R1 probe - bag-of-embeddings CI excludes 0 on the frozen set and on >= 2/3 external sources. R2 in-domain frozen set: report the sign and CI of probe - TF-IDF (Llama: -0.088 [-0.128, -0.046]). R3 cross-domain H1 (probe - TF-IDF > 0) on >= 2/3 external sources. R4 layer plateau reported as relative depth (layer / n_blocks). If R1 and R3 both hold, the cross-domain claim is "holds on two model families"; if either fails, it is model-dependent and the claims file says so; both outcomes reported.
+
 ## T6 [J run] Second probe model
 - Choose and write down the model before looking at final Llama results: different family from Llama and from Qwen, similar size, instruction-tuned, same quantization level.
 - Accept: same audit report; layer plateau as relative depth; differences with CIs.
@@ -110,6 +122,13 @@ Owner key: **[J]** = Justin's hands (model runs, decisions), **[A]** = agent onl
 ## T7 [A draft, J edit] Writeup + release
 - README and FINDINGS match the reports (check the README's hand-written numbers against FINDINGS.md now; an outside reader reported a mismatch). CLAIMS.md complete. 4-6 page note, pyproject.
 - Accept: every number traces to a committed report.
+
+## T8 PRE-REGISTRATION for the cached-state experiments (2026-11-17, before any result). RESULT 2026-11-17 (both models): (a) hierarchy 1/4, (e) MLP 0/4, (b) similarity p < 0.05 for both estimators; see docs/FINDINGS.md
+- Scope: (a) hierarchical, (e) nonlinear ceiling, (b) similarity-to-valence-arousal. Pooling/prompt variants (c, d) and SAEs (f) are NOT part of this run. Training = HUM (LLM rows + all human pool rows), the same as T0d; primary test set = GoEmotions frozen (n=840), secondary = dair, ISEAR, DailyDialog (predictions restricted to each source's classes). Llama-3.2-3B first, Gemma-2-2B as replication.
+- (a) Hierarchical LR (stage 1: valence group {positive: joy, love; negative: sadness, fear, anger, disgust; ambiguous: surprise; neutral}; stage 2: class within group; soft composition P(group) x P(class|group)) vs flat native LR on the same states; C by VAL macro-F1 of the final 8-way prediction. Claim "hierarchy helps" only if hierarchical - flat has a CI above 0 on >= 3 of the 4 test sets.
+- (e) sklearn MLP (one hidden layer of 256, early stopping, alpha in {1e-3, 1e-2, 1e-1} chosen on VAL) vs flat native LR. Claim "nonlinear information beyond the linear read-out" only if MLP - LR has a CI above 0 on >= 3 of 4 test sets; otherwise "the linear read-out is sufficient at this layer".
+- (b) Similarity: Spearman correlation between the 21 pairwise distances of the 7 emotion words in NRC VAD v2.1 (valence, arousal, dominance; non-commercial research, not redistributed) and the 21 pairwise cosine dissimilarities of the probe directions (selected estimator, and meandiff as a second view); exact permutation null over the 5040 labelings of the 7 emotions. Seven points have low power; reported as a validity note, no claim unless one-sided p < 0.05 for both estimators.
+- Comparison count: 4 sets x 2 models in (a) and (e) = 16 paired comparisons per model plus 2 in (b); CIs are reported unadjusted and any result is "nominal". The >= 3/4 consistency rule is the guard.
 
 ## T8 [A design, J for extraction] Geometry and representation experiments (after T0c)
 - (a) Hierarchical probes: valence group first (positive: joy, love; negative: sadness, fear, anger, disgust; ambiguous: surprise; neutral), then category within group. Cached states only.

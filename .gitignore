@@ -56,3 +56,6 @@ claude_tests/data/external/
 claude_tests/data/testsets/dair_test_frozen.jsonl
 claude_tests/data/testsets/isear_test_frozen.jsonl
 claude_tests/data/testsets/dailydialog_test_frozen.jsonl
+
+# Calibration texts (GoEmotions comments, rebuildable from the ids and manifest)
+claude_tests/data/testsets/goemotions_calibration.jsonl

@@ -1,0 +1,16 @@
+{
+  "model": "mlx-community/gemma-2-2b-it-4bit",
+  "method": "logreg",
+  "layer": 14,
+  "cfg": {
+    "var_frac": 0.5,
+    "C": 0.003
+  },
+  "tau": 1.7744440555572512,
+  "val_f1": 0.6818379769137158,
+  "plateau_layers": [
+    14,
+    16
+  ],
+  "skip": 4
+}

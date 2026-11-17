@@ -1,0 +1,15 @@
+{
+  "model": "mlx-community/gemma-2-2b-it-4bit",
+  "method": "meandiff",
+  "layer": 14,
+  "cfg": {
+    "var_frac": 0.5
+  },
+  "tau": 1.039400601387024,
+  "val_f1": 0.6086184797578158,
+  "plateau_layers": [
+    14,
+    16
+  ],
+  "skip": 4
+}

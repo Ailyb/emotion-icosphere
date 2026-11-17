@@ -2,7 +2,11 @@
 
 Each line links to the file that holds the number. Wording rule: say "information beyond bag-of-words baselines", never "beyond topic or semantics" and never "internal state".
 
-## Supported (Llama-3.2-3B-Instruct, one model)
+## Supported (two model families: Llama-3.2-3B-Instruct and Gemma-2-2B-it, both small and 4-bit)
+- Replication (pre-registered criteria R1, R3 met on Gemma-2-2B): probe beats a bag-of-embeddings baseline on the frozen set (+0.112 [+0.073, +0.150]) and on all three external sources; probe beats TF-IDF cross-domain on 3/3 sources (+0.095 to +0.190 HUM-trained); in-domain TF-IDF still wins on GoEmotions (-0.085 [-0.128, -0.046]). Same direction and size as Llama. `data/eval_merged2/<model>/{frozen,external}_eval.md`.
+- Probe-direction geometry correlates with valence-arousal-dominance distances between emotion words (NRC VAD v2.1): Llama rho +0.53 (lda, p=0.016) / +0.60 (meandiff, p=0.001); Gemma +0.61 (p=0.003) / +0.63 (p=0.001); exact permutation over 7! labelings; nominal, seven points. `t8_experiments.md`.
+- A linear read-out is sufficient at the selected layer: an MLP and a valence-hierarchy do not beat flat logistic regression on >= 3 of 4 test sets (pre-registered rule). Both models. `t8_experiments.md`.
+- Per-length recalibration of z-scores: with the existing calibration, 15-76% (Llama) / 20-83% (Gemma) of neutral human passages raise some |z| > 3 depending on length; after per-bucket cross-validated recalibration the alarm threshold for 5% false alarms is a uniform 2.9-3.3 (descriptive, post hoc). `length_calibration.md`.
 - Cross-domain transfer beats a lexical baseline (pre-registered H1, `external_eval.md`): trained on GoEmotions-derived data, the probe beats TF-IDF trained on the same data on dair-ai/emotion (+0.151 [+0.122, +0.178]), ISEAR (+0.132 [+0.101, +0.163]) and DailyDialog (+0.103 [+0.077, +0.130]); with LLM-only training the gaps are larger (+0.125 to +0.262, all CIs exclude 0). Also beats a bag-of-embeddings baseline on all three (+0.076 to +0.186). Caveats: dair labels hashtag-derived, ISEAR provenance unverified, one model.
 - Frozen human test set (GoEmotions official test, n=840, 8-way, hash-verified; `data/eval_merged2/mlx-community__Llama-3.2-3B-Instruct/frozen_eval.md`): probe beats a bag-of-embeddings baseline, +0.107 [+0.065, +0.148]; and beats block-0 states, +0.078 [+0.039, +0.116]. Wording: "information beyond a bag-of-embeddings baseline".
 - Cross-writer transfer: probes trained only on LLM-written text score 0.305 [0.272, 0.338] on the frozen human set (shuffle-null p95 0.137, TF-IDF 0.146; probe − TF-IDF +0.159 [+0.122, +0.197]). Low in absolute terms. Same file.
@@ -21,6 +25,7 @@ Each line links to the file that holds the number. Wording rule: say "informatio
 - Qwen-written corpus is lexically harder than v1 but not clearly hard: TF-IDF 8-way macro-F1 0.708 [0.678, 0.741] (gate was < 0.7). Command: `python probekit_tfidf_gate.py --corpus data/corpus/corpus_v3_qwen3.8-27b.jsonl`.
 
 ## Rejected
+- "The probe's z-scores are calibrated (|z| > 3 is rare on neutral text)": false at every length with the existing calibration; after per-bucket recalibration still fails the pre-registered per-passage bound (<= 5% upper) in every bucket because tails are heavier than Gaussian. The 1-2 word bucket also lacks n >= 500.
 - "The probe beats a lexical baseline on human text" (frozen set, equal training data: it does not).
 - "LLM-written corpora are sufficient for probes that work on human text" (0.305 with no human rows vs 0.51+ with them).
 - Any claim that the probes read the model's "internal emotional state" or feelings.

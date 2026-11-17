@@ -39,6 +39,10 @@ class Extractor:
         self.model, self.tok = load(model_name)
         self.blocks = self.model.model.layers
         self.n_layers = len(self.blocks)
+        # Gemma-family models multiply the embeddings by sqrt(hidden_size) inside their own forward pass; a manual layer loop
+        # that skips it feeds the blocks activations at the wrong scale. Detected by model_type; verified by fidelity_check().
+        mt = str(getattr(self.model, "model_type", "")).lower()
+        self.embed_scale = float(self.model.model.args.hidden_size) ** 0.5 if mt.startswith("gemma") else 1.0
 
     def encode(self, text: str) -> List[int]:
         return list(self.tok.encode(text))
@@ -46,7 +50,7 @@ class Extractor:
     def states_from_ids(self, ids: Sequence[int], layers: Sequence[int], use_mask: bool = True) -> Dict[int, np.ndarray]:
         """-> {layer: (T, H) float32}. use_mask=False exists only to demonstrate the old bug."""
         want, last = set(layers), max(layers)
-        h = self.model.model.embed_tokens(mx.array([list(ids)]))
+        h = self.model.model.embed_tokens(mx.array([list(ids)])) * self.embed_scale
         mask = causal_mask(h.shape[1], h.dtype) if use_mask else None
         out = {}
         for i, block in enumerate(self.blocks):
@@ -68,8 +72,17 @@ class Extractor:
     def embedded_pooled(self, text: str, skip: int = 4) -> np.ndarray:
         """Bag-of-embeddings baseline: mean of the input token embeddings (before ANY decoder block) over tokens [skip:].
         No attention, no context: a purely lexical (token-identity) representation of the same passage."""
-        e = np.array(self.model.model.embed_tokens(mx.array([self.encode(text)]))[0].astype(mx.float32))
+        e = np.array((self.model.model.embed_tokens(mx.array([self.encode(text)])) * self.embed_scale)[0].astype(mx.float32))
         return e[min(skip, len(e) - 1):].mean(0)
+
+    def fidelity_check(self, text: str) -> Dict[str, float]:
+        """The manual layer loop (all blocks, then the model's final norm) must reproduce the model's own forward pass.
+        Returns the max relative difference; large values mean the loop misses an architecture-specific step (e.g. embedding scale)."""
+        ids = self.encode(text)
+        mine = self.states_from_ids(ids, [self.n_layers - 1])[self.n_layers - 1]
+        mine = np.array(self.model.model.norm(mx.array(mine[None])).astype(mx.float32))[0]
+        ref = np.array(self.model.model(mx.array([ids]))[0].astype(mx.float32))
+        return {"max_rel_diff": float(np.abs(mine - ref).max() / (np.abs(ref).max() + 1e-8)), "embed_scale": self.embed_scale}
 
     def token_states(self, text: str, layer: int, skip: int = 4) -> np.ndarray:
         s = self.states(text, [layer])[layer]
@@ -94,6 +107,7 @@ if __name__ == "__main__":
     ap.add_argument("--model", default="mlx-community/Llama-3.2-3B-Instruct")
     ap.add_argument("--layer", type=int, default=17)
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--fidelity", action="store_true", help="manual layer loop must reproduce the model's own forward pass")
     a = ap.parse_args()
     ex = Extractor(a.model)
     print(f"{a.model}: {ex.n_layers} blocks")
@@ -102,3 +116,7 @@ if __name__ == "__main__":
         print(f"relative prefix mismatch @ layer {a.layer}: masked={r['masked']:.2e}  unmasked={r['unmasked']:.2e}")
         print("PASS" if r["masked"] < 5e-2 and r["unmasked"] > 5 * r["masked"] else
               "CHECK: masked should be tiny (fp16 noise ok) and unmasked clearly larger")
+    if a.fidelity:
+        f = ex.fidelity_check("I opened the letter slowly, and my hands began to shake as I read it.")
+        print(f"fidelity: max relative diff vs the model's own forward = {f['max_rel_diff']:.2e} (embed scale {f['embed_scale']:.2f})")
+        print("PASS" if f["max_rel_diff"] < 5e-2 else "FAIL: the manual loop does not match this architecture; do not use its states")
