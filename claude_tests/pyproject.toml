@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "probekit"
+version = "0.1.0"
+description = "Audit toolkit for linear emotion-concept probes on LLM hidden states: equal-data lexical baselines, frozen test sets, cross-domain checks, bootstrap CIs."
+readme = "../README.md"
+requires-python = ">=3.10"
+dependencies = ["numpy", "scikit-learn"]
+
+[project.optional-dependencies]
+mlx = ["mlx", "mlx-lm"]          # only needed for extraction on Apple Silicon; the audit itself reads cached activations
+dev = ["pytest"]
+
+[project.scripts]
+probekit-audit = "probekit_audit:main"
+probekit-testset = "probekit_testset:main"
+probekit-external = "probekit_external:main"
+
+[tool.setuptools]
+py-modules = [
+  "probekit_audit", "probekit_probes", "probekit_estimators", "probekit_eval_v2", "probekit_eval_v3", "probekit_external",
+  "probekit_external_eval", "probekit_frozen_eval", "probekit_l0_baseline", "probekit_lexicon_subtypes", "probekit_length_calibration",
+  "probekit_overlap", "probekit_testset", "probekit_tfidf_gate", "probekit_corpus_audit", "probekit_variants", "probekit_t8",
+  "probekit_capture", "probekit_corpus", "probekit_corpus_v2", "probekit_corpus_api", "probekit_corpus_hf", "adversarial_filter",
+]

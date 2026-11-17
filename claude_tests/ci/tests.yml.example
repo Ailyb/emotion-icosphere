@@ -1,0 +1,14 @@
+name: model-free tests
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r claude_tests/requirements-ci.txt scipy
+      - name: run synthetic tests (no model, no network, no private data)
+        working-directory: claude_tests
+        run: |
+          for t in test_*.py; do echo "== $t"; python "$t" || exit 1; done
