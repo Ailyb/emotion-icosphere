@@ -1,0 +1,63 @@
+{
+ "source": "isear",
+ "fetched_from": [
+  [
+   "savalera/isear-from-original",
+   "original",
+   "train",
+   null
+  ],
+  [
+   "savalera/isear-from-original",
+   "original",
+   "validation",
+   null
+  ],
+  [
+   "savalera/isear-from-original",
+   "original",
+   "test",
+   null
+  ]
+ ],
+ "raw_rows": 7666,
+ "raw_sha256": "c095ec9369f2d2708b676c29d3c329c27fc93fc79086f55fdd574269d3ab9611",
+ "license_note": "Hub tag apache-2.0 (uploader's claim; original terms unverified)",
+ "label_provenance": "self-reported emotion of the writer for their own event",
+ "domain": "first-person event descriptions",
+ "classes_present": [
+  "anger",
+  "disgust",
+  "fear",
+  "joy",
+  "sadness"
+ ],
+ "label_mapping_rule": "see adapter in probekit_external.py",
+ "caps": {
+  "per_class": 300,
+  "neutral": "size of largest other class"
+ },
+ "seed": 0,
+ "drops": {
+  "unmapped_label": 2189,
+  "too_short": 72,
+  "duplicate": 48,
+  "over_cap_sadness": 749,
+  "over_cap_fear": 776,
+  "over_cap_anger": 783,
+  "over_cap_disgust": 774,
+  "over_cap_joy": 775
+ },
+ "n": 1500,
+ "class_counts": {
+  "disgust": 300,
+  "fear": 300,
+  "anger": 300,
+  "joy": 300,
+  "sadness": 300
+ },
+ "near_duplicate_rule": "dropped if >= 50% of 5-grams inside one training-corpus passage or exact text match",
+ "testset_file": "isear_test_frozen.jsonl",
+ "testset_sha256": "2198cc19df9305306a9fd25918ee1a64be11051dc90618513172304641478547",
+ "note": "neither the raw data nor this derived test jsonl is committed (third-party terms unclear or share-alike); rebuild with `python probekit_external.py build --source <name>` and check testset_sha256"
+}

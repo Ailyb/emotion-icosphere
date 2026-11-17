@@ -1,0 +1,46 @@
+{
+ "source": "dair",
+ "fetched_from": [
+  [
+   "dair-ai/emotion",
+   "split",
+   "test",
+   null
+  ]
+ ],
+ "raw_rows": 2000,
+ "raw_sha256": "f8624603c09c9b8766dd6978cde80197dbf8fb649c43161beb5aaee7da3910d2",
+ "license_note": "other (no terms stated on the card)",
+ "label_provenance": "machine-generated from hashtags (distant supervision)",
+ "domain": "tweets",
+ "classes_present": [
+  "anger",
+  "fear",
+  "joy",
+  "love",
+  "sadness",
+  "surprise"
+ ],
+ "label_mapping_rule": "see adapter in probekit_external.py",
+ "caps": {
+  "per_class": null,
+  "neutral": "size of largest other class"
+ },
+ "seed": 0,
+ "drops": {
+  "near_duplicate_of_training_corpus": 1
+ },
+ "n": 1999,
+ "class_counts": {
+  "sadness": 580,
+  "fear": 224,
+  "joy": 695,
+  "anger": 275,
+  "love": 159,
+  "surprise": 66
+ },
+ "near_duplicate_rule": "dropped if >= 50% of 5-grams inside one training-corpus passage or exact text match",
+ "testset_file": "dair_test_frozen.jsonl",
+ "testset_sha256": "3de3f9daaa82f78ad9a1254a1212d9596f2dd370c295f4f720dd194316acdb97",
+ "note": "neither the raw data nor this derived test jsonl is committed (third-party terms unclear or share-alike); rebuild with `python probekit_external.py build --source <name>` and check testset_sha256"
+}

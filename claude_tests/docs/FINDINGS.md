@@ -23,6 +23,24 @@ Sources: `data/eval_merged2/<model>/frozen_eval.md` (+ `frozen_eval_prereg_run1.
 
 Paired differences (macro-F1): probe − bag of embeddings +0.107 [+0.065, +0.148]; probe − block-0 +0.078 [+0.039, +0.116]; probe − native LR −0.010 [−0.036, +0.016] (indistinguishable); **probe − TF-IDF −0.088 [−0.128, −0.046]** (TF-IDF is better on human text); fusion − TF-IDF +0.018 [−0.018, +0.053] (post hoc, hidden states add no measurable gain on top of TF-IDF here). Per class (probe recall): love 0.75, fear 0.63, joy 0.58, surprise 0.58, sadness 0.53, anger 0.52, disgust 0.47, **neutral 0.19**. Strata: rater agreement >= 0.67 (n=244) probe 0.594 / TF-IDF 0.749; < 0.67 (n=596) 0.475 / 0.544; <= 12 words (n=431) 0.541 / 0.572; > 12 words (n=409) 0.475 / 0.623. Rule-mined subtypes are too small to score (negation n=10, emotion_word_neutral n=6).
 
+## Cross-domain evaluation on three external human-labelled sources (PLAN_v2 T0d; pre-registered)
+Source: `data/eval_merged2/<model>/external_eval.md` (`probekit_external_eval.py`). Sources (hash-manifested, nothing trained or tuned on them): dair-ai/emotion test (tweets; labels machine-generated from hashtags, strongly lexical; license "other", no terms stated), ISEAR (first-person event descriptions; Hub copy, original host unreachable, so provenance unverified), DailyDialog test utterances (CC-BY-NC-SA-4.0; fear n=16 and disgust n=45 too small to read per class). Systems trained on HUM (LLM-written rows + all 3024 human GoEmotions-train pool rows) or LLM (LLM-written rows only), layer 16, lda; predictions restricted to the classes each source has; macro-F1 over those classes [95% CI]:
+
+| source (n, classes, chance) | training | probe | native LR | bag of embeddings | TF-IDF | probe − TF-IDF (H1) | probe − embed (H2) |
+|---|---|---|---|---|---|---|---|
+| dair (1999, 6, 0.167) | HUM | 0.405 [0.382, 0.427] | 0.405 | 0.329 | 0.254 | +0.151 [+0.122, +0.178]* | +0.076 [+0.049, +0.103]* |
+| | LLM | 0.334 | 0.327 | 0.179 | 0.167 | +0.167 [+0.141, +0.192]* | +0.155 [+0.131, +0.178]* |
+| ISEAR (1500, 5, 0.200) | HUM | 0.567 [0.539, 0.589] | 0.575 | 0.380 | 0.434 | +0.132 [+0.101, +0.163]* | +0.186 [+0.155, +0.216]* |
+| | LLM | 0.486 | 0.511 | 0.274 | 0.224 | +0.262 [+0.230, +0.293]* | +0.212 [+0.180, +0.245]* |
+| DailyDialog (2193, 7, 0.143) | HUM | 0.343 [0.315, 0.367] | 0.410 | 0.234 | 0.240 | +0.103 [+0.077, +0.130]* | +0.109 [+0.083, +0.137]* |
+| | LLM | 0.280 | 0.326 | 0.178 | 0.154 | +0.125 [+0.097, +0.154]* | +0.102 [+0.074, +0.130]* |
+
+- **H1 holds on 3 of 3 sources for both training sets; H2 holds on 3 of 3.** By the pre-registered rule this supports "hidden-state probes transfer across human domains better than a lexical model trained on the same data", and better than a bag of the model's own input embeddings.
+- Probe vs native LR: indistinguishable on dair (+0.000 [−0.020, +0.021]) and ISEAR (−0.008 [−0.028, +0.011]); native LR is better on DailyDialog (−0.067 [−0.089, −0.045], HUM). So a single linear direction per emotion loses little except on short dialogue utterances.
+- Combined with the in-domain result above: **TF-IDF wins in-domain on reddit (frozen set); the probe wins when the target domain differs from the training domain.** Both are the same models and the same training data.
+- Caveats that apply: dair labels are hashtag-derived and lexical; ISEAR provenance is unverified; sources differ in class sets, so macro-F1 values are not comparable across sources; this is one model.
+- Lexicon strata on the GoEmotions frozen set (NRC EmoLex sidecar, exploratory, post hoc; `frozen_subtype_strata.md`): probe − TF-IDF is −0.091 [−0.142, −0.036] on items with an emotion word (n=538) and +0.042 [−0.060, +0.149] on emotion items with no lexicon word (n=151). The direction matches the hypothesis stated beforehand (probe relatively better where words don't give the answer away), but the no-word interval includes 0 and the difference of the two was not tested. Neutral strata are single-class (F1 of the neutral class only) and mostly show the probe's weak neutral recall.
+
 ### Human-data learning curve (pre-registered question: data-limited or representation-limited?)
 Training = LLM-written rows + k human GoEmotions-TRAIN rows per class (k=378 is the fear-limited maximum), 3 subsampling seeds, frozen-set macro-F1 (mean ± sd). TF-IDF and fusion columns were added post hoc:
 
@@ -104,6 +122,7 @@ Reading: trained only on synthetic text, the probes were high on in-distribution
 Pooled acc 0.562 / AUC 0.833; max_z AUC 0.927; true-emotion top-token share 0.41. The "onset" metric is INVALID (no neutral baseline) — redesign (roadmap 5).
 
 ## Defensible claims now (see docs/CLAIMS.md for the checked list)
+- Cross-domain (three external human sources, pre-registered) the probe BEATS a TF-IDF baseline trained on the same data by +0.10 to +0.26 macro-F1 with CIs excluding 0, and beats a bag-of-embeddings baseline; in-domain on the GoEmotions frozen set it does NOT beat TF-IDF (below).
 - On the frozen human test set the probe is NOT better than a TF-IDF baseline trained on the same data (−0.088 [−0.128, −0.046]); it beats a bag-of-embeddings baseline (+0.107 [+0.065, +0.148]) and transfers from LLM-written to human text where TF-IDF does not (0.305 vs 0.146 with no human training rows). The earlier statement below about hand-written text refers to a non-blind set.
 - Probes carry emotion-concept information beyond lexical cues on hand-written text (probe − lexical +0.492, CI excludes 0; n=92).
 - On the merged corpus the best probe (lda@14) is not distinguishable from a trained classifier on the same hidden states on the hand-written set (+0.044, CI includes 0), and is weaker than it on TEST-all (0.670 vs 0.734; −0.065 [−0.105, −0.026]); on TEST-hard the gap (0.616 vs 0.669; −0.055 [−0.117, +0.005]) includes 0.

@@ -51,3 +51,8 @@ claude_tests/data/**/errors_*.md
 
 # Third-party raw datasets (re-downloadable; see manifests)
 claude_tests/data/external/
+
+# External test sets (third-party text; terms unclear or share-alike): commit manifests only, rebuild with probekit_external.py
+claude_tests/data/testsets/dair_test_frozen.jsonl
+claude_tests/data/testsets/isear_test_frozen.jsonl
+claude_tests/data/testsets/dailydialog_test_frozen.jsonl

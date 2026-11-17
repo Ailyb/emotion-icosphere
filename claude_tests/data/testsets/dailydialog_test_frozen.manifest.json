@@ -1,0 +1,49 @@
+{
+ "source": "dailydialog",
+ "fetched_from": [
+  [
+   "https://huggingface.co/datasets/ConvLab/dailydialog/resolve/main/data.zip",
+   "data/dialogues.json"
+  ]
+ ],
+ "raw_rows": 1000,
+ "raw_sha256": "d0fe81af616f2b03c35c4f2f2b7499bcbbd8708a3851d71a9812256c76be99ee",
+ "license_note": "CC-BY-NC-SA-4.0",
+ "label_provenance": "human annotated per utterance",
+ "domain": "everyday dialogue utterances (no context given to the model)",
+ "classes_present": [
+  "anger",
+  "disgust",
+  "fear",
+  "joy",
+  "neutral",
+  "sadness",
+  "surprise"
+ ],
+ "label_mapping_rule": "see adapter in probekit_external.py",
+ "caps": {
+  "per_class": null,
+  "neutral": "size of largest other class"
+ },
+ "seed": 0,
+ "drops": {
+  "too_short": 392,
+  "duplicate": 188,
+  "neutral_over_cap": 4961,
+  "near_duplicate_of_training_corpus": 6
+ },
+ "n": 2193,
+ "class_counts": {
+  "neutral": 915,
+  "fear": 16,
+  "joy": 916,
+  "sadness": 94,
+  "surprise": 98,
+  "anger": 109,
+  "disgust": 45
+ },
+ "near_duplicate_rule": "dropped if >= 50% of 5-grams inside one training-corpus passage or exact text match",
+ "testset_file": "dailydialog_test_frozen.jsonl",
+ "testset_sha256": "aeb0c1dd0441ac8f5a7156c0caaf00f72c22855f253df386aeee25bb559aacce",
+ "note": "neither the raw data nor this derived test jsonl is committed (third-party terms unclear or share-alike); rebuild with `python probekit_external.py build --source <name>` and check testset_sha256"
+}

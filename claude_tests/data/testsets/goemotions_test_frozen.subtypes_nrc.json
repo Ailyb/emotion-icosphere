@@ -1,0 +1,2593 @@
+{
+ "manifest": {
+  "lexicon": "NRC Word-Emotion Association Lexicon v0.92 (non-commercial research use; not redistributed)",
+  "lexicon_sha256": "02c661544f4f12ae0c14f9576a10959e8d39a151bb091e455a71a08dcaa2535a",
+  "n_emotion_words": 4454,
+  "testset": "data/testsets/goemotions_test_frozen.jsonl",
+  "testset_sha256": "f47b22ae79d391116559e68b6887822083b8b0a547bdcd712c58411e6a44f44f",
+  "counts": {
+   "lexicon_match": 538,
+   "emotion_word_neutral": 96,
+   "negation": 54,
+   "no_lexicon_match": 151,
+   "plain_neutral": 55
+  },
+  "rules": "see module docstring; exact lower-case token match; negator within 3 tokens before an emotion word"
+ },
+ "subtypes": {
+  "eczf1y3": [
+   "lexicon_match"
+  ],
+  "eczfbty": [
+   "lexicon_match"
+  ],
+  "eczjbdy": [
+   "lexicon_match"
+  ],
+  "eczkjma": [
+   "lexicon_match"
+  ],
+  "eczl4db": [
+   "lexicon_match"
+  ],
+  "eczlc6s": [
+   "emotion_word_neutral",
+   "negation"
+  ],
+  "eczxpjy": [
+   "no_lexicon_match"
+  ],
+  "ed003qq": [
+   "no_lexicon_match"
+  ],
+  "ed00rv5": [
+   "no_lexicon_match"
+  ],
+  "ed0286s": [
+   "lexicon_match"
+  ],
+  "ed038bu": [
+   "no_lexicon_match"
+  ],
+  "ed0cmts": [
+   "lexicon_match"
+  ],
+  "ed0dqec": [
+   "emotion_word_neutral"
+  ],
+  "ed0fw6m": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ed0g64t": [
+   "emotion_word_neutral"
+  ],
+  "ed0vghc": [
+   "no_lexicon_match"
+  ],
+  "ed0wlth": [
+   "lexicon_match"
+  ],
+  "ed10dfd": [
+   "no_lexicon_match"
+  ],
+  "ed12ob1": [
+   "lexicon_match"
+  ],
+  "ed184ql": [
+   "lexicon_match"
+  ],
+  "ed18xer": [
+   "lexicon_match"
+  ],
+  "ed1amhd": [
+   "lexicon_match"
+  ],
+  "ed1h3xz": [
+   "no_lexicon_match"
+  ],
+  "ed1ms3j": [
+   "lexicon_match"
+  ],
+  "ed1nwrl": [
+   "plain_neutral"
+  ],
+  "ed1o6kr": [
+   "lexicon_match"
+  ],
+  "ed1oiyg": [
+   "lexicon_match"
+  ],
+  "ed1z5be": [
+   "no_lexicon_match"
+  ],
+  "ed21elv": [
+   "no_lexicon_match"
+  ],
+  "ed2a1zc": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ed2a2kf": [
+   "lexicon_match"
+  ],
+  "ed2c5f7": [
+   "lexicon_match"
+  ],
+  "ed2e00i": [
+   "lexicon_match"
+  ],
+  "ed2fq86": [
+   "lexicon_match"
+  ],
+  "ed2g85q": [
+   "lexicon_match"
+  ],
+  "ed2hvlf": [
+   "lexicon_match"
+  ],
+  "ed2igms": [
+   "no_lexicon_match"
+  ],
+  "ed2nh3m": [
+   "no_lexicon_match"
+  ],
+  "ed2nvf4": [
+   "lexicon_match"
+  ],
+  "ed2qhvk": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ed2uyol": [
+   "lexicon_match"
+  ],
+  "ed32d92": [
+   "plain_neutral"
+  ],
+  "ed37lbm": [
+   "lexicon_match"
+  ],
+  "ed38yof": [
+   "emotion_word_neutral"
+  ],
+  "ed3bjn7": [
+   "lexicon_match"
+  ],
+  "ed3co3z": [
+   "emotion_word_neutral",
+   "negation"
+  ],
+  "ed3hg8c": [
+   "lexicon_match"
+  ],
+  "ed3iidx": [
+   "no_lexicon_match"
+  ],
+  "ed3kh4x": [
+   "emotion_word_neutral"
+  ],
+  "ed3klo0": [
+   "no_lexicon_match"
+  ],
+  "ed3mf1l": [
+   "lexicon_match"
+  ],
+  "ed3udbr": [
+   "lexicon_match"
+  ],
+  "ed3vol0": [
+   "no_lexicon_match"
+  ],
+  "ed3w5cd": [
+   "lexicon_match"
+  ],
+  "ed3z4b8": [
+   "lexicon_match"
+  ],
+  "ed3zbgg": [
+   "plain_neutral"
+  ],
+  "ed42d0u": [
+   "lexicon_match"
+  ],
+  "ed42oct": [
+   "no_lexicon_match"
+  ],
+  "ed44yea": [
+   "lexicon_match"
+  ],
+  "ed45xrw": [
+   "lexicon_match"
+  ],
+  "ed4bex7": [
+   "lexicon_match"
+  ],
+  "ed4cpjo": [
+   "lexicon_match"
+  ],
+  "ed4d87o": [
+   "emotion_word_neutral"
+  ],
+  "ed4m0qz": [
+   "no_lexicon_match"
+  ],
+  "ed4mye9": [
+   "lexicon_match"
+  ],
+  "ed4qfxg": [
+   "emotion_word_neutral"
+  ],
+  "ed4u63d": [
+   "lexicon_match"
+  ],
+  "ed4vczs": [
+   "emotion_word_neutral"
+  ],
+  "ed4vnhz": [
+   "emotion_word_neutral"
+  ],
+  "ed4vtot": [
+   "lexicon_match"
+  ],
+  "ed50bmw": [
+   "no_lexicon_match"
+  ],
+  "ed50yyw": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ed5ny4m": [
+   "lexicon_match"
+  ],
+  "ed5osdg": [
+   "plain_neutral"
+  ],
+  "ed5u59i": [
+   "no_lexicon_match"
+  ],
+  "ed5zozk": [
+   "lexicon_match"
+  ],
+  "ed61lxp": [
+   "lexicon_match"
+  ],
+  "ed62vv7": [
+   "lexicon_match"
+  ],
+  "ed6dxeq": [
+   "emotion_word_neutral"
+  ],
+  "ed6l8a7": [
+   "lexicon_match"
+  ],
+  "ed6pkzv": [
+   "lexicon_match"
+  ],
+  "ed6qwkd": [
+   "no_lexicon_match"
+  ],
+  "ed6rodh": [
+   "lexicon_match"
+  ],
+  "ed6rz20": [
+   "lexicon_match"
+  ],
+  "ed6syhw": [
+   "lexicon_match"
+  ],
+  "ed6vcfh": [
+   "lexicon_match"
+  ],
+  "ed6zzxx": [
+   "plain_neutral"
+  ],
+  "ed702q1": [
+   "lexicon_match"
+  ],
+  "ed70f6w": [
+   "emotion_word_neutral",
+   "negation"
+  ],
+  "ed71zss": [
+   "lexicon_match"
+  ],
+  "ed73ats": [
+   "plain_neutral"
+  ],
+  "ed73okq": [
+   "plain_neutral"
+  ],
+  "ed7bg7i": [
+   "no_lexicon_match"
+  ],
+  "ed7lqu4": [
+   "lexicon_match"
+  ],
+  "ed7rdog": [
+   "lexicon_match"
+  ],
+  "ed7t8y6": [
+   "lexicon_match"
+  ],
+  "ed7wkex": [
+   "plain_neutral"
+  ],
+  "ed86t6r": [
+   "lexicon_match"
+  ],
+  "ed88ihl": [
+   "lexicon_match"
+  ],
+  "ed88wg5": [
+   "lexicon_match"
+  ],
+  "ed8id0h": [
+   "no_lexicon_match"
+  ],
+  "ed8qydk": [
+   "lexicon_match"
+  ],
+  "ed8v0vd": [
+   "lexicon_match"
+  ],
+  "ed8yt80": [
+   "lexicon_match"
+  ],
+  "ed8z3iv": [
+   "emotion_word_neutral"
+  ],
+  "ed96j9t": [
+   "lexicon_match"
+  ],
+  "ed96sxm": [
+   "no_lexicon_match"
+  ],
+  "ed97v0m": [
+   "emotion_word_neutral"
+  ],
+  "ed99kw8": [
+   "lexicon_match"
+  ],
+  "ed9c7dq": [
+   "lexicon_match"
+  ],
+  "ed9feu7": [
+   "lexicon_match"
+  ],
+  "ed9ir21": [
+   "lexicon_match"
+  ],
+  "ed9s8qe": [
+   "lexicon_match"
+  ],
+  "ed9sga6": [
+   "emotion_word_neutral"
+  ],
+  "ed9vbms": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ed9vovm": [
+   "lexicon_match"
+  ],
+  "ed9z8oy": [
+   "plain_neutral"
+  ],
+  "eda0l6x": [
+   "lexicon_match"
+  ],
+  "eda1817": [
+   "lexicon_match"
+  ],
+  "eda3seg": [
+   "emotion_word_neutral"
+  ],
+  "edaf7ls": [
+   "no_lexicon_match"
+  ],
+  "edan1sb": [
+   "lexicon_match",
+   "negation"
+  ],
+  "edanmu0": [
+   "lexicon_match"
+  ],
+  "edashqi": [
+   "lexicon_match"
+  ],
+  "edayjff": [
+   "lexicon_match"
+  ],
+  "edbc8d6": [
+   "lexicon_match"
+  ],
+  "edbye2t": [
+   "lexicon_match"
+  ],
+  "edbyeqs": [
+   "lexicon_match"
+  ],
+  "edbyvi1": [
+   "lexicon_match",
+   "negation"
+  ],
+  "edc0gv5": [
+   "no_lexicon_match"
+  ],
+  "edc4l1j": [
+   "lexicon_match"
+  ],
+  "edc6je2": [
+   "lexicon_match"
+  ],
+  "edc8jzv": [
+   "lexicon_match"
+  ],
+  "edc8vp2": [
+   "lexicon_match"
+  ],
+  "edcjfei": [
+   "lexicon_match"
+  ],
+  "edclugt": [
+   "lexicon_match"
+  ],
+  "edcmhdm": [
+   "lexicon_match"
+  ],
+  "edcmiq3": [
+   "lexicon_match"
+  ],
+  "edcqf5m": [
+   "no_lexicon_match"
+  ],
+  "edcriqi": [
+   "lexicon_match"
+  ],
+  "edcydnj": [
+   "emotion_word_neutral"
+  ],
+  "edcyz60": [
+   "no_lexicon_match"
+  ],
+  "edd0jx1": [
+   "lexicon_match"
+  ],
+  "edd2cj3": [
+   "lexicon_match"
+  ],
+  "edd4m3l": [
+   "plain_neutral"
+  ],
+  "eddb1k5": [
+   "lexicon_match"
+  ],
+  "eddd3g8": [
+   "emotion_word_neutral"
+  ],
+  "eddktov": [
+   "lexicon_match"
+  ],
+  "eddo2dd": [
+   "no_lexicon_match"
+  ],
+  "eddpto7": [
+   "lexicon_match"
+  ],
+  "eddtkaz": [
+   "plain_neutral"
+  ],
+  "ede32z9": [
+   "emotion_word_neutral"
+  ],
+  "ede5aoj": [
+   "no_lexicon_match"
+  ],
+  "ede7p7v": [
+   "lexicon_match"
+  ],
+  "ede81cn": [
+   "lexicon_match"
+  ],
+  "edebfmc": [
+   "plain_neutral"
+  ],
+  "ededg5v": [
+   "lexicon_match"
+  ],
+  "edegdbo": [
+   "no_lexicon_match"
+  ],
+  "edej0vb": [
+   "lexicon_match",
+   "negation"
+  ],
+  "edelrki": [
+   "lexicon_match"
+  ],
+  "edem489": [
+   "no_lexicon_match"
+  ],
+  "edem6q7": [
+   "lexicon_match"
+  ],
+  "edenhhr": [
+   "lexicon_match"
+  ],
+  "edeo0a6": [
+   "lexicon_match"
+  ],
+  "edeq0rd": [
+   "no_lexicon_match"
+  ],
+  "ederqwi": [
+   "emotion_word_neutral"
+  ],
+  "edeutkm": [
+   "lexicon_match"
+  ],
+  "edext4x": [
+   "no_lexicon_match"
+  ],
+  "edeyog7": [
+   "no_lexicon_match"
+  ],
+  "edf1gzs": [
+   "no_lexicon_match"
+  ],
+  "edf2uzy": [
+   "emotion_word_neutral"
+  ],
+  "edf9nth": [
+   "lexicon_match",
+   "negation"
+  ],
+  "edfa1xi": [
+   "lexicon_match"
+  ],
+  "edfcumq": [
+   "lexicon_match",
+   "negation"
+  ],
+  "edfmk6s": [
+   "lexicon_match",
+   "negation"
+  ],
+  "edfs5k1": [
+   "lexicon_match"
+  ],
+  "edg5ose": [
+   "lexicon_match"
+  ],
+  "edg7yys": [
+   "lexicon_match"
+  ],
+  "edg8cja": [
+   "lexicon_match"
+  ],
+  "edgh3zs": [
+   "plain_neutral"
+  ],
+  "edghuit": [
+   "no_lexicon_match"
+  ],
+  "edh8fue": [
+   "lexicon_match"
+  ],
+  "edh9t8o": [
+   "emotion_word_neutral"
+  ],
+  "edhaghb": [
+   "no_lexicon_match"
+  ],
+  "edhanm0": [
+   "emotion_word_neutral"
+  ],
+  "edhfomd": [
+   "lexicon_match"
+  ],
+  "edhg1ez": [
+   "lexicon_match"
+  ],
+  "edhgogk": [
+   "emotion_word_neutral",
+   "negation"
+  ],
+  "edhjtlr": [
+   "no_lexicon_match"
+  ],
+  "edhkbec": [
+   "lexicon_match",
+   "negation"
+  ],
+  "edhl6hb": [
+   "lexicon_match"
+  ],
+  "edhqcy6": [
+   "no_lexicon_match"
+  ],
+  "edhqnmi": [
+   "lexicon_match"
+  ],
+  "edhzgg4": [
+   "lexicon_match"
+  ],
+  "edi0iyi": [
+   "lexicon_match"
+  ],
+  "edi3w9p": [
+   "no_lexicon_match"
+  ],
+  "edi7nx2": [
+   "lexicon_match"
+  ],
+  "edi86iy": [
+   "lexicon_match"
+  ],
+  "edibjfe": [
+   "emotion_word_neutral"
+  ],
+  "ediciv3": [
+   "no_lexicon_match"
+  ],
+  "edih1gx": [
+   "no_lexicon_match"
+  ],
+  "edihnax": [
+   "no_lexicon_match"
+  ],
+  "edihyzp": [
+   "lexicon_match",
+   "negation"
+  ],
+  "edikweb": [
+   "plain_neutral"
+  ],
+  "edinn3n": [
+   "no_lexicon_match"
+  ],
+  "edio3tc": [
+   "lexicon_match"
+  ],
+  "edirhr2": [
+   "lexicon_match"
+  ],
+  "edj1n44": [
+   "lexicon_match"
+  ],
+  "edj3f5m": [
+   "lexicon_match"
+  ],
+  "edj6bdj": [
+   "lexicon_match"
+  ],
+  "edj84ja": [
+   "lexicon_match"
+  ],
+  "edjcfwz": [
+   "lexicon_match"
+  ],
+  "edjeqnb": [
+   "lexicon_match"
+  ],
+  "edjh8yp": [
+   "emotion_word_neutral"
+  ],
+  "edjhfz7": [
+   "lexicon_match"
+  ],
+  "edjl93i": [
+   "lexicon_match"
+  ],
+  "edjl9qg": [
+   "plain_neutral"
+  ],
+  "edjpk2k": [
+   "lexicon_match"
+  ],
+  "edjw23t": [
+   "lexicon_match"
+  ],
+  "edk4e66": [
+   "no_lexicon_match"
+  ],
+  "edk6gbr": [
+   "no_lexicon_match"
+  ],
+  "edk7tzi": [
+   "no_lexicon_match"
+  ],
+  "edk8sml": [
+   "lexicon_match"
+  ],
+  "edkdcgk": [
+   "lexicon_match"
+  ],
+  "edkj6zy": [
+   "emotion_word_neutral"
+  ],
+  "edkk0e0": [
+   "lexicon_match"
+  ],
+  "edklp5u": [
+   "lexicon_match"
+  ],
+  "edkmfr1": [
+   "no_lexicon_match"
+  ],
+  "edkts4d": [
+   "lexicon_match"
+  ],
+  "edkurfd": [
+   "emotion_word_neutral"
+  ],
+  "edkykpt": [
+   "lexicon_match"
+  ],
+  "edl1iz9": [
+   "lexicon_match"
+  ],
+  "edl27ai": [
+   "lexicon_match"
+  ],
+  "edl2fdy": [
+   "lexicon_match"
+  ],
+  "edl43g4": [
+   "lexicon_match"
+  ],
+  "edldwd3": [
+   "emotion_word_neutral"
+  ],
+  "edlgecg": [
+   "lexicon_match"
+  ],
+  "edlh3uc": [
+   "plain_neutral"
+  ],
+  "edlifi8": [
+   "lexicon_match"
+  ],
+  "edlmoh8": [
+   "lexicon_match"
+  ],
+  "edlpzp9": [
+   "lexicon_match"
+  ],
+  "edlqicf": [
+   "lexicon_match"
+  ],
+  "edlrjtg": [
+   "emotion_word_neutral"
+  ],
+  "edlstd9": [
+   "no_lexicon_match"
+  ],
+  "edlt0qm": [
+   "lexicon_match"
+  ],
+  "edluqx4": [
+   "lexicon_match"
+  ],
+  "edlzkq1": [
+   "lexicon_match"
+  ],
+  "edm1ttz": [
+   "emotion_word_neutral"
+  ],
+  "edm27fi": [
+   "lexicon_match"
+  ],
+  "edm3oea": [
+   "emotion_word_neutral",
+   "negation"
+  ],
+  "edm5qv7": [
+   "lexicon_match"
+  ],
+  "edm6zip": [
+   "lexicon_match"
+  ],
+  "edm7czd": [
+   "lexicon_match"
+  ],
+  "edm95ms": [
+   "lexicon_match"
+  ],
+  "edm9lwz": [
+   "lexicon_match"
+  ],
+  "edmcs0g": [
+   "emotion_word_neutral"
+  ],
+  "edmjehl": [
+   "lexicon_match"
+  ],
+  "edmjk91": [
+   "emotion_word_neutral"
+  ],
+  "edmst7r": [
+   "emotion_word_neutral"
+  ],
+  "edmu7gq": [
+   "no_lexicon_match"
+  ],
+  "edmzko2": [
+   "lexicon_match"
+  ],
+  "edncf9f": [
+   "no_lexicon_match"
+  ],
+  "edng1aq": [
+   "lexicon_match"
+  ],
+  "edni2jh": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ednmjwe": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ednobom": [
+   "emotion_word_neutral"
+  ],
+  "ednvjq5": [
+   "lexicon_match"
+  ],
+  "ednzj77": [
+   "lexicon_match"
+  ],
+  "edo16o4": [
+   "lexicon_match"
+  ],
+  "edo1mus": [
+   "emotion_word_neutral"
+  ],
+  "edoa8hc": [
+   "lexicon_match"
+  ],
+  "edog0xh": [
+   "emotion_word_neutral"
+  ],
+  "edokegg": [
+   "lexicon_match"
+  ],
+  "edoqnr3": [
+   "lexicon_match"
+  ],
+  "edotntk": [
+   "no_lexicon_match"
+  ],
+  "edow9ya": [
+   "lexicon_match"
+  ],
+  "edoy5ok": [
+   "no_lexicon_match"
+  ],
+  "edozypw": [
+   "lexicon_match"
+  ],
+  "edp09hl": [
+   "lexicon_match",
+   "negation"
+  ],
+  "edp09u3": [
+   "no_lexicon_match"
+  ],
+  "edp44sl": [
+   "no_lexicon_match"
+  ],
+  "edp4rjj": [
+   "lexicon_match"
+  ],
+  "edp5e4b": [
+   "lexicon_match"
+  ],
+  "edp7quw": [
+   "no_lexicon_match"
+  ],
+  "edp8l3q": [
+   "emotion_word_neutral"
+  ],
+  "edp9hn5": [
+   "lexicon_match"
+  ],
+  "edpe2yy": [
+   "plain_neutral"
+  ],
+  "edpg57t": [
+   "lexicon_match"
+  ],
+  "edph4ed": [
+   "no_lexicon_match"
+  ],
+  "edplze2": [
+   "lexicon_match"
+  ],
+  "edpsii7": [
+   "lexicon_match"
+  ],
+  "edpt47k": [
+   "no_lexicon_match"
+  ],
+  "edq06vd": [
+   "emotion_word_neutral"
+  ],
+  "edq3vgn": [
+   "lexicon_match"
+  ],
+  "edqcsac": [
+   "lexicon_match"
+  ],
+  "edqql86": [
+   "plain_neutral"
+  ],
+  "edqv0nr": [
+   "lexicon_match",
+   "negation"
+  ],
+  "edqxehq": [
+   "lexicon_match"
+  ],
+  "edqzozq": [
+   "lexicon_match"
+  ],
+  "edrayos": [
+   "emotion_word_neutral"
+  ],
+  "edrb24b": [
+   "no_lexicon_match"
+  ],
+  "edrbjfh": [
+   "lexicon_match"
+  ],
+  "edrcdu7": [
+   "lexicon_match"
+  ],
+  "edri4at": [
+   "lexicon_match"
+  ],
+  "edrjkoy": [
+   "lexicon_match"
+  ],
+  "edrlgil": [
+   "plain_neutral"
+  ],
+  "edrsavm": [
+   "lexicon_match"
+  ],
+  "edrtk9a": [
+   "plain_neutral"
+  ],
+  "edrxr2g": [
+   "lexicon_match"
+  ],
+  "eds0hr5": [
+   "no_lexicon_match"
+  ],
+  "eds2a10": [
+   "lexicon_match"
+  ],
+  "eds4we5": [
+   "lexicon_match"
+  ],
+  "edscfnz": [
+   "emotion_word_neutral"
+  ],
+  "edsf1m0": [
+   "lexicon_match"
+  ],
+  "edt4eie": [
+   "lexicon_match"
+  ],
+  "edt640l": [
+   "lexicon_match"
+  ],
+  "edt92z8": [
+   "lexicon_match"
+  ],
+  "edtejkr": [
+   "no_lexicon_match"
+  ],
+  "edtgrhv": [
+   "lexicon_match"
+  ],
+  "edth1j2": [
+   "emotion_word_neutral"
+  ],
+  "edtikix": [
+   "lexicon_match"
+  ],
+  "edtp2zb": [
+   "lexicon_match"
+  ],
+  "edu79o2": [
+   "lexicon_match"
+  ],
+  "edujmcx": [
+   "lexicon_match"
+  ],
+  "eduq5ma": [
+   "no_lexicon_match"
+  ],
+  "eduwluz": [
+   "lexicon_match"
+  ],
+  "eduylqg": [
+   "lexicon_match"
+  ],
+  "eduyvb4": [
+   "no_lexicon_match"
+  ],
+  "eduz8d0": [
+   "plain_neutral"
+  ],
+  "eduzjxs": [
+   "no_lexicon_match"
+  ],
+  "edv1vds": [
+   "lexicon_match",
+   "negation"
+  ],
+  "edv3o9n": [
+   "lexicon_match"
+  ],
+  "edv7vga": [
+   "plain_neutral"
+  ],
+  "edvbkon": [
+   "lexicon_match"
+  ],
+  "edvdy44": [
+   "lexicon_match"
+  ],
+  "edvey02": [
+   "no_lexicon_match"
+  ],
+  "edvq520": [
+   "emotion_word_neutral"
+  ],
+  "edw2nto": [
+   "lexicon_match"
+  ],
+  "edw65t1": [
+   "emotion_word_neutral"
+  ],
+  "edw6wjq": [
+   "lexicon_match"
+  ],
+  "edw7914": [
+   "lexicon_match"
+  ],
+  "edw7tfe": [
+   "lexicon_match"
+  ],
+  "edwcpgk": [
+   "lexicon_match"
+  ],
+  "edwux5m": [
+   "lexicon_match"
+  ],
+  "edwv5o1": [
+   "no_lexicon_match"
+  ],
+  "edx1m4z": [
+   "no_lexicon_match"
+  ],
+  "edx6l0q": [
+   "lexicon_match"
+  ],
+  "edx945w": [
+   "lexicon_match"
+  ],
+  "edxgh62": [
+   "lexicon_match"
+  ],
+  "edxjj1s": [
+   "lexicon_match"
+  ],
+  "edxnv6e": [
+   "plain_neutral"
+  ],
+  "edxoipc": [
+   "no_lexicon_match"
+  ],
+  "edxwxqq": [
+   "plain_neutral"
+  ],
+  "edxysbg": [
+   "no_lexicon_match"
+  ],
+  "edxyu9t": [
+   "no_lexicon_match"
+  ],
+  "edy0432": [
+   "lexicon_match"
+  ],
+  "edy3eip": [
+   "lexicon_match"
+  ],
+  "edy4kl7": [
+   "emotion_word_neutral"
+  ],
+  "edy5dg0": [
+   "lexicon_match"
+  ],
+  "edy6nlz": [
+   "emotion_word_neutral"
+  ],
+  "edy7ngu": [
+   "no_lexicon_match"
+  ],
+  "edy973x": [
+   "lexicon_match"
+  ],
+  "edz34j0": [
+   "emotion_word_neutral"
+  ],
+  "edz6ueh": [
+   "no_lexicon_match"
+  ],
+  "edziqjn": [
+   "lexicon_match"
+  ],
+  "edzmkbp": [
+   "no_lexicon_match"
+  ],
+  "edzrrh0": [
+   "lexicon_match"
+  ],
+  "ee02ts0": [
+   "emotion_word_neutral"
+  ],
+  "ee06bwr": [
+   "plain_neutral"
+  ],
+  "ee07cnm": [
+   "lexicon_match"
+  ],
+  "ee0ffkt": [
+   "lexicon_match"
+  ],
+  "ee0ot74": [
+   "no_lexicon_match"
+  ],
+  "ee0psvl": [
+   "lexicon_match"
+  ],
+  "ee0q7ly": [
+   "lexicon_match"
+  ],
+  "ee0r0l7": [
+   "no_lexicon_match"
+  ],
+  "ee0t7sw": [
+   "lexicon_match"
+  ],
+  "ee0tsrm": [
+   "plain_neutral"
+  ],
+  "ee0tuha": [
+   "lexicon_match"
+  ],
+  "ee0ug24": [
+   "lexicon_match"
+  ],
+  "ee11yns": [
+   "lexicon_match"
+  ],
+  "ee13djb": [
+   "lexicon_match"
+  ],
+  "ee1a98v": [
+   "emotion_word_neutral"
+  ],
+  "ee1evdb": [
+   "lexicon_match"
+  ],
+  "ee1it4r": [
+   "lexicon_match"
+  ],
+  "ee1kg09": [
+   "lexicon_match"
+  ],
+  "ee1ppz2": [
+   "lexicon_match"
+  ],
+  "ee1rkwi": [
+   "no_lexicon_match"
+  ],
+  "ee1z4ot": [
+   "no_lexicon_match"
+  ],
+  "ee21vqz": [
+   "no_lexicon_match"
+  ],
+  "ee24uie": [
+   "lexicon_match"
+  ],
+  "ee2bd7a": [
+   "lexicon_match"
+  ],
+  "ee2gc6b": [
+   "lexicon_match"
+  ],
+  "ee2hrev": [
+   "lexicon_match"
+  ],
+  "ee2kpvc": [
+   "plain_neutral"
+  ],
+  "ee2miso": [
+   "lexicon_match"
+  ],
+  "ee2n1yl": [
+   "no_lexicon_match"
+  ],
+  "ee2rrgs": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ee31iqr": [
+   "no_lexicon_match"
+  ],
+  "ee36ak1": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ee3am6p": [
+   "emotion_word_neutral"
+  ],
+  "ee3b3om": [
+   "no_lexicon_match"
+  ],
+  "ee3e1ph": [
+   "lexicon_match"
+  ],
+  "ee3gb8q": [
+   "emotion_word_neutral"
+  ],
+  "ee3hrd0": [
+   "lexicon_match"
+  ],
+  "ee3jles": [
+   "lexicon_match"
+  ],
+  "ee3kxxm": [
+   "emotion_word_neutral"
+  ],
+  "ee3lolu": [
+   "emotion_word_neutral"
+  ],
+  "ee3lw19": [
+   "lexicon_match"
+  ],
+  "ee3mw0h": [
+   "lexicon_match"
+  ],
+  "ee3o6qp": [
+   "no_lexicon_match"
+  ],
+  "ee3pa8o": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ee3q2de": [
+   "emotion_word_neutral"
+  ],
+  "ee3uztg": [
+   "no_lexicon_match"
+  ],
+  "ee3wcxe": [
+   "lexicon_match"
+  ],
+  "ee3xlfx": [
+   "lexicon_match"
+  ],
+  "ee47wii": [
+   "no_lexicon_match"
+  ],
+  "ee4hcgp": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ee4kouf": [
+   "emotion_word_neutral"
+  ],
+  "ee4miqe": [
+   "lexicon_match"
+  ],
+  "ee4nerr": [
+   "no_lexicon_match"
+  ],
+  "ee4utnt": [
+   "lexicon_match"
+  ],
+  "ee5c4dn": [
+   "no_lexicon_match"
+  ],
+  "ee5ede3": [
+   "lexicon_match"
+  ],
+  "ee5ijot": [
+   "lexicon_match"
+  ],
+  "ee5j15q": [
+   "lexicon_match"
+  ],
+  "ee5ojr8": [
+   "emotion_word_neutral",
+   "negation"
+  ],
+  "ee5oo2m": [
+   "lexicon_match"
+  ],
+  "ee5s4hc": [
+   "no_lexicon_match"
+  ],
+  "ee5xvwn": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ee60k0m": [
+   "lexicon_match"
+  ],
+  "ee68h6r": [
+   "lexicon_match"
+  ],
+  "ee69cgm": [
+   "lexicon_match"
+  ],
+  "ee6f4rc": [
+   "lexicon_match"
+  ],
+  "ee6hpsf": [
+   "lexicon_match"
+  ],
+  "ee6n7kk": [
+   "lexicon_match"
+  ],
+  "ee6ohr6": [
+   "lexicon_match"
+  ],
+  "ee6peah": [
+   "lexicon_match"
+  ],
+  "ee6qy6d": [
+   "lexicon_match"
+  ],
+  "ee6r0ks": [
+   "no_lexicon_match"
+  ],
+  "ee6xf7i": [
+   "plain_neutral"
+  ],
+  "ee72v7p": [
+   "no_lexicon_match"
+  ],
+  "ee75uj1": [
+   "no_lexicon_match"
+  ],
+  "ee78wzy": [
+   "emotion_word_neutral"
+  ],
+  "ee78yiz": [
+   "plain_neutral"
+  ],
+  "ee79w6s": [
+   "no_lexicon_match"
+  ],
+  "ee7ewg0": [
+   "emotion_word_neutral"
+  ],
+  "ee7eze4": [
+   "lexicon_match"
+  ],
+  "ee7ezvs": [
+   "lexicon_match"
+  ],
+  "ee7fdof": [
+   "lexicon_match"
+  ],
+  "ee7g7q2": [
+   "lexicon_match"
+  ],
+  "ee7hgcm": [
+   "no_lexicon_match"
+  ],
+  "ee7j2ux": [
+   "lexicon_match"
+  ],
+  "ee7nerz": [
+   "lexicon_match"
+  ],
+  "ee7s1jk": [
+   "lexicon_match"
+  ],
+  "ee7tr51": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ee7u02r": [
+   "emotion_word_neutral"
+  ],
+  "ee7zrpo": [
+   "lexicon_match"
+  ],
+  "ee81x6o": [
+   "lexicon_match"
+  ],
+  "ee8h1wq": [
+   "lexicon_match"
+  ],
+  "ee8mjqp": [
+   "lexicon_match"
+  ],
+  "ee8pz1j": [
+   "lexicon_match"
+  ],
+  "ee8vuxa": [
+   "plain_neutral"
+  ],
+  "ee8wanj": [
+   "lexicon_match"
+  ],
+  "ee8wf77": [
+   "lexicon_match"
+  ],
+  "ee92d0g": [
+   "emotion_word_neutral"
+  ],
+  "ee92had": [
+   "no_lexicon_match"
+  ],
+  "ee9a0fj": [
+   "no_lexicon_match"
+  ],
+  "ee9b5a6": [
+   "lexicon_match"
+  ],
+  "ee9jvfx": [
+   "lexicon_match"
+  ],
+  "ee9no6c": [
+   "lexicon_match"
+  ],
+  "ee9rhdo": [
+   "no_lexicon_match"
+  ],
+  "ee9su7o": [
+   "no_lexicon_match"
+  ],
+  "ee9wkpl": [
+   "lexicon_match"
+  ],
+  "eea2j7t": [
+   "lexicon_match"
+  ],
+  "eea7ug9": [
+   "lexicon_match"
+  ],
+  "eea97o5": [
+   "lexicon_match"
+  ],
+  "eeaa4kh": [
+   "plain_neutral"
+  ],
+  "eeah80k": [
+   "lexicon_match"
+  ],
+  "eeaku8o": [
+   "emotion_word_neutral"
+  ],
+  "eeamz4s": [
+   "lexicon_match"
+  ],
+  "eeao5p8": [
+   "lexicon_match",
+   "negation"
+  ],
+  "eeaothh": [
+   "lexicon_match",
+   "negation"
+  ],
+  "eeb2y2u": [
+   "lexicon_match"
+  ],
+  "eeb915h": [
+   "plain_neutral"
+  ],
+  "eebbnny": [
+   "no_lexicon_match"
+  ],
+  "eebepp3": [
+   "lexicon_match"
+  ],
+  "eebsu7m": [
+   "lexicon_match"
+  ],
+  "eebwxkr": [
+   "lexicon_match"
+  ],
+  "eec2ltm": [
+   "plain_neutral"
+  ],
+  "eec4yxi": [
+   "lexicon_match"
+  ],
+  "eec6zh5": [
+   "lexicon_match"
+  ],
+  "eec8s5u": [
+   "no_lexicon_match"
+  ],
+  "eeceqn4": [
+   "emotion_word_neutral"
+  ],
+  "eecg2ly": [
+   "lexicon_match"
+  ],
+  "eecrq51": [
+   "lexicon_match"
+  ],
+  "eecsc0x": [
+   "lexicon_match"
+  ],
+  "eecwqtt": [
+   "lexicon_match"
+  ],
+  "eecxvy7": [
+   "lexicon_match"
+  ],
+  "eed8cg1": [
+   "emotion_word_neutral"
+  ],
+  "eedfnfm": [
+   "no_lexicon_match"
+  ],
+  "eedhapw": [
+   "lexicon_match"
+  ],
+  "eedhkjf": [
+   "lexicon_match"
+  ],
+  "eedn836": [
+   "lexicon_match"
+  ],
+  "eedop51": [
+   "lexicon_match"
+  ],
+  "eedrfyd": [
+   "lexicon_match"
+  ],
+  "eedrvtr": [
+   "emotion_word_neutral"
+  ],
+  "eedx12i": [
+   "emotion_word_neutral"
+  ],
+  "eeecutl": [
+   "lexicon_match"
+  ],
+  "eeeekvh": [
+   "no_lexicon_match"
+  ],
+  "eeeg69u": [
+   "no_lexicon_match"
+  ],
+  "eeemx8b": [
+   "no_lexicon_match"
+  ],
+  "eeepfbd": [
+   "lexicon_match",
+   "negation"
+  ],
+  "eees1gr": [
+   "lexicon_match"
+  ],
+  "eeeved3": [
+   "lexicon_match"
+  ],
+  "eeeybsp": [
+   "lexicon_match"
+  ],
+  "eef2uo1": [
+   "emotion_word_neutral"
+  ],
+  "eeforq2": [
+   "plain_neutral"
+  ],
+  "eefugwr": [
+   "lexicon_match",
+   "negation"
+  ],
+  "eefx8tg": [
+   "no_lexicon_match"
+  ],
+  "eefy5l1": [
+   "lexicon_match"
+  ],
+  "eeg14j5": [
+   "lexicon_match"
+  ],
+  "eeg40z9": [
+   "no_lexicon_match"
+  ],
+  "eeg71ym": [
+   "lexicon_match"
+  ],
+  "eeg90ek": [
+   "no_lexicon_match"
+  ],
+  "eegigu8": [
+   "lexicon_match"
+  ],
+  "eeglsgh": [
+   "lexicon_match"
+  ],
+  "eegmyvu": [
+   "lexicon_match"
+  ],
+  "eegn38f": [
+   "no_lexicon_match"
+  ],
+  "eegn6i5": [
+   "lexicon_match"
+  ],
+  "eeh4hjb": [
+   "lexicon_match"
+  ],
+  "eeh9qft": [
+   "emotion_word_neutral"
+  ],
+  "eehhji8": [
+   "lexicon_match",
+   "negation"
+  ],
+  "eehrx63": [
+   "lexicon_match"
+  ],
+  "eehu2ja": [
+   "emotion_word_neutral",
+   "negation"
+  ],
+  "eei41e2": [
+   "lexicon_match"
+  ],
+  "eei9t8s": [
+   "plain_neutral"
+  ],
+  "eeibo6i": [
+   "no_lexicon_match"
+  ],
+  "eeidamx": [
+   "no_lexicon_match"
+  ],
+  "eeidol8": [
+   "lexicon_match"
+  ],
+  "eeiidu7": [
+   "lexicon_match"
+  ],
+  "eeiiqqy": [
+   "no_lexicon_match"
+  ],
+  "eein07r": [
+   "lexicon_match"
+  ],
+  "eeiq3ag": [
+   "lexicon_match"
+  ],
+  "eeiqkjv": [
+   "lexicon_match"
+  ],
+  "eeist6u": [
+   "plain_neutral"
+  ],
+  "eeitn01": [
+   "lexicon_match"
+  ],
+  "eeiyx66": [
+   "no_lexicon_match"
+  ],
+  "eej9coh": [
+   "lexicon_match"
+  ],
+  "eejaqiz": [
+   "lexicon_match"
+  ],
+  "eejga22": [
+   "lexicon_match"
+  ],
+  "eejkbxh": [
+   "plain_neutral"
+  ],
+  "eejn8qt": [
+   "lexicon_match",
+   "negation"
+  ],
+  "eejwopn": [
+   "lexicon_match"
+  ],
+  "eejz2sc": [
+   "lexicon_match"
+  ],
+  "eek2ntl": [
+   "lexicon_match"
+  ],
+  "eek32qy": [
+   "plain_neutral"
+  ],
+  "eek35cr": [
+   "lexicon_match"
+  ],
+  "eek85lm": [
+   "lexicon_match",
+   "negation"
+  ],
+  "eek89ki": [
+   "lexicon_match"
+  ],
+  "eekby4q": [
+   "lexicon_match"
+  ],
+  "eekm2mn": [
+   "plain_neutral"
+  ],
+  "eekp5gi": [
+   "lexicon_match"
+  ],
+  "eekv307": [
+   "lexicon_match"
+  ],
+  "eekx665": [
+   "lexicon_match"
+  ],
+  "eekyspm": [
+   "lexicon_match"
+  ],
+  "eel7yir": [
+   "lexicon_match"
+  ],
+  "eel9csq": [
+   "lexicon_match"
+  ],
+  "eelbr0z": [
+   "lexicon_match"
+  ],
+  "eeldqgx": [
+   "lexicon_match"
+  ],
+  "eelehyb": [
+   "lexicon_match"
+  ],
+  "eelisuj": [
+   "lexicon_match"
+  ],
+  "eelix3n": [
+   "no_lexicon_match"
+  ],
+  "eell134": [
+   "lexicon_match"
+  ],
+  "eellfv0": [
+   "lexicon_match"
+  ],
+  "eelmaa4": [
+   "emotion_word_neutral"
+  ],
+  "eelojiq": [
+   "no_lexicon_match"
+  ],
+  "eelr0wx": [
+   "lexicon_match"
+  ],
+  "eelv98w": [
+   "lexicon_match"
+  ],
+  "eem32qe": [
+   "lexicon_match"
+  ],
+  "eem5k1k": [
+   "lexicon_match"
+  ],
+  "eeme0j0": [
+   "emotion_word_neutral"
+  ],
+  "eemjtpw": [
+   "lexicon_match"
+  ],
+  "eemn1s5": [
+   "no_lexicon_match"
+  ],
+  "eemovlk": [
+   "emotion_word_neutral"
+  ],
+  "eempufb": [
+   "no_lexicon_match"
+  ],
+  "eems49s": [
+   "lexicon_match"
+  ],
+  "eemvd5h": [
+   "no_lexicon_match"
+  ],
+  "eemwklm": [
+   "emotion_word_neutral"
+  ],
+  "eemx4xv": [
+   "no_lexicon_match"
+  ],
+  "een4s88": [
+   "no_lexicon_match"
+  ],
+  "een6y2q": [
+   "lexicon_match"
+  ],
+  "een7cjm": [
+   "lexicon_match"
+  ],
+  "eenhw3s": [
+   "lexicon_match"
+  ],
+  "eeni74k": [
+   "lexicon_match"
+  ],
+  "eennfur": [
+   "lexicon_match"
+  ],
+  "eenni73": [
+   "lexicon_match"
+  ],
+  "eennz0q": [
+   "emotion_word_neutral"
+  ],
+  "eenqj7j": [
+   "lexicon_match"
+  ],
+  "eenqt5a": [
+   "lexicon_match"
+  ],
+  "eenrhtj": [
+   "plain_neutral"
+  ],
+  "eens4w2": [
+   "lexicon_match"
+  ],
+  "eenv1pb": [
+   "lexicon_match"
+  ],
+  "eeo2054": [
+   "lexicon_match"
+  ],
+  "eeo4ds5": [
+   "lexicon_match"
+  ],
+  "eeo6ius": [
+   "no_lexicon_match"
+  ],
+  "eeobtjx": [
+   "plain_neutral"
+  ],
+  "eeodqq2": [
+   "lexicon_match"
+  ],
+  "eeodu0d": [
+   "lexicon_match"
+  ],
+  "eeoi9xd": [
+   "lexicon_match"
+  ],
+  "eeoiqz1": [
+   "lexicon_match"
+  ],
+  "eeok732": [
+   "lexicon_match"
+  ],
+  "eeoulo9": [
+   "no_lexicon_match"
+  ],
+  "eeoz1nm": [
+   "lexicon_match"
+  ],
+  "eeozjib": [
+   "no_lexicon_match"
+  ],
+  "eep6w1l": [
+   "no_lexicon_match"
+  ],
+  "eep70hm": [
+   "lexicon_match"
+  ],
+  "eep85vg": [
+   "lexicon_match"
+  ],
+  "eepefiy": [
+   "lexicon_match"
+  ],
+  "eepf1aq": [
+   "emotion_word_neutral"
+  ],
+  "eepo2rm": [
+   "lexicon_match",
+   "negation"
+  ],
+  "eepqi96": [
+   "emotion_word_neutral",
+   "negation"
+  ],
+  "eepr3uj": [
+   "emotion_word_neutral"
+  ],
+  "eepr6u3": [
+   "emotion_word_neutral"
+  ],
+  "eepu3bf": [
+   "plain_neutral"
+  ],
+  "eeq23lq": [
+   "lexicon_match",
+   "negation"
+  ],
+  "eeq3vim": [
+   "emotion_word_neutral"
+  ],
+  "eeqogg9": [
+   "lexicon_match"
+  ],
+  "eeqr8n9": [
+   "lexicon_match"
+  ],
+  "eeqxizl": [
+   "emotion_word_neutral",
+   "negation"
+  ],
+  "eeqxnjb": [
+   "lexicon_match"
+  ],
+  "eer7ups": [
+   "lexicon_match"
+  ],
+  "eercjmw": [
+   "lexicon_match"
+  ],
+  "eerfyqo": [
+   "lexicon_match"
+  ],
+  "eergeej": [
+   "lexicon_match"
+  ],
+  "eerk3up": [
+   "lexicon_match"
+  ],
+  "eerpe67": [
+   "emotion_word_neutral"
+  ],
+  "eeruwjf": [
+   "lexicon_match"
+  ],
+  "ees8ic1": [
+   "lexicon_match"
+  ],
+  "eesioex": [
+   "no_lexicon_match"
+  ],
+  "eesjxth": [
+   "lexicon_match"
+  ],
+  "eesnlsb": [
+   "no_lexicon_match"
+  ],
+  "eesno19": [
+   "lexicon_match"
+  ],
+  "eesstwu": [
+   "no_lexicon_match"
+  ],
+  "eesysv3": [
+   "lexicon_match"
+  ],
+  "eeta1qa": [
+   "lexicon_match"
+  ],
+  "eetfduz": [
+   "lexicon_match",
+   "negation"
+  ],
+  "eetgbyi": [
+   "lexicon_match"
+  ],
+  "eetgtfg": [
+   "plain_neutral"
+  ],
+  "eetho28": [
+   "plain_neutral"
+  ],
+  "eetmkpj": [
+   "emotion_word_neutral"
+  ],
+  "eetrfd1": [
+   "lexicon_match"
+  ],
+  "eets2cw": [
+   "no_lexicon_match"
+  ],
+  "eetta44": [
+   "lexicon_match"
+  ],
+  "eettn7f": [
+   "lexicon_match"
+  ],
+  "eetycos": [
+   "plain_neutral"
+  ],
+  "eeu0cdq": [
+   "lexicon_match"
+  ],
+  "eeu0j16": [
+   "lexicon_match"
+  ],
+  "eeu3zv0": [
+   "no_lexicon_match"
+  ],
+  "eeu4dq8": [
+   "lexicon_match"
+  ],
+  "eeu4qki": [
+   "lexicon_match"
+  ],
+  "eeu6561": [
+   "lexicon_match"
+  ],
+  "eeugov9": [
+   "emotion_word_neutral",
+   "negation"
+  ],
+  "eeuib3e": [
+   "lexicon_match"
+  ],
+  "eev17hg": [
+   "lexicon_match"
+  ],
+  "eev5q9y": [
+   "lexicon_match"
+  ],
+  "eev6gpc": [
+   "lexicon_match"
+  ],
+  "eevcmsb": [
+   "lexicon_match"
+  ],
+  "eevcnj0": [
+   "lexicon_match"
+  ],
+  "eevfjuy": [
+   "emotion_word_neutral"
+  ],
+  "eevkkqw": [
+   "lexicon_match"
+  ],
+  "eevmcy1": [
+   "lexicon_match"
+  ],
+  "eevmp24": [
+   "no_lexicon_match"
+  ],
+  "eevsblv": [
+   "plain_neutral"
+  ],
+  "eevuskc": [
+   "lexicon_match"
+  ],
+  "eevwe7c": [
+   "lexicon_match"
+  ],
+  "eevwgbf": [
+   "lexicon_match"
+  ],
+  "eevyxqa": [
+   "emotion_word_neutral"
+  ],
+  "eevyzvq": [
+   "lexicon_match"
+  ],
+  "eevzcvn": [
+   "lexicon_match"
+  ],
+  "eewboco": [
+   "no_lexicon_match"
+  ],
+  "eewevfh": [
+   "lexicon_match"
+  ],
+  "eewjd3i": [
+   "lexicon_match"
+  ],
+  "eewpl8e": [
+   "lexicon_match"
+  ],
+  "eewu1km": [
+   "emotion_word_neutral"
+  ],
+  "eewzmut": [
+   "lexicon_match"
+  ],
+  "eex15d6": [
+   "lexicon_match"
+  ],
+  "eex3krx": [
+   "no_lexicon_match"
+  ],
+  "eex60my": [
+   "no_lexicon_match"
+  ],
+  "eex9lba": [
+   "plain_neutral"
+  ],
+  "eexapep": [
+   "lexicon_match"
+  ],
+  "eexntdi": [
+   "lexicon_match"
+  ],
+  "eexpxup": [
+   "lexicon_match"
+  ],
+  "eexs4zr": [
+   "no_lexicon_match"
+  ],
+  "eey42p5": [
+   "no_lexicon_match"
+  ],
+  "eey5v8c": [
+   "lexicon_match"
+  ],
+  "eeyhxzq": [
+   "lexicon_match"
+  ],
+  "eeykr1i": [
+   "lexicon_match"
+  ],
+  "eeynkjq": [
+   "lexicon_match"
+  ],
+  "eeyyq99": [
+   "lexicon_match"
+  ],
+  "eezbpxo": [
+   "plain_neutral"
+  ],
+  "eezcz2y": [
+   "lexicon_match"
+  ],
+  "eezeur1": [
+   "lexicon_match"
+  ],
+  "eezix0c": [
+   "lexicon_match"
+  ],
+  "eezjnyo": [
+   "no_lexicon_match"
+  ],
+  "eezjon7": [
+   "emotion_word_neutral"
+  ],
+  "eezro69": [
+   "emotion_word_neutral"
+  ],
+  "eezsr2a": [
+   "no_lexicon_match"
+  ],
+  "eezxeyk": [
+   "lexicon_match"
+  ],
+  "eezy7jh": [
+   "lexicon_match"
+  ],
+  "eezzt7a": [
+   "no_lexicon_match"
+  ],
+  "ef09k1c": [
+   "lexicon_match"
+  ],
+  "ef0bxvd": [
+   "lexicon_match"
+  ],
+  "ef0c1vh": [
+   "no_lexicon_match"
+  ],
+  "ef0ekxx": [
+   "lexicon_match"
+  ],
+  "ef0smtv": [
+   "lexicon_match"
+  ],
+  "ef0xnr3": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ef12uz4": [
+   "no_lexicon_match"
+  ],
+  "ef1eq85": [
+   "lexicon_match"
+  ],
+  "ef1h4if": [
+   "lexicon_match"
+  ],
+  "ef1hli8": [
+   "emotion_word_neutral"
+  ],
+  "ef1i9q3": [
+   "no_lexicon_match"
+  ],
+  "ef1ikb7": [
+   "lexicon_match"
+  ],
+  "ef1o2fu": [
+   "plain_neutral"
+  ],
+  "ef1r7bj": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ef1wsmt": [
+   "lexicon_match"
+  ],
+  "ef26myj": [
+   "lexicon_match"
+  ],
+  "ef2gy5u": [
+   "lexicon_match"
+  ],
+  "ef2jabt": [
+   "lexicon_match"
+  ],
+  "ef2jec1": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ef2mfzy": [
+   "no_lexicon_match"
+  ],
+  "ef2p9mw": [
+   "lexicon_match"
+  ],
+  "ef32sdd": [
+   "lexicon_match"
+  ],
+  "ef3hloa": [
+   "lexicon_match"
+  ],
+  "ef3r0v2": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ef3r8uo": [
+   "lexicon_match"
+  ],
+  "ef3ti8c": [
+   "lexicon_match"
+  ],
+  "ef3uxax": [
+   "lexicon_match"
+  ],
+  "ef45pxs": [
+   "lexicon_match"
+  ],
+  "ef462vc": [
+   "lexicon_match"
+  ],
+  "ef4bv31": [
+   "lexicon_match"
+  ],
+  "ef4litv": [
+   "lexicon_match"
+  ],
+  "ef4n4vp": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ef4oqrq": [
+   "emotion_word_neutral"
+  ],
+  "ef4x5ph": [
+   "lexicon_match"
+  ],
+  "ef57u8z": [
+   "lexicon_match"
+  ],
+  "ef5d17e": [
+   "plain_neutral"
+  ],
+  "ef5lhwg": [
+   "lexicon_match"
+  ],
+  "ef5nlo9": [
+   "lexicon_match"
+  ],
+  "ef60nhs": [
+   "lexicon_match"
+  ],
+  "ef629xy": [
+   "lexicon_match"
+  ],
+  "ef64yhq": [
+   "lexicon_match"
+  ],
+  "ef64yoh": [
+   "lexicon_match"
+  ],
+  "ef67xn0": [
+   "lexicon_match"
+  ],
+  "ef6kojt": [
+   "no_lexicon_match"
+  ],
+  "ef6mwwv": [
+   "lexicon_match"
+  ],
+  "ef6wfio": [
+   "lexicon_match"
+  ],
+  "ef6yq1b": [
+   "lexicon_match"
+  ],
+  "ef74c6h": [
+   "lexicon_match"
+  ],
+  "ef7c27s": [
+   "lexicon_match"
+  ],
+  "ef7ha7l": [
+   "plain_neutral"
+  ],
+  "ef7jyoy": [
+   "lexicon_match"
+  ],
+  "ef7mlrx": [
+   "lexicon_match"
+  ],
+  "ef7odkl": [
+   "lexicon_match"
+  ],
+  "ef7pvkq": [
+   "emotion_word_neutral"
+  ],
+  "ef7vxhx": [
+   "lexicon_match"
+  ],
+  "ef7y6bm": [
+   "lexicon_match"
+  ],
+  "ef856f5": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ef86dml": [
+   "no_lexicon_match"
+  ],
+  "ef86k66": [
+   "lexicon_match",
+   "negation"
+  ],
+  "ef88l23": [
+   "lexicon_match"
+  ],
+  "ef8g3xn": [
+   "lexicon_match"
+  ],
+  "ef8kj0b": [
+   "lexicon_match"
+  ],
+  "ef8yp5h": [
+   "no_lexicon_match"
+  ],
+  "ef94f03": [
+   "lexicon_match"
+  ],
+  "ef96s4w": [
+   "no_lexicon_match"
+  ],
+  "ef97j55": [
+   "lexicon_match"
+  ],
+  "ef9vgw2": [
+   "no_lexicon_match"
+  ],
+  "ef9wj5f": [
+   "lexicon_match"
+  ],
+  "ef9xt3b": [
+   "lexicon_match"
+  ],
+  "ef9y4uz": [
+   "lexicon_match"
+  ],
+  "ef9zipz": [
+   "lexicon_match"
+  ],
+  "efa5ht4": [
+   "no_lexicon_match"
+  ],
+  "efa5m1w": [
+   "emotion_word_neutral"
+  ],
+  "efaul5g": [
+   "lexicon_match"
+  ],
+  "efaxbrd": [
+   "lexicon_match"
+  ],
+  "efb6i6p": [
+   "lexicon_match"
+  ],
+  "efb7e1k": [
+   "no_lexicon_match"
+  ],
+  "efbbztw": [
+   "lexicon_match",
+   "negation"
+  ],
+  "efbeqvc": [
+   "emotion_word_neutral"
+  ],
+  "efbh146": [
+   "no_lexicon_match"
+  ],
+  "efbi2bv": [
+   "lexicon_match"
+  ],
+  "efbm1g4": [
+   "lexicon_match"
+  ],
+  "efbok4w": [
+   "lexicon_match"
+  ],
+  "efbtxiv": [
+   "lexicon_match"
+  ],
+  "efc0ayt": [
+   "emotion_word_neutral"
+  ],
+  "efc3kii": [
+   "lexicon_match"
+  ],
+  "efcr4cm": [
+   "plain_neutral"
+  ],
+  "efcsywh": [
+   "emotion_word_neutral"
+  ],
+  "efcwwfj": [
+   "lexicon_match"
+  ],
+  "efcx9uv": [
+   "lexicon_match",
+   "negation"
+  ],
+  "efcz1ee": [
+   "lexicon_match"
+  ],
+  "efde96j": [
+   "lexicon_match"
+  ],
+  "efdet2x": [
+   "lexicon_match"
+  ],
+  "efdqjsb": [
+   "lexicon_match"
+  ],
+  "efdv7m4": [
+   "lexicon_match"
+  ],
+  "efdwu1x": [
+   "lexicon_match"
+  ],
+  "efdxbeo": [
+   "lexicon_match"
+  ],
+  "efe39wm": [
+   "lexicon_match"
+  ],
+  "efe3xec": [
+   "no_lexicon_match"
+  ],
+  "efe4nw7": [
+   "no_lexicon_match"
+  ],
+  "efearm4": [
+   "emotion_word_neutral"
+  ],
+  "efecbk3": [
+   "no_lexicon_match"
+  ],
+  "efegrrd": [
+   "lexicon_match"
+  ],
+  "efemt0g": [
+   "lexicon_match"
+  ],
+  "efendxq": [
+   "lexicon_match"
+  ],
+  "efenjqc": [
+   "lexicon_match"
+  ],
+  "efet0j4": [
+   "lexicon_match"
+  ],
+  "efetssk": [
+   "lexicon_match"
+  ],
+  "efeueo2": [
+   "plain_neutral"
+  ],
+  "efeuxmi": [
+   "lexicon_match"
+  ],
+  "efev9va": [
+   "lexicon_match"
+  ],
+  "efevjno": [
+   "lexicon_match"
+  ],
+  "efeymfg": [
+   "no_lexicon_match"
+  ],
+  "eff15np": [
+   "no_lexicon_match"
+  ],
+  "eff52fk": [
+   "lexicon_match"
+  ],
+  "eff5msb": [
+   "lexicon_match"
+  ],
+  "eff6flv": [
+   "lexicon_match"
+  ],
+  "effckqq": [
+   "plain_neutral"
+  ],
+  "effplzu": [
+   "lexicon_match"
+  ],
+  "effudcr": [
+   "lexicon_match",
+   "negation"
+  ],
+  "effxhn1": [
+   "lexicon_match"
+  ],
+  "effzsws": [
+   "lexicon_match"
+  ],
+  "efg6nt1": [
+   "plain_neutral"
+  ],
+  "efgeoye": [
+   "lexicon_match"
+  ],
+  "efgk9m7": [
+   "lexicon_match"
+  ],
+  "efgqmll": [
+   "lexicon_match"
+  ],
+  "efgz3es": [
+   "lexicon_match"
+  ],
+  "efh0u98": [
+   "lexicon_match"
+  ],
+  "efh50bc": [
+   "lexicon_match"
+  ],
+  "efh6oic": [
+   "lexicon_match"
+  ]
+ }
+}

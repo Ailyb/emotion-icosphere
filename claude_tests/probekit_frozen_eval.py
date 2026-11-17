@@ -293,6 +293,8 @@ def run_eval(a):
     for r in res:
         r.pop("_p", None)
     md = "\n".join(L)
+    Path(a.out).with_name("frozen_preds.json").write_text(json.dumps(    # ids, labels and predictions only; no text
+        {"ids": [r["id"] for r in frozen], "labels": [str(x) for x in y_fr], "preds": {k: [str(x) for x in v] for k, v in preds.items()}}))
     Path(a.out).write_text(md + "\n"); Path(a.out).with_suffix(".json").write_text(json.dumps({"curve": res, "extra": extra}, indent=1))
     print(md)
 
