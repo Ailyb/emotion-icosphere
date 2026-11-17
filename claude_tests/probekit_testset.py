@@ -166,6 +166,35 @@ def build_human_train(items, calib_ids, test_keys, n_train=80, n_val=20, seed=SE
     return rows
 
 
+def build_pool(items, calib_ids, test_keys, existing_rows, cap=400, min_words=4, max_words=80, seed=SEED):
+    """Human learning-curve pool (PLAN_v2 T0c): per class, the existing corpus rows first (train rows in their order, then val),
+    then extra eligible official-TRAIN items (single label in our 8 classes, `min_words`-`max_words` words, not calibration, not a
+    test text, no duplicates) up to `cap` TRAIN rows per class. Rows carry `pool_rank` (training order) and keep split=val for val."""
+    rng = random.Random(seed + 3)
+    calib = set(calib_ids)
+    seen = {" ".join(norm(r["text"])) for r in existing_rows}
+    used_ids = {r["id"].split("|")[-1] for r in existing_rows}
+    extra = defaultdict(list)
+    for it in items:
+        if it["label"] not in OURS or it["id"] in calib or it["id"] in used_ids:
+            continue
+        text = clean_text(it["text"]); key = " ".join(norm(text))
+        if not (min_words <= n_words(text) <= max_words) or key in seen or key in test_keys:
+            continue
+        seen.add(key); extra[it["label"]].append((it["id"], text))
+    rows = []
+    for cat in OURS:
+        ex = [r for r in existing_rows if r["category"] == cat]
+        tr = [r for r in ex if r["split"] == "train"]; va = [r for r in ex if r["split"] == "val"]
+        rng.shuffle(extra[cat])
+        add = [{"id": f"hf|goemotions|train|{rid}", "category": cat, "topic": f"goemotions|train|{rid}", "style": STYLE, "split": "train",
+                "writer": WRITER, "source": "goemotions", "text": text} for rid, text in extra[cat][: max(0, cap - len(tr))]]
+        for rank, r in enumerate((tr + add)[:cap]):
+            rows.append(dict(r, pool_rank=rank))
+        rows += [dict(r, pool_rank=-1) for r in va]
+    return rows
+
+
 # ---------------------------------------------------------------- manifest / verification
 def write_jsonl(path, rows):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -268,6 +297,19 @@ def cmd_leakage(a):
     return 0 if ok else 1
 
 
+def cmd_pool(a):
+    out = Path(a.out_dir); d = Path(a.data_dir)
+    rows, m = load_frozen(out / "goemotions_test_frozen.manifest.json")
+    test_keys = {" ".join(norm(r["text"])) for r in rows}
+    calib = json.loads((out / m["calibration_ids_file"]).read_text())["ids"]
+    names = (d / "emotions.txt").read_text().split()
+    existing = [json.loads(l) for l in open(a.existing) if l.strip()]
+    pool = build_pool(read_tsv(d / "train.tsv", names), calib, test_keys, existing, cap=a.cap)
+    write_jsonl(a.pool_out, pool)
+    print(f"pool: {len(pool)} rows -> {a.pool_out}; train rows per class: "
+          f"{dict(Counter(r['category'] for r in pool if r['split'] == 'train'))}; val rows: {sum(r['split'] == 'val' for r in pool)}")
+
+
 def cmd_verify(a):
     m = verify(Path(a.out_dir) / "goemotions_test_frozen.manifest.json")
     print(f"OK: {m['testset_file']} n={m['n']} sha256 {m['testset_sha256'][:16]}...")
@@ -284,9 +326,13 @@ def main():
     l.add_argument("--data-dir", default="data/external/goemotions"); l.add_argument("--out-dir", default="data/testsets")
     l.add_argument("--corpus", nargs="+", required=True)
     l.add_argument("--retired", nargs="*", default=[], help="corpora that are no longer used (e.g. the old human corpus): reported only")
+    pl = sp.add_parser("pool")
+    pl.add_argument("--data-dir", default="data/external/goemotions"); pl.add_argument("--out-dir", default="data/testsets")
+    pl.add_argument("--existing", default="data/corpus/corpus_human_goemotions_train.jsonl")
+    pl.add_argument("--pool-out", default="data/corpus/corpus_human_goemotions_pool.jsonl"); pl.add_argument("--cap", type=int, default=400)
     v = sp.add_parser("verify"); v.add_argument("--out-dir", default="data/testsets")
     a = ap.parse_args()
-    sys.exit({"build": lambda: cmd_build(a), "leakage": lambda: cmd_leakage(a), "verify": lambda: cmd_verify(a)}[a.cmd]() or 0)
+    sys.exit({"build": lambda: cmd_build(a), "pool": lambda: cmd_pool(a), "leakage": lambda: cmd_leakage(a), "verify": lambda: cmd_verify(a)}[a.cmd]() or 0)
 
 
 if __name__ == "__main__":

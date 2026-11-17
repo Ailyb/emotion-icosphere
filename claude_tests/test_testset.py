@@ -59,6 +59,12 @@ with tempfile.TemporaryDirectory() as d:
     sm = ts.build_human_train(ts.read_tsv(d / "train.tsv", NAMES), sorted(calib), set(), n_train=30, n_val=10)
     assert sum(r["category"] == "joy" and r["split"] == "train" for r in sm) == 30 and sum(r["category"] == "joy" and r["split"] == "val" for r in sm) == 10
     assert {r["split"] for r in sm} == {"train", "val"} and not any(r["id"].split("|")[-1] in calib for r in sm)
+    # pool: existing rows first and in order, extras never in calibration/test/existing, per-class cap respected
+    ex_train = [r for r in crows if r["category"] == "joy" and r["split"] == "train"]
+    pl = ts.build_pool(ts.read_tsv(d / "train.tsv", NAMES), sorted(calib), {" ".join(ts.norm(r["text"])) for r in rows}, crows, cap=15, min_words=4)
+    jt = [r for r in pl if r["category"] == "joy" and r["split"] == "train"]
+    assert len(jt) == 15 and [r["id"] for r in jt[:len(ex_train)]] == [r["id"] for r in ex_train][:15] and [r["pool_rank"] for r in jt] == list(range(15))
+    assert len({r["id"] for r in pl}) == len(pl) and not (calib & {r["id"].split("|")[-1] for r in pl})
     # leakage check passes on clean data, fails when a training text equals a test text
     b = A(); b.out_dir, b.data_dir, b.corpus, b.retired = str(out), str(d), [str(corpus)], []
     assert ts.cmd_leakage(b) == 0

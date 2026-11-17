@@ -10,7 +10,7 @@ Rules from CLAUDE.md still apply: hard set and own_voice are TEST ONLY; aggregat
 
 Owner key: **[J]** = Justin's hands (model runs, decisions), **[A]** = agent only.
 
-**Execution order: T0a (done, failed) -> T2 -> T1 -> T0 -> T0b (only if triggered) -> T3 -> T4 -> T5 -> T6 -> T7.** (Task ids kept from v2 so earlier reviews still map. T1 moves before T0 so the layer-0 baseline decides whether regenerating a hard stratum is needed.)
+**Execution order: T0a (done, failed) -> T2 (done) -> T1(i) (done) -> T0 (done) -> T0c -> T8 -> T0b (only if triggered) -> T3 -> T4 -> T5 -> T6 -> T7.** (Task ids kept from v2 so earlier reviews still map. T1 moves before T0 so the layer-0 baseline decides whether regenerating a hard stratum is needed.)
 
 ## Standing rules added in v2.1
 - **Class coverage.** Any class missing from a writer is writer-confounded. The human corpus has no `calm`, so calm is LLM-only. **The common classes are the 7 emotions joy, sadness, fear, anger, surprise, disgust, love, plus neutral.** Primary results are 8-way (7 emotions + neutral); a 7-way neutral-excluded number is reported alongside so it stays comparable with the v1 gate. "n >= 50 per class" in T2 applies to all 8. Calm is reported separately, labelled "writer-confounded", and never counted in transfer or leave-one-writer-out means.
@@ -56,6 +56,17 @@ Owner key: **[J]** = Justin's hands (model runs, decisions), **[A]** = agent onl
 - Gate before the full run: pilot of ~25 passages per class through `probekit_tfidf_gate.py`; accept only if the upper CI is below 0.7 on the pilot; the full run starts only after Justin approves the pilot.
 - Accept: audit report with format adherence (dialogue passages start and end with a quote; text-message passages have speaker lines); T0a-style report.
 
+## T0c [A writes, J runs extraction] Frozen-set evaluation + human-data learning curve — PRE-REGISTERED 2026-11-17, before any frozen-set result was seen. DONE 2026-11-17
+- **Results (full tables in docs/FINDINGS.md):** D1 PASSES (probe - bag-of-embeddings +0.107 [+0.065, +0.148]); D2 = DATA-LIMITED (native LR k=378 - k=80 = +0.069 [+0.039, +0.099]). Unplanned but decisive: TF-IDF beats the probe on human text at equal data (-0.088 [-0.128, -0.046]); probes trained on LLM text only transfer at 0.305 vs TF-IDF 0.146; human-only training equals LLM+human. TF-IDF, fusion and the k=0 / D2 paired CIs were added post hoc and are labelled so.
+- **Consequence for the plan:** T0's change-course trigger fired (probe at or below TF-IDF on human text, once human data is in training) but the picture is nuanced: the "beyond lexical" claim survives only as cross-writer transfer, not as head-to-head superiority. Next work is data (second human source, more items, dev split), T3, and T8, evaluated against a TF-IDF baseline at equal data from now on.
+- Original protocol follows.
+- Question: is the probe data-limited or representation-limited on human text?
+- Selection (VAL only): layer, estimator config and neutral threshold come from the merged2 eval (`v3/best_config.json`, VAL-hard F1). The frozen set is never used to choose anything. Calm is excluded from training and evaluation here (writer-confounded); primary metric is 8-way macro-F1 (7 emotions + neutral).
+- Systems on the frozen set (n=840): probe (selected estimator, plus the other two as unselected context), native LR at the probe layer, TF-IDF, bag-of-embeddings, block-0. Metrics: macro-F1 with bootstrap 95% CI over frozen items, accuracy, per-class recall/F1, coarse valence (positive / negative / ambiguous = surprise / neutral), shuffle-null p95, strata by rater agreement (`agree` >= 0.67 vs lower) and length (<= 12 words vs longer). Paired bootstrap differences: probe - TF-IDF, probe - embed, probe - native LR.
+- Learning curve: training = all LLM-written train rows (v2 + Qwen, no calm) + k human GoEmotions-TRAIN rows per class, k in {0, 20, 40, 80, 160, 320, max}; 3 subsampling seeds for k < max; also human-only. Tau/C chosen on the merged2 VAL rows. Pool = eligible GoEmotions TRAIN items (single label in our 8 classes, 10-80 words, excluding calibration ids and test texts), capped at 500 per class; k=80 equals the existing human corpus.
+- Decision rules, fixed now: (D1) if probe - embed on the frozen set has a CI that includes 0, "information beyond bag-of-words baselines" is NOT claimable on human text and the writeup becomes a negative result. (D2) native-LR(k=max) - native-LR(k=80) > 0.03 with a CI excluding 0 means data-limited: next work is more/second-source human data; otherwise representation-limited: go to T8. Both are reported whichever way they fall.
+- Caveat built in: any later experiment (T8) evaluated on this same frozen set adds forking paths; each candidate is chosen on VAL, evaluated once, and all candidates are reported with the count of comparisons.
+
 ## T1 [A, then J for one rerun] Baselines beyond TF-IDF
 - (i) Layer-0 embedding mean-pool + LR. Needs one extraction pass.
   - **(i) DONE 2026-11-17** (`probekit_l0_baseline.py`, `data/eval_merged/<model>/l0_baseline.md`): probe (lda@14) - bag-of-embeddings: TEST-all +0.137 [+0.067, +0.206], TEST-hard +0.210 [+0.114, +0.305], hand-written +0.451 [+0.331, +0.572]; all exclude 0, so the change-course trigger did NOT fire on the current sets. Re-run on the T2 frozen sets once built (that is the plan's decision test). Probe vs native LR on TEST-all: -0.065 [-0.105, -0.026].
@@ -90,6 +101,15 @@ Owner key: **[J]** = Justin's hands (model runs, decisions), **[A]** = agent onl
 ## T7 [A draft, J edit] Writeup + release
 - README and FINDINGS match the reports (check the README's hand-written numbers against FINDINGS.md now; an outside reader reported a mismatch). CLAIMS.md complete. 4-6 page note, pyproject.
 - Accept: every number traces to a committed report.
+
+## T8 [A design, J for extraction] Geometry and representation experiments (after T0c)
+- (a) Hierarchical probes: valence group first (positive: joy, love; negative: sadness, fear, anger, disgust; ambiguous: surprise; neutral), then category within group. Cached states only.
+- (b) Representational similarity: compare the cosine matrix of the 7 emotion directions with the matrix implied by human valence-arousal ratings, with a permutation null over emotion labels (7 points can match by chance). Ratings source and licence checked first (not hand-entered); report the null.
+- (c) Pooling and layers: last-token, max, attention-weighted pooling; concat or ensemble of plateau layers 12-18; one extraction pass per variant.
+- (d) Prompted read-out: append a fixed framing ("The emotion expressed in this text is") and read the last-token state.
+- (e) Nonlinear ceiling: small MLP on the same states, to test whether anything linear is being missed.
+- (f) Second model with published sparse autoencoders (candidate: a Gemma-2 model with Gemma Scope; availability and licence verified first), to ask whether emotion features exist beyond one linear direction. Merges with T6 if the same model serves both.
+- Protocol: primary metric and comparison baseline fixed per experiment before running; candidate chosen on VAL, evaluated once on the frozen set; every comparison counted and reported; a result is a finding only if it also holds on the second human source.
 
 ## v1.1: does validation predict steering?
 - Directions: (i) audited probe direction; (ii) direction fit on the lexically solvable v1 corpus; (iii) >= 20 norm-matched random directions; 3-4 strengths. Same prompts, sampling parameters and seeds across conditions.

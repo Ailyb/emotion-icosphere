@@ -8,7 +8,42 @@ Manual layer loops without a causal mask leak future tokens. Old capture: masked
 ## v1 corpus was lexically solvable
 Test acc 0.860 / F1 0.857 (layer 6; shuffle-null p95 0.110) but TF-IDF lexical baseline 0.953. So v1 proved nothing about "beyond words".
 
-## Merged corpus (current): synthetic v2 + human GoEmotions (reddit)
+## Frozen human test set (PLAN_v2 T0c; current primary evidence) — GoEmotions official test, n=840
+Sources: `data/eval_merged2/<model>/frozen_eval.md` (+ `frozen_eval_prereg_run1.md`, the run before post hoc columns were added), `data/testsets/goemotions_test_frozen.manifest.json` (SHA-256 verified on every load). Protocol pre-registered in PLAN_v2 T0c before any result was seen. Test items: official single label, 8 classes (7 emotions + neutral, calm excluded: LLM-only), no length filter, near-duplicates of official train/dev removed; per class n: joy 91, sadness 98, fear 63, anger 128, surprise 84, disgust 74, love 151, neutral 151. Models trained on the pooled merged2 TRAIN (Llama-3.2-3B-written v2, Qwen3.8-27B-written, human GoEmotions-train rows; no calm), layer 16 / lda chosen on VAL-hard only. 8-way macro-F1 [95% bootstrap CI over test items], shuffle-null p95 about 0.14:
+
+| system | macro-F1 | accuracy |
+|---|---|---|
+| probe lda@16 (selected) | 0.510 [0.476, 0.544] | 0.521 |
+| probe meandiff / logreg (not selected) | 0.489 / 0.517 | 0.485 / 0.521 |
+| native hidden-state LR @16 | 0.521 [0.486, 0.554] | 0.531 |
+| bag of embeddings | 0.403 [0.373, 0.435] | 0.401 |
+| block-0 states | 0.432 [0.401, 0.465] | 0.433 |
+| TF-IDF | 0.599 [0.564, 0.630] | 0.599 |
+| TF-IDF + native LR fusion (post hoc) | 0.617 [0.582, 0.650] | 0.625 |
+
+Paired differences (macro-F1): probe − bag of embeddings +0.107 [+0.065, +0.148]; probe − block-0 +0.078 [+0.039, +0.116]; probe − native LR −0.010 [−0.036, +0.016] (indistinguishable); **probe − TF-IDF −0.088 [−0.128, −0.046]** (TF-IDF is better on human text); fusion − TF-IDF +0.018 [−0.018, +0.053] (post hoc, hidden states add no measurable gain on top of TF-IDF here). Per class (probe recall): love 0.75, fear 0.63, joy 0.58, surprise 0.58, sadness 0.53, anger 0.52, disgust 0.47, **neutral 0.19**. Strata: rater agreement >= 0.67 (n=244) probe 0.594 / TF-IDF 0.749; < 0.67 (n=596) 0.475 / 0.544; <= 12 words (n=431) 0.541 / 0.572; > 12 words (n=409) 0.475 / 0.623. Rule-mined subtypes are too small to score (negation n=10, emotion_word_neutral n=6).
+
+### Human-data learning curve (pre-registered question: data-limited or representation-limited?)
+Training = LLM-written rows + k human GoEmotions-TRAIN rows per class (k=378 is the fear-limited maximum), 3 subsampling seeds, frozen-set macro-F1 (mean ± sd). TF-IDF and fusion columns were added post hoc:
+
+| k per class | probe | native LR | TF-IDF | fusion |
+|---|---|---|---|---|
+| 0 (LLM text only) | 0.305 | 0.271 | 0.146 | 0.262 |
+| 20 | 0.439 | 0.448 | 0.451 | 0.535 |
+| 80 | 0.512 | 0.548 | 0.583 | 0.638 |
+| 160 | 0.542 | 0.588 | 0.620 | 0.674 |
+| 320 | 0.566 | 0.632 | 0.659 | 0.704 |
+| 378 | 0.576 | 0.617 | 0.666 | 0.696 |
+
+- **D2 (pre-registered): data-limited.** Native LR k=378 − k=80 = +0.069 [+0.039, +0.099] (threshold 0.03).
+- Human-only training (no LLM rows) is as good as LLM + human at every k (e.g. k=378: probe 0.596 vs 0.576, native LR 0.628 vs 0.617): once human text is in the training set, the LLM-written corpora add nothing measurable.
+- With ZERO human training rows the probe still scores 0.305 [0.272, 0.338] (shuffle-null p95 0.137) while TF-IDF collapses to 0.146: probe − TF-IDF +0.159 [+0.122, +0.197], native LR − TF-IDF +0.125 [+0.090, +0.161]. So probes carry some emotion information that transfers from LLM-written to human text where lexical features do not — but at a low absolute level.
+- At equal human data TF-IDF is better than the probe (k=378: −0.090 [−0.126, −0.053]) and than native LR (−0.049 [−0.085, −0.010]); fusion − TF-IDF +0.030 [−0.001, +0.062].
+
+### Pooled merged2 evaluation (LLM-written test splits; hand-written set is non-blind)
+`data/eval_merged2/<model>/v3/report_v3.md`: lda@16 chosen. TEST-hard / TEST-all (all LLM-written; the human corpus has no test split any more): meandiff 0.676/0.746, lda 0.807/0.862, logreg 0.781/0.852, native LR 0.828/0.890, TF-IDF 0.354/0.648. Hand-written (n=92, public in git history): lda 0.665 (61/92), native LR 0.622, TF-IDF 0.337; probe − TF-IDF +0.326 [+0.213, +0.438]; probe − native LR +0.046 [−0.049, +0.137]. Leave-one-WRITER-out, 3 writers (test F1 for meandiff / lda / logreg): Llama-3.2-3B-written held out 0.661 / 0.747 / 0.764; Qwen3.8-27B-written held out 0.590 / 0.658 / 0.644; reddit-goemotions held out **0.238 / 0.237 / 0.261**. Leave-one-style-out mean (worst): 0.647 (0.238), 0.734 (0.237), 0.719 (0.261); the worst fold is always reddit. These are in-distribution-friendly numbers and should not be read as human-text performance; the frozen set above is the human-text result.
+
+## Merged corpus v1 (superseded: used the old human corpus, which overlaps the frozen set; kept for history): synthetic v2 + human GoEmotions (reddit)
 Source: `data/eval_merged/<model>/` (report_v3.md, robustness_*/robustness.md, confusion_v3.md). Splits n: train 1128, val-hard 153, test-hard 153, test-all 307, hand-written 92. Selected **lda @ layer 14** by VAL-hard F1 only (tau 1.78). Layer plateau (within 0.03 val-F1): 12, 14, 16, 18.
 
 | | VAL-hard | TEST-hard | TEST-all | hand-written |
@@ -68,7 +103,8 @@ Reading: trained only on synthetic text, the probes were high on in-distribution
 ## Streaming (pre-merge probes; not re-run)
 Pooled acc 0.562 / AUC 0.833; max_z AUC 0.927; true-emotion top-token share 0.41. The "onset" metric is INVALID (no neutral baseline) — redesign (roadmap 5).
 
-## Defensible claims now
+## Defensible claims now (see docs/CLAIMS.md for the checked list)
+- On the frozen human test set the probe is NOT better than a TF-IDF baseline trained on the same data (−0.088 [−0.128, −0.046]); it beats a bag-of-embeddings baseline (+0.107 [+0.065, +0.148]) and transfers from LLM-written to human text where TF-IDF does not (0.305 vs 0.146 with no human training rows). The earlier statement below about hand-written text refers to a non-blind set.
 - Probes carry emotion-concept information beyond lexical cues on hand-written text (probe − lexical +0.492, CI excludes 0; n=92).
 - On the merged corpus the best probe (lda@14) is not distinguishable from a trained classifier on the same hidden states on the hand-written set (+0.044, CI includes 0), and is weaker than it on TEST-all (0.670 vs 0.734; −0.065 [−0.105, −0.026]); on TEST-hard the gap (0.616 vs 0.669; −0.055 [−0.117, +0.005]) includes 0.
 - The probe beats a bag-of-embeddings baseline (mean input embeddings) on every test set: +0.137 [+0.067, +0.206] on TEST-all (unfiltered, n=307), +0.451 [+0.331, +0.572] on hand-written (n=92, non-blind). Supports "information beyond bag-of-words baselines"; it does not rule out topic or semantic content.
