@@ -65,6 +65,12 @@ class Extractor:
         st = self.states(text, layers)
         return {l: s[min(skip, len(s) - 1):].mean(0) for l, s in st.items()}
 
+    def embedded_pooled(self, text: str, skip: int = 4) -> np.ndarray:
+        """Bag-of-embeddings baseline: mean of the input token embeddings (before ANY decoder block) over tokens [skip:].
+        No attention, no context: a purely lexical (token-identity) representation of the same passage."""
+        e = np.array(self.model.model.embed_tokens(mx.array([self.encode(text)]))[0].astype(mx.float32))
+        return e[min(skip, len(e) - 1):].mean(0)
+
     def token_states(self, text: str, layer: int, skip: int = 4) -> np.ndarray:
         s = self.states(text, [layer])[layer]
         return s[min(skip, len(s) - 1):]

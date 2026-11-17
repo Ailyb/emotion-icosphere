@@ -40,6 +40,20 @@ Source: `data/eval_merged/<model>/` (report_v3.md, robustness_*/robustness.md, c
 - Remaining weak classes (own-voice, n=5 each): love is 1/5 (meandiff, lda), 0/5 (logreg), 2/5 (native LR), mostly absorbed by neutral or joy; native LR calls 3/5 joy passages neutral; calm→joy appears for meandiff (1) and native LR (2).
 - Short text: only 1 own-voice passage is ≤12 words, so short-text reliability cannot be assessed from this set. The earlier observation ("The sky is blue." → sadness z +4.9) stands as an anecdote until length-aware calibration is tested (roadmap 4).
 
+### Layer-0 baselines (PLAN_v2 T1 i; merged corpus, lda@14 probe)
+Source: `data/eval_merged/<model>/l0_baseline.md` (`probekit_l0_baseline.py`). `embed` = mean of the INPUT token embeddings (bag of embeddings, no context); `block0` = after decoder block 0; both with the native-LR recipe (C chosen on VAL-hard). Macro-F1:
+
+| | VAL-hard | TEST-hard (n=153) | TEST-all (n=307) | hand-written (n=92) |
+|---|---|---|---|---|
+| TF-IDF | 0.228 | 0.279 | 0.596 | 0.221 |
+| embed (bag of embeddings) | 0.356 | 0.404 | 0.534 | 0.270 |
+| block0 | 0.422 | 0.459 | 0.586 | 0.265 |
+| native LR @14 | 0.644 | 0.669 | 0.734 | 0.680 |
+| probe lda@14 | 0.642 | 0.616 | 0.670 | 0.723 |
+
+Paired bootstrap, probe − embed: VAL-hard +0.285 [+0.185, +0.383], TEST-hard +0.210 [+0.114, +0.305], TEST-all +0.137 [+0.067, +0.206], hand-written +0.451 [+0.331, +0.572]; all exclude 0. Probe − block0 is similar (+0.085 to +0.456, all exclude 0). Probe − native LR@14: TEST-all −0.065 [−0.105, −0.026] (excludes 0), TEST-hard −0.055 [−0.117, +0.005], VAL-hard −0.004, hand-written +0.044 [−0.045, +0.129]. Hand-written accuracy: TF-IDF 25/92, embed 32/92, block0 33/92, native LR 64/92, probe 67/92.
+Caveats: these are the current (non-frozen) test sets; the PLAN_v2 decision test is on the T2 frozen human sets, not yet built. TEST-hard rows are selected as hard for TF-IDF, which also lowers the embed baseline; TEST-all is unfiltered and still shows the gap. Hand-written is non-blind (public repo). Wording that is supported: "information beyond bag-of-words baselines (TF-IDF and bag-of-embeddings)", not "beyond topic or semantics".
+
 ## Pre-merge results (synthetic corpus only, n=92 hand-written test) — kept for comparison
 | | VAL | TEST-hard | TEST-all | hand-written |
 |---|---|---|---|---|
@@ -56,7 +70,8 @@ Pooled acc 0.562 / AUC 0.833; max_z AUC 0.927; true-emotion top-token share 0.41
 
 ## Defensible claims now
 - Probes carry emotion-concept information beyond lexical cues on hand-written text (probe − lexical +0.492, CI excludes 0; n=92).
-- On the merged corpus the best probe (lda@14) is not distinguishable from a trained classifier on the same hidden states on the hand-written set (+0.044, CI includes 0), and is weaker than it on TEST-hard/TEST-all (0.616 vs 0.669; 0.670 vs 0.734; no CI computed for these).
+- On the merged corpus the best probe (lda@14) is not distinguishable from a trained classifier on the same hidden states on the hand-written set (+0.044, CI includes 0), and is weaker than it on TEST-all (0.670 vs 0.734; −0.065 [−0.105, −0.026]); on TEST-hard the gap (0.616 vs 0.669; −0.055 [−0.117, +0.005]) includes 0.
+- The probe beats a bag-of-embeddings baseline (mean input embeddings) on every test set: +0.137 [+0.067, +0.206] on TEST-all (unfiltered, n=307), +0.451 [+0.331, +0.572] on hand-written (n=92, non-blind). Supports "information beyond bag-of-words baselines"; it does not rule out topic or semantic content.
 - Estimators (meandiff / lda / logreg) are statistically indistinguishable on this evidence.
 - Performance depends strongly on writer/style: informal reddit text held out gives F1 0.24-0.28. Coarse (4-way) own-voice accuracy is 0.73-0.78.
 - Short-text reliability is untested here (n=1 short own-voice passage).
