@@ -66,4 +66,15 @@ assert gn["mean"] < 0.6, gn                                 # random keywords: w
 assert ge["n_topics"] == 20 and len(ge["per_seed"]) == 3
 feats = gt.top_features(easy, k=5); assert any(w.startswith("zorp") for w, _ in feats["joy"])
 assert gt.openers(easy)["joy"][0][1] <= 1.0
-print("CORPUS AUDIT / OVERLAP / TFIDF-GATE TESTS PASSED")
+
+# ---- clean(): keep dialogue quotes and line breaks; still strip wrappers and preambles
+from probekit_corpus import clean
+assert clean('"He sat down. The room was quiet."') == "He sat down. The room was quiet."          # wrapping pair stripped
+assert clean('\u201cHe sat down.\u201d') == "He sat down."
+d = '"Did you finish?" she asked.\n"Not yet," he said.'
+assert clean(d) == d, clean(d)                                                                   # dialogue untouched
+assert clean('"Did you finish?" she asked. "Not yet."').startswith('"Did') and clean('"Hi," he said. "Bye."').endswith('"')
+assert clean("Mara: It is late.\nSam: I know.") == "Mara: It is late.\nSam: I know."            # speaker labels kept
+assert clean("Here is a short diary entry:\n\nI paid the bill.\nThen I left.") == "I paid the bill.\nThen I left."
+assert clean("  Plain text only.  ") == "Plain text only." and clean("") == ""
+print("CORPUS AUDIT / OVERLAP / TFIDF-GATE / CLEAN TESTS PASSED")

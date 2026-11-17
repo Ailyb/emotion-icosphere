@@ -74,12 +74,21 @@ def neutral_prompt(topic, style):
             f"language and no strong feelings. Output only the text, no title or commentary.")
 
 
+_QUOTES = "\"\u201c\u201d"
+
+
 def clean(text: str) -> str:
-    text = text.strip().strip('"').strip()
-    lines = [l for l in text.splitlines() if l.strip()]
-    if lines and lines[0].rstrip().endswith(":"):      # drop "Here is a diary entry:" preambles
-        lines = lines[1:]
-    return " ".join(l.strip() for l in lines).strip().strip('"')
+    """Strip commentary and a quote pair that wraps the WHOLE output, but keep dialogue quotes and line breaks.
+    (Earlier versions stripped the first/last quote of every passage and joined lines, flattening the dialogue and
+    text-message styles; corpus.jsonl, corpus_v2.jsonl and corpus_v3_qwen3.8-27b.jsonl were generated with that
+    behaviour and are NOT regenerated.)"""
+    text = text.strip()
+    if len(text) > 1 and text[0] in _QUOTES and text[-1] in _QUOTES and sum(ch in _QUOTES for ch in text) == 2:
+        text = text[1:-1].strip()                       # one wrapping pair, no inner quotes => not dialogue
+    lines = [l.strip() for l in text.splitlines() if l.strip()]
+    if len(lines) > 1 and lines[0].endswith(":") and len(lines[0].split()) >= 3:   # "Here is a diary entry:" preamble
+        lines = lines[1:]                               # (one-word "Mara:" speaker labels are kept)
+    return "\n".join(lines)
 
 
 def reject_reason(text: str):
