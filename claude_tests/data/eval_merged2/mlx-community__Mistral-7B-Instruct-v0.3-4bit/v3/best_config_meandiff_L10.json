@@ -1,0 +1,16 @@
+{
+  "model": "mlx-community/Mistral-7B-Instruct-v0.3-4bit",
+  "method": "meandiff",
+  "layer": 10,
+  "cfg": {
+    "var_frac": 0.5
+  },
+  "tau": 1.4322182536125183,
+  "val_f1": 0.6278924622462128,
+  "plateau_layers": [
+    10,
+    12,
+    18
+  ],
+  "skip": 4
+}

@@ -1,0 +1,105 @@
+{
+  "style": {
+    "dry, understated first-person account": {
+      "n_train": 1575,
+      "n_test": 113,
+      "test_f1": 0.7081025398103197,
+      "hardset_f1": 0.6224898558231892
+    },
+    "informal social-media comment (reddit)": {
+      "n_train": 1131,
+      "n_test": 160,
+      "test_f1": 0.21130470321931588,
+      "hardset_f1": 0.517352725247462
+    },
+    "plain report-style account where the feeling shows only in what the person decides or does": {
+      "n_train": 1581,
+      "n_test": 114,
+      "test_f1": 0.7817996219597414,
+      "hardset_f1": 0.6332922323634398
+    },
+    "reflective paragraph in which the writer reasons about what to do next": {
+      "n_train": 1587,
+      "n_test": 102,
+      "test_f1": 0.7827901392764053,
+      "hardset_f1": 0.6265143862700372
+    },
+    "short dialogue between two people (use quotation marks)": {
+      "n_train": 1582,
+      "n_test": 109,
+      "test_f1": 0.8140092316968585,
+      "hardset_f1": 0.6188454317486575
+    },
+    "text-message exchange between two people": {
+      "n_train": 1586,
+      "n_test": 110,
+      "test_f1": 0.8167943645362999,
+      "hardset_f1": 0.6012381807671663
+    },
+    "third-person narrative focused on one person's actions and choices": {
+      "n_train": 1584,
+      "n_test": 108,
+      "test_f1": 0.8333576829890077,
+      "hardset_f1": 0.5874774006652564
+    }
+  },
+  "writer": {
+    "llama-3.2-3b": {
+      "n_train": 1283,
+      "n_test": 297,
+      "test_f1": 0.6797420112461733,
+      "hardset_f1": 0.5570820991873623
+    },
+    "qwen3.8-27b": {
+      "n_train": 1128,
+      "n_test": 359,
+      "test_f1": 0.6079061842224525,
+      "hardset_f1": 0.6916994972475745
+    },
+    "reddit-goemotions": {
+      "n_train": 1131,
+      "n_test": 160,
+      "test_f1": 0.21130470321931588,
+      "hardset_f1": 0.517352725247462
+    }
+  },
+  "skipped_style": {},
+  "skipped_writer": {},
+  "curve": {
+    "0.1": {
+      "n_train": 177,
+      "test_f1_mean": 0.532902434827801,
+      "test_f1_sd": 0.05104332204314636,
+      "hardset_f1_mean": 0.5010319488868223,
+      "hardset_f1_sd": 0.02745308036096422
+    },
+    "0.2": {
+      "n_train": 354,
+      "test_f1_mean": 0.6019813946171583,
+      "test_f1_sd": 0.012830769405378844,
+      "hardset_f1_mean": 0.5642410370016213,
+      "hardset_f1_sd": 0.039766090067478256
+    },
+    "0.4": {
+      "n_train": 708,
+      "test_f1_mean": 0.6758930759117587,
+      "test_f1_sd": 0.030717864805621713,
+      "hardset_f1_mean": 0.6335831390100174,
+      "hardset_f1_sd": 0.01814430101122893
+    },
+    "0.7": {
+      "n_train": 1240,
+      "test_f1_mean": 0.692814403778254,
+      "test_f1_sd": 0.04024259729227338,
+      "hardset_f1_mean": 0.5950604633486283,
+      "hardset_f1_sd": 0.015300387569426227
+    },
+    "1.0": {
+      "n_train": 1771,
+      "test_f1_mean": 0.7116670500728471,
+      "test_f1_sd": 0.0,
+      "hardset_f1_mean": 0.6205910663481221,
+      "hardset_f1_sd": 0.0
+    }
+  }
+}

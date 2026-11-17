@@ -1,0 +1,23 @@
+{
+ "model": "mlx-community/Mistral-7B-Instruct-v0.3-4bit",
+ "skip": 4,
+ "layers": [
+  0,
+  8,
+  10,
+  12,
+  14,
+  16,
+  18,
+  20,
+  22,
+  24,
+  26
+ ],
+ "pooling": "mean over tokens[skip:]",
+ "n": 840,
+ "ids_sha256": "a9667f4d7a6b60f1c281cd891e62124b1c4c15bd55ddbbc60a80705b8e1973b3",
+ "code_version": "6d853ab9c2c804f7da39419de629910e78894c83",
+ "created": "2026-11-17 17:41:54",
+ "embed_scale": 1.0
+}

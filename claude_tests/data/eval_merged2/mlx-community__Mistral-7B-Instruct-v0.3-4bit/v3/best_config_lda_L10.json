@@ -1,0 +1,17 @@
+{
+  "model": "mlx-community/Mistral-7B-Instruct-v0.3-4bit",
+  "method": "lda",
+  "layer": 10,
+  "cfg": {
+    "var_frac": 0.5,
+    "shrinkage": "auto"
+  },
+  "tau": 1.9777606248855593,
+  "val_f1": 0.6875738636755586,
+  "plateau_layers": [
+    10,
+    12,
+    18
+  ],
+  "skip": 4
+}
