@@ -75,6 +75,21 @@ class Extractor:
         e = np.array((self.model.model.embed_tokens(mx.array([self.encode(text)])) * self.embed_scale)[0].astype(mx.float32))
         return e[min(skip, len(e) - 1):].mean(0)
 
+    PROMPT_FRAME = "\n\nThe emotion expressed in the text above is"
+
+    def variant_states(self, text: str, layers: Sequence[int], skip: int = 4) -> Dict[int, Dict[str, np.ndarray]]:
+        """Alternative poolings from ONE forward pass: last token, max-pool over tokens[skip:], mean of the last 4 tokens."""
+        out = {}
+        for l, s in self.states(text, layers).items():
+            t = s[min(skip, len(s) - 1):]
+            out[l] = {"last": s[-1], "max": t.max(0), "last4": s[-4:].mean(0)}
+        return out
+
+    def prompted_last(self, text: str, layers: Sequence[int], frame: str = None) -> Dict[int, np.ndarray]:
+        """Prompted read-out: append a fixed framing sentence and return the last token's state per layer."""
+        ids = self.encode(text + (self.PROMPT_FRAME if frame is None else frame))
+        return {l: s[-1] for l, s in self.states_from_ids(ids, layers).items()}
+
     def fidelity_check(self, text: str) -> Dict[str, float]:
         """The manual layer loop (all blocks, then the model's final norm) must reproduce the model's own forward pass.
         Returns the max relative difference; large values mean the loop misses an architecture-specific step (e.g. embedding scale)."""

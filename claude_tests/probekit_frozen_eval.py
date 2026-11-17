@@ -31,7 +31,11 @@ CLASSES = EMOTIONS + [NEUTRAL]
 VALENCE = {"joy": "positive", "love": "positive", "sadness": "negative", "fear": "negative", "anger": "negative",
            "disgust": "negative", "surprise": "ambiguous", "neutral": "neutral"}
 FROZEN_MANIFEST = "data/testsets/goemotions_test_frozen.manifest.json"
-EXTRACT_LAYERS = [0, 6, 8, 10, 12, 14, 16, 18]
+# Layers cached for the frozen / pool / external sets. Models with more blocks need a different mid-band: set
+# PROBEKIT_EXTRACT_LAYERS="0,8,10,...,26" (the default below is the Llama-3.2-3B / Gemma-2-2B list).
+import os
+EXTRACT_LAYERS = ([int(x) for x in os.environ["PROBEKIT_EXTRACT_LAYERS"].split(",")] if os.environ.get("PROBEKIT_EXTRACT_LAYERS")
+                  else [0, 6, 8, 10, 12, 14, 16, 18])
 
 
 # ---------------------------------------------------------------- extraction (needs the model)
@@ -55,6 +59,11 @@ def extract_cached(items, cache: Path, layers, skip, model):
             print(f"    {n + 1}/{len(items)}", flush=True)
     out = {l: np.stack(v) for l, v in acc.items()}; out["E"] = np.stack(emb)
     np.savez(cache, ids=np.array(ids), skip=skip, E=out["E"], **{f"L{l}": out[l] for l in layers})
+    try:
+        from probekit_audit import write_meta
+        write_meta(cache, model, skip, layers, ids, embed_scale=getattr(ex, "embed_scale", 1.0))
+    except Exception as e:                                     # provenance is best-effort, never blocks extraction
+        print(f"  (meta sidecar not written: {e})")
     return out
 
 

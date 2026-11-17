@@ -68,23 +68,28 @@ def probe_predict_restricted(ps, X, tau, classes):
     return pred
 
 
-def fit_systems(Xtr, Etr, Ttr, ytr, Xva, Eva, yva, Xcal, layer, cfg, method="lda"):
-    """Everything is fit on one training set; returns {name: predict(X, E, texts, classes)}."""
-    ps = fit_directions(Xtr, ytr, EMOTIONS, layer, method=method, **cfg)
+def fit_systems(Xtr, Etr, Ttr, ytr, Xva, Eva, yva, Xcal, layer, cfg, method="lda", emotions=None):
+    """Everything is fit on one training set; returns ({name: predict(X, E, texts, classes)}, tau).
+    `emotions` = the non-neutral classes of the training set (default: the 7 project emotions); `Etr=None` omits the embedding baseline."""
+    emotions = EMOTIONS if emotions is None else emotions
+    ps = fit_directions(Xtr, ytr, emotions, layer, method=method, **cfg)
     calibrate_pooled(ps, Xcal)
     tau = pick_tau(ps, Xva, yva)
     sc_s, lr_s = fit_lr(Xtr, ytr, Xva, yva)
-    sc_e, lr_e = fit_lr(Etr, ytr, Eva, yva)
     vec, lex = fit_tfidf_model(Ttr, ytr)
     P_lex = lambda T, cl: columns(lex, lex.predict_proba(vec.transform(T)), cl)
     P_lr = lambda X, cl: columns(lr_s, lr_s.predict_proba(sc_s.transform(X)), cl)
-    return {
+    systems = {
         "probe": lambda X, E, T, cl: probe_predict_restricted(ps, X, tau, cl),
         "native_lr": lambda X, E, T, cl: argmax_classes(P_lr(X, cl), cl),
-        "embed": lambda X, E, T, cl: argmax_classes(columns(lr_e, lr_e.predict_proba(sc_e.transform(E)), cl), cl),
         "tfidf": lambda X, E, T, cl: argmax_classes(P_lex(T, cl), cl),
         "fusion (post hoc)": lambda X, E, T, cl: argmax_classes(P_lex(T, cl) + P_lr(X, cl), cl),
-    }, tau
+    }
+    if Etr is not None:
+        sc_e, lr_e = fit_lr(Etr, ytr, Eva, yva)
+        systems["embed"] = lambda X, E, T, cl: argmax_classes(columns(lr_e, lr_e.predict_proba(sc_e.transform(E)), cl), cl)
+    order = ["probe", "native_lr", "embed", "tfidf", "fusion (post hoc)"]
+    return {k: systems[k] for k in order if k in systems}, tau
 
 
 def evaluate_source(systems, X, E, T, y, classes):
