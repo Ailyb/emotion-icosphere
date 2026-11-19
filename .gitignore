@@ -59,3 +59,7 @@ claude_tests/data/testsets/dailydialog_test_frozen.jsonl
 
 # Calibration texts (GoEmotions comments, rebuildable from the ids and manifest)
 claude_tests/data/testsets/goemotions_calibration.jsonl
+
+# Steering outputs: generated text and judge labels stay local; commit aggregates only
+claude_tests/data/steering/*.jsonl
+claude_tests/data/steering/*.npz
