@@ -1,4 +1,4 @@
-# Findings so far (Llama-3.2-3B-Instruct, MLX)
+# Findings so far (three models: Llama-3.2-3B-Instruct, Gemma-2-2B-it, Mistral-7B-Instruct-v0.3; 4-bit, MLX)
 
 Probes: 8 emotions (joy, sadness, fear, anger, surprise, disgust, calm, love) + neutral; mean-pooled residual states; z-scored vs held-out neutral. All numbers below are 9-way macro-F1 unless stated (chance ~0.11). "Hand-written" = the 92-passage test-only set (47 hand-written + 45 own-voice); it is never used for training, tuning or selection.
 
@@ -35,7 +35,7 @@ Source: `data/eval_merged2/<model>/external_eval.md` (`probekit_external_eval.py
 | DailyDialog (2193, 7, 0.143) | HUM | 0.343 [0.315, 0.367] | 0.410 | 0.234 | 0.240 | +0.103 [+0.077, +0.130]* | +0.109 [+0.083, +0.137]* |
 | | LLM | 0.280 | 0.326 | 0.178 | 0.154 | +0.125 [+0.097, +0.154]* | +0.102 [+0.074, +0.130]* |
 
-- **H1 holds on 3 of 3 sources for both training sets; H2 holds on 3 of 3.** By the pre-registered rule this supports "hidden-state probes transfer across human domains better than a lexical model trained on the same data", and better than a bag of the model's own input embeddings.
+- **H1 holds on 3 of 3 sources for both training sets; H2 holds on 3 of 3.** By the pre-registered rule this supports "hidden-state probes transfer across human domains better than a lexical model trained on the same data", and better than a bag of the model's own input embeddings. **Qualifier (T11, pre-registered H3, added later): a frozen sentence encoder trained on the same data is as good or better than the probe on these sources (probe - encoder +0.004 to -0.095; H3 not supported), so the advantage is over lexical models, not over contextual encoders in general.**
 - Probe vs native LR: indistinguishable on dair (+0.000 [−0.020, +0.021]) and ISEAR (−0.008 [−0.028, +0.011]); native LR is better on DailyDialog (−0.067 [−0.089, −0.045], HUM). So a single linear direction per emotion loses little except on short dialogue utterances.
 - Combined with the in-domain result above: **TF-IDF wins in-domain on reddit (frozen set); the probe wins when the target domain differs from the training domain.** Both are the same models and the same training data.
 - Caveats that apply: dair labels are hashtag-derived and lexical; ISEAR provenance is unverified; sources differ in class sets, so macro-F1 values are not comparable across sources; this is one model.
@@ -167,17 +167,16 @@ Reading: trained only on synthetic text, the probes were high on in-distribution
 ## Streaming (pre-merge probes; not re-run)
 Pooled acc 0.562 / AUC 0.833; max_z AUC 0.927; true-emotion top-token share 0.41. The "onset" metric is INVALID (no neutral baseline) — redesign (roadmap 5).
 
-## Defensible claims now (see docs/CLAIMS.md for the checked list)
-- Cross-domain (three external human sources, pre-registered) the probe BEATS a TF-IDF baseline trained on the same data by +0.10 to +0.26 macro-F1 with CIs excluding 0, and beats a bag-of-embeddings baseline; in-domain on the GoEmotions frozen set it does NOT beat TF-IDF (below).
-- On the frozen human test set the probe is NOT better than a TF-IDF baseline trained on the same data (−0.088 [−0.128, −0.046]); it beats a bag-of-embeddings baseline (+0.107 [+0.065, +0.148]) and transfers from LLM-written to human text where TF-IDF does not (0.305 vs 0.146 with no human training rows). The earlier statement below about hand-written text refers to a non-blind set.
-- Probes carry emotion-concept information beyond lexical cues on hand-written text (probe − lexical +0.492, CI excludes 0; n=92).
-- On the merged corpus the best probe (lda@14) is not distinguishable from a trained classifier on the same hidden states on the hand-written set (+0.044, CI includes 0), and is weaker than it on TEST-all (0.670 vs 0.734; −0.065 [−0.105, −0.026]); on TEST-hard the gap (0.616 vs 0.669; −0.055 [−0.117, +0.005]) includes 0.
-- The probe beats a bag-of-embeddings baseline (mean input embeddings) on every test set: +0.137 [+0.067, +0.206] on TEST-all (unfiltered, n=307), +0.451 [+0.331, +0.572] on hand-written (n=92, non-blind). Supports "information beyond bag-of-words baselines"; it does not rule out topic or semantic content.
-- Estimators (meandiff / lda / logreg) are statistically indistinguishable on this evidence.
-- Performance depends strongly on writer/style: informal reddit text held out gives F1 0.24-0.28. Coarse (4-way) own-voice accuracy is 0.73-0.78.
-- Short-text reliability is untested here (n=1 short own-voice passage).
-- One model (Llama-3.2-3B-Instruct, 4-bit), one layer plateau (12-18), and one synthetic writer. Nothing here is about "internal states" or feelings: these are linear read-outs correlated with emotion-concept text.
-
+## Defensible claims now (see docs/CLAIMS.md for the checked list; three models, 4-bit, 2B-7B)
+All with test set, n and baseline in the sections above; training set HUM unless stated.
+- Cross-domain (three external human sources, pre-registered H1) the probe beats TF-IDF trained on the same data by +0.054 to +0.190 macro-F1 (HUM) and +0.092 to +0.264 (LLM-only), CIs excluding 0, on all three models; it does not beat a frozen sentence encoder (H3 not supported).
+- In-domain (GoEmotions frozen set, n=840) TF-IDF beats the probe (-0.086, -0.106, -0.126 HUM; -0.088, -0.085, -0.083 on the first run) and a 7B model does not close the gap; the probe beats a bag of embeddings (+0.080 to +0.098 HUM).
+- The trained classifier on the same hidden states is above the probe in-domain and beats the sentence encoder there (+0.071 to +0.091, post hoc); a single direction per emotion does not extract what the states hold.
+- Probes trained only on LLM-written text transfer weakly to human text (0.305-0.313 on the frozen set against 0.55-0.59 with human data); human data are the lever; LLM-written rows add nothing once human data are present.
+- z-scores are not length-calibrated, 69-86% of held-out neutral human text is labelled emotional at the LLM-chosen threshold, and a human-neutral threshold restores neutral recall at a cost of 0.12-0.17 macro-F1 (pre-registered, not met).
+- Linear read-out is sufficient (MLP and hierarchy do not help); mean-pooling is a sound default; probe geometry correlates with VAD norms on two of three models.
+- Steering (Llama, layer 16): the probe directions do not shift expressed emotion beyond random controls (0/7; low power, fluency-limited); mean-difference directions shift joy and anger post hoc, matching Marks & Tegmark (2023).
+- Nothing here is about "internal states" or feelings: these are linear read-outs correlated with emotion-concept text. Hand-written/own_voice results are non-blind and are history only (see the sections below).
 
 ## T11 (2026-11-19, pre-registered in 0d74f80): encoder baseline, EmoLex, human-neutral threshold, seeds
 Sources: `data/eval_merged2/<model>/t11.md/.json`, `data/eval_merged2/t11_summary.md`; code `probekit_t11.py`. All systems trained on HUM (LLM-written rows + human GoEmotions-train pool, n=4,192); predictions restricted to each source's classes; paired bootstrap 95% CIs.
@@ -186,3 +185,11 @@ Sources: `data/eval_merged2/<model>/t11.md/.json`, `data/eval_merged2/t11_summar
 - **H5 (human-neutral threshold): rule not met.** tau_h (90th percentile of max z on a human neutral reserve) restores held-out neutral recall to 0.90 (from 0.18 / 0.31 / 0.14) but frozen macro-F1 changes by -0.121 [-0.163, -0.084] (Llama), -0.173 [-0.213, -0.135] (Gemma), -0.134 [-0.173, -0.096] (Mistral).
 - **H6 (5 subsampled training seeds):** probe - TF-IDF has a stable sign in all 12 model x set cells (frozen -0.122 to -0.074; external +0.039 to +0.211); probe - encoder is stable in 9 of 12.
 - Note: the frozen-set numbers under HUM training (probe 0.549-0.587, TF-IDF 0.674) differ from the T0c numbers (merged2 train; probe 0.510-0.515, TF-IDF 0.599); the in-domain conclusion is unchanged.
+
+## T11 post hoc (2026-11-19; requested in REVIEW_v3; NOT pre-registered)
+Sources: `data/eval_merged2/<model>/t11_posthoc.md/.json`, `.../steering_diagnostic.md/.json`; code `probekit_t11_posthoc.py`, `probekit_steer_diag.py`.
+- Native LR minus sentence encoder (HUM): frozen +0.078 / +0.071 / +0.091 (CIs exclude 0), dair +0.003 / +0.004 / +0.006 (tie), ISEAR -0.082 / -0.061 / -0.061 (encoder better), DailyDialog +0.029 / +0.053 / +0.018 (only Gemma's CI excludes 0) for Llama / Gemma / Mistral.
+- Probe - bag of embeddings, frozen set, HUM: +0.098 [+0.058, +0.139], +0.080 [+0.038, +0.122], +0.090 [+0.048, +0.132].
+- Probe - trained classifier: frozen -0.053 / -0.066 / -0.106; DailyDialog -0.067 / -0.098 / -0.105; dair ~0; ISEAR -0.008 / +0.029 / -0.035.
+- tau_h per-class recall (frozen): all seven emotion classes lose 0.23-0.43; neutral gains 0.66-0.79; 59-61% of emotional items move to neutral.
+- Steering diagnostic (Llama layer 16): cosine of the unit direction with the class mean-difference axis 0.270 (probe) vs 0.274 (mean-difference) vs 0.002 (random); sd of states along the direction 0.21 / 0.59 / 0.10; perplexity ratio at 0.4 is 1.10-1.14 (probe) vs 1.37-1.68 (mean-difference). The null for the probe directions is not explained by a smaller class-axis shift per unit norm.

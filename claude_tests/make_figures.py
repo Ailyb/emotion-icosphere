@@ -17,21 +17,21 @@ plt.rcParams.update({"font.size": 9, "axes.spines.top": False, "axes.spines.righ
 
 
 def fig1():
-    sets = ["frozen", "dair", "isear", "dailydialog"]; lab = ["GoEmotions\n(in-domain)", "dair\n(tweets)", "ISEAR", "DailyDialog"]
+    sets = ["frozen", "dair", "isear", "dailydialog"]; lab = ["GoEmotions\n(in-domain, shaded)", "dair\n(tweets)", "ISEAR", "DailyDialog"]
     comps = [("tfidf", "vs TF-IDF", C["a"], "o"), ("encoder", "vs sentence encoder", C["b"], "s"), ("embed", "vs bag of embeddings", C["c"], "^")]
     fig, axs = plt.subplots(1, 3, figsize=(10, 3.6), sharey=True)
     for ax, (mn, slug) in zip(axs, MODELS.items()):
-        t = json.loads((R / slug / "t11.json").read_text()); e = json.loads((R / slug / "external_eval.json").read_text())
+        t = json.loads((R / slug / "t11.json").read_text()); e = json.loads((R / slug / "external_eval.json").read_text()); ph = json.loads((R / slug / "t11_posthoc.json").read_text())
+        ax.axhspan(-0.5, 0.5, color="#f0f0f0", zorder=0)
         for ci, (k, name, col, mk) in enumerate(comps):
             for si, s in enumerate(sets):
                 if k == "embed":
-                    if s == "frozen": continue
-                    m, lo, hi = e[s]["HUM|probe-embed"]
+                    m, lo, hi = ph["sets"][s]["probe_minus_embed"] if s == "frozen" else e[s]["HUM|probe-embed"]
                 else:
                     m, lo, hi = t["sets"][s]["probe_minus"][k]
                 y = si + (ci - 1) * 0.22
-                ax.plot([lo, hi], [y, y], color=col, lw=1.4); ax.plot(m, y, mk, color=col, ms=5, label=name if si == 0 or (k == "embed" and s == "dair") else None)
-        ax.axvline(0, color=C["ink"], lw=0.8); ax.set_title(mn); ax.set_yticks(range(4)); ax.set_yticklabels(lab); ax.invert_yaxis()
+                ax.plot([lo, hi], [y, y], color=col, lw=1.4); ax.plot(m, y, mk, color=col, ms=5, label=name if si == 0 else None)
+        ax.axvline(0, color=C["ink"], lw=0.8); ax.set_ylim(3.6, -0.5); ax.set_title(mn); ax.set_yticks(range(4)); ax.set_yticklabels(lab); 
         ax.set_xlabel("probe − baseline, macro-F1 (95% CI)"); ax.grid(axis="x", color="#e5e5e5", lw=0.6)
     h, l = axs[0].get_legend_handles_labels(); fig.legend(h, l, loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, -0.02))
     fig.tight_layout(rect=(0, 0.07, 1, 1)); fig.savefig(OUT / "fig1_forest.svg"); plt.close(fig)

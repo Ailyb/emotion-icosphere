@@ -117,6 +117,7 @@ def setup(a):
     byid = {r["id"]: i for i, r in enumerate(rows)}; nid = {r["id"]: i for i, r in enumerate(new)}
     pr = [r for r in pool if r["split"] == "train"]
     c["Xp"] = np.stack([Xc[byid[r["id"]]] if r["id"] in byid else Xn[layer][nid[r["id"]]] for r in pr])
+    c["Ec"] = Ec; c["Ep"] = np.stack([Ec[byid[r["id"]]] if r["id"] in byid else Xn["E"][nid[r["id"]]] for r in pr])
     c["yp"] = np.array([r["category"] for r in pr], dtype=object); c["Tp"] = np.array([r["text"] for r in pr], dtype=object)
     sets = {}
     fr, _ = load_frozen("data/testsets/goemotions_test_frozen.manifest.json")
@@ -125,7 +126,7 @@ def setup(a):
         items[s] = load_source(s, a.testsets)[0]
     for name, it in items.items():
         Xe = extract_cached(it, cache / ("states_frozen.npz" if name == "frozen" else f"states_ext_{name}.npz"), EXTRACT_LAYERS, skip, a.model)
-        sets[name] = dict(X=Xe[layer], y=np.array([r["category"] for r in it], dtype=object), T=np.array([r["text"] for r in it], dtype=object))
+        sets[name] = dict(X=Xe[layer], E=Xe["E"], y=np.array([r["category"] for r in it], dtype=object), T=np.array([r["text"] for r in it], dtype=object))
     c["sets"] = sets
     cal_items = load_jsonl(a.calib)
     c["calib"] = dict(ids=[r["id"] for r in cal_items], X=extract_cached(cal_items, cache / "states_calib.npz", EXTRACT_LAYERS, skip, a.model)[layer],
