@@ -40,7 +40,7 @@ Three small 4-bit models from three families (2B–7B); no larger or full-precis
 
 ## 5. Reproducibility and compliance
 
-Code, tests (17 model-free synthetic tests, passing from a clean checkout), pre-registrations and reports are in the repository. `probekit_audit.py` reproduces the headline table from cached activations exactly (Llama probe 0.510, native LR 0.521, bag of embeddings 0.403, TF-IDF 0.599). Third-party data stay outside the repository: GoEmotions (Apache-2.0) is rebuilt from the original release by hash-checked scripts; dair-ai/emotion (license "other", no terms stated), the Hub copy of ISEAR (original host unreachable; uploader's license tag unverified) and DailyDialog (CC-BY-NC-SA-4.0) are rebuilt locally from manifests; the NRC EmoLex and VAD lexicons (non-commercial research use, no redistribution) are used locally and never committed. The repository still needs a LICENSE file (the README states MIT).
+Code, tests (17 model-free synthetic tests, passing from a clean checkout), pre-registrations and reports are in the repository. `probekit_audit.py` reproduces the headline table from cached activations exactly (Llama probe 0.510, native LR 0.521, bag of embeddings 0.403, TF-IDF 0.599). Third-party data stay outside the repository: GoEmotions (Apache-2.0) is rebuilt from the original release by hash-checked scripts; dair-ai/emotion (license "other", no terms stated), the Hub copy of ISEAR (original host unreachable; uploader's license tag unverified) and DailyDialog (CC-BY-NC-SA-4.0) are rebuilt locally from manifests; the NRC EmoLex and VAD lexicons (non-commercial research use, no redistribution) are used locally and never committed. Our code and documents are released under The Unlicense (public domain); `NOTICE.md` lists the third-party terms that remain.
 
 ## 6. Related work (verify before release)
 
@@ -48,4 +48,4 @@ Linear probes for intermediate representations (Alain & Bengio, 2016/17); probin
 
 ## 7. Open items
 
-Add a LICENSE file; verify citations; confirm provenance/terms for ISEAR and dair-ai/emotion or replace them; add a human source with clean terms; run the Gemma Scope analysis (noting the base-vs-instruct mismatch); consider steering tests with random-direction controls (PLAN_v2 v1.1); human review of this draft.
+Verify citations; confirm provenance/terms for ISEAR and dair-ai/emotion or replace them; add a human source with clean terms; run the Gemma Scope analysis (noting the base-vs-instruct mismatch); consider steering tests with random-direction controls (PLAN_v2 v1.1); human review of this draft.

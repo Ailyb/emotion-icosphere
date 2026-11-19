@@ -239,4 +239,4 @@ python facet_mapping.py
 
 ## License
 
-MIT
+[The Unlicense](LICENSE): our code, tests, plans, reports and documentation are in the public domain; use them for anything. Third-party data, model outputs and model weights keep their own terms: see [NOTICE.md](NOTICE.md).
