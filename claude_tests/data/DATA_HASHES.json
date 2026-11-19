@@ -1,0 +1,10 @@
+{
+ "note": "SHA-256 of the files rebuilt by rebuild_human_data.sh (they contain GoEmotions text and are not in the repository)",
+ "sha256": {
+  "data/testsets/goemotions_test_frozen.jsonl": "f47b22ae79d391116559e68b6887822083b8b0a547bdcd712c58411e6a44f44f",
+  "data/corpus/corpus_human_goemotions_train.jsonl": "baae95bbaa1e6326a932e5b30947b17f09b1d076ef8db848b03c96c410edf4fc",
+  "data/corpus/corpus_human_goemotions_pool.jsonl": "fd4481cc34501b464ce800adf20b9b30f2ee3791ca26b61471a7e594cf049dae",
+  "data/corpus/corpus_merged2.jsonl": "4fed98871b093c1795092c889643fdeb0d120c90e4e95b8b72554d4eb0647b7d",
+  "data/corpus/corpus_merged2_scored.jsonl": "b245657abd47b4a8ddd47b133230670d5abde6ab62d0077fa40ef67250691b07"
+ }
+}

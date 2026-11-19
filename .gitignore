@@ -63,3 +63,11 @@ claude_tests/data/testsets/goemotions_calibration.jsonl
 # Steering outputs: generated text and judge labels stay local; commit aggregates only
 claude_tests/data/steering/*.jsonl
 claude_tests/data/steering/*.npz
+
+# files containing GoEmotions (Reddit) text: rebuilt locally by claude_tests/rebuild_human_data.sh, only ids/hashes are kept in git
+claude_tests/data/testsets/goemotions_test_frozen.jsonl
+claude_tests/data/corpus/corpus_human_goemotions*.jsonl
+claude_tests/data/corpus/corpus_merged.jsonl
+claude_tests/data/corpus/corpus_merged_scored.jsonl
+claude_tests/data/corpus/corpus_merged2.jsonl
+claude_tests/data/corpus/corpus_merged2_scored.jsonl

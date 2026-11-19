@@ -3,21 +3,18 @@
  "skip": 4,
  "layers": [
   0,
+  6,
   8,
   10,
   12,
   14,
   16,
-  18,
-  20,
-  22,
-  24,
-  26
+  18
  ],
  "pooling": "mean over tokens[skip:]",
  "n": 2538,
  "ids_sha256": "ecd6fc45d5176449d082c228f6f163bd92c5b4d0e22f1bd7c6956de040a2a9cc",
- "code_version": "6d853ab9c2c804f7da39419de629910e78894c83",
- "created": "2026-11-17 17:44:06",
+ "code_version": "74a645e601670a7909b6289122c4dda2f50fc236",
+ "created": "2026-11-19 04:31:52",
  "embed_scale": 1.0
 }

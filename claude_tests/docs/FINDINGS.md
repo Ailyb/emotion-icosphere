@@ -177,3 +177,12 @@ Pooled acc 0.562 / AUC 0.833; max_z AUC 0.927; true-emotion top-token share 0.41
 - Performance depends strongly on writer/style: informal reddit text held out gives F1 0.24-0.28. Coarse (4-way) own-voice accuracy is 0.73-0.78.
 - Short-text reliability is untested here (n=1 short own-voice passage).
 - One model (Llama-3.2-3B-Instruct, 4-bit), one layer plateau (12-18), and one synthetic writer. Nothing here is about "internal states" or feelings: these are linear read-outs correlated with emotion-concept text.
+
+
+## T11 (2026-11-19, pre-registered in 0d74f80): encoder baseline, EmoLex, human-neutral threshold, seeds
+Sources: `data/eval_merged2/<model>/t11.md/.json`, `data/eval_merged2/t11_summary.md`; code `probekit_t11.py`. All systems trained on HUM (LLM-written rows + human GoEmotions-train pool, n=4,192); predictions restricted to each source's classes; paired bootstrap 95% CIs.
+- **H3 (frozen sentence encoder; sentence-transformers/all-mpnet-base-v2, revision e8c3b32, 109.5M parameters): not supported.** Probe - encoder on dair / ISEAR / DailyDialog: Llama +0.003 / -0.090 / -0.038; Gemma -0.011 / -0.032 / -0.046; Mistral +0.004 / -0.095 / -0.087 (ISEAR and DailyDialog CIs exclude 0 in the encoder's favour for all three models; frozen set: +0.024, +0.005, -0.015, all include 0). The cross-domain advantage over lexical models is shared by a generic sentence encoder.
+- **H4 (EmoLex, no training), descriptive:** EmoLex macro-F1 0.248 on the frozen set and 0.226-0.316 on the external sources; probe - EmoLex +0.300 to +0.339 (frozen) and +0.069 to +0.309 (external), all CIs exclude 0.
+- **H5 (human-neutral threshold): rule not met.** tau_h (90th percentile of max z on a human neutral reserve) restores held-out neutral recall to 0.90 (from 0.18 / 0.31 / 0.14) but frozen macro-F1 changes by -0.121 [-0.163, -0.084] (Llama), -0.173 [-0.213, -0.135] (Gemma), -0.134 [-0.173, -0.096] (Mistral).
+- **H6 (5 subsampled training seeds):** probe - TF-IDF has a stable sign in all 12 model x set cells (frozen -0.122 to -0.074; external +0.039 to +0.211); probe - encoder is stable in 9 of 12.
+- Note: the frozen-set numbers under HUM training (probe 0.549-0.587, TF-IDF 0.674) differ from the T0c numbers (merged2 train; probe 0.510-0.515, TF-IDF 0.599); the in-domain conclusion is unchanged.
