@@ -68,19 +68,19 @@ def boot_diff(base, a_labels, b_labels, emotion, B=2000, seed=0):
     return float((a.mean() - be.mean()) - (b.mean() - be.mean())), float(np.percentile(d, 2.5)), float(np.percentile(d, 97.5))
 
 
-def analyze(gens):
+def analyze(gens, cond="probe"):
     """gens: list of dicts {cond: 'base'|'probe'|'v1'|'random', emotion|None, rid|None, strength, pid, label, ppl_ratio}. Returns a results dict."""
     by = {}
     for g in gens:
         by.setdefault((g["cond"], g.get("emotion"), g.get("rid"), g["strength"]), {})[g["pid"]] = g
     pids = sorted(next(v for k, v in by.items() if k[0] == "base"))
     base = [by[("base", None, None, 0.0)][p]["label"] for p in pids]
-    strengths = sorted({k[3] for k in by if k[0] == "probe"})
+    strengths = sorted({k[3] for k in by if k[0] == cond})
     rids = sorted({k[2] for k in by if k[0] == "random"})
     res = {"strengths": strengths, "emotions": {}, "n_prompts": len(pids), "n_random": len(rids)}
     for s in strengths:
         for e in EMOTIONS:
-            cell = by.get(("probe", e, None, s))
+            cell = by.get((cond, e, None, s))
             if not cell:
                 continue
             lab = [cell[p]["label"] for p in pids]
@@ -89,7 +89,7 @@ def analyze(gens):
             med = float(np.median(ratios)) if ratios else float("nan")
             rand = [delta(base, [by[("random", None, r, s)][p]["label"] for p in pids], e) for r in rids if ("random", None, r, s) in by]
             v1c = by.get(("v1", e, None, s)); v1 = None
-            if v1c:
+            if v1c and cond == "probe":
                 v1 = boot_diff(base, lab, [v1c[p]["label"] for p in pids], e)
             off = {l: delta(base, lab, l) for l in LABELS}
             res["emotions"].setdefault(e, {})[s] = {
@@ -103,9 +103,9 @@ def analyze(gens):
     return res
 
 
-def render(res):
+def render(res, title="T10 steering results (pre-registered in PLAN_v2"):
     ss = res["strengths"]
-    L = [f"# T10 steering results (pre-registered in PLAN_v2; {res['n_prompts']} prompts, {res['n_random']} random directions)", "",
+    L = [f"# {title}; {res['n_prompts']} prompts, {res['n_random']} random directions)", "",
          "Delta = change in the judge's rate of the target emotion vs the unsteered text of the same prompts; * = bootstrap 95% CI over prompts excludes 0; "
          f"fluent = median perplexity ratio <= {PPL_LIMIT}; specific = fluent AND Delta above ALL random directions AND CI excludes 0.", "",
          "| emotion | strength | Delta [95% CI] | random max | ppl ratio | fluent | specific | probe - v1 [CI] |", "|---|---|---|---|---|---|---|---|"]
@@ -311,6 +311,15 @@ def cmd_analyze(a):
     res = analyze(rows)
     unparsed = sum(r["label"] == "unparsed" for r in rows)
     md = render(res) + f"\nJudge: granite4.2:8b; unparsed labels {unparsed}/{len(rows)}; see judge_validation.md for the judge's accuracy on human text.\n"
+    # POST HOC (not pre-registered): the same rule applied to the v1-style directions, and where the judge failed to produce a label
+    v1 = analyze(rows, cond="v1")
+    md += "\n" + render(v1, "POST HOC (not pre-registered): the same rule applied to the v1-style mean-difference directions (PLAN_v2 T10 (ii)") + "\n"
+    ur = {}
+    for r in rows:
+        k = (r["cond"], r["strength"]); ur.setdefault(k, [0, 0]); ur[k][0] += r["label"] == "unparsed"; ur[k][1] += 1
+    md += "Unparsed judge labels by condition (post hoc): " + "; ".join(f"{c}@{s:g}: {u}/{n}" for (c, s), (u, n) in sorted(ur.items())) + "\n"
+    base = [r["label"] for r in rows if r["cond"] == "base"]
+    md += "Unsteered label distribution: " + ", ".join(f"{l} {base.count(l)}" for l in sorted(set(base))) + "\n"
     Path(a.out).write_text(md); Path(a.out).with_suffix(".json").write_text(json.dumps(res, indent=1, default=float)); print(md)
 
 

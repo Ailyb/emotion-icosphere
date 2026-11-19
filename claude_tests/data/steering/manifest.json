@@ -1,0 +1,10 @@
+{
+ "generations_sha256": "26c2a0a0f39839305db335fc433ba7a87a7ba3f5594aedd361598b6ccf5f7f1b",
+ "judged_sha256": "98b6fea29b5a1feb4e8683c3467e4f6fbc69d1a052b6fdb41dea693ef8096b5d",
+ "n_generations": 4120,
+ "n_judged": 4120,
+ "note": "generated text and judge labels are not committed (model outputs; see NOTICE.md); hashes identify the exact run reported in steering_results.md",
+ "model": "mlx-community/Llama-3.2-3B-Instruct",
+ "layer": 16,
+ "judge": "granite4.2:8b (Ollama), reasoning_effort none, temperature 0"
+}
