@@ -40,7 +40,7 @@ Comparisons are paired over the same test items and reported with bootstrap 95% 
 
 **Data.** Training: LLM-written passages from two writers (Llama-3.2-3B and Qwen3.8-27B) plus human GoEmotions comments (up to 378 per class, official train split only). Test:
 - (i) a frozen GoEmotions test set: official test split, single-label items, near-duplicates of train/dev removed, n=840, 63–151 per class, SHA-256 manifest; the evaluator refuses a modified file [`data/testsets/*.manifest.json`];
-- (ii) dair-ai/emotion test (tweets, hashtag-derived labels), ISEAR (first-person event descriptions) and DailyDialog (utterances).
+- (ii) dair-ai/emotion test (tweets, hashtag-derived labels; Saravia et al., 2018), ISEAR (first-person event descriptions; Scherer & Wallbott, 1994) and DailyDialog (utterances; Li et al., 2017). The GoEmotions set is Demszky et al. (2020).
 
 Class sets differ across sources, so predictions are restricted to each source's classes. Calm exists only in LLM-written text (confounded with writer) and is excluded from all headline numbers.
 
@@ -173,7 +173,7 @@ These experiments classify *input text*. They test whether probes read the emoti
 
 ## 4. Limitations
 - **Models.** Three small 4-bit models from three families (2B–7B); no larger or full-precision model.
-- **Data.** Human evidence comes from Reddit comments plus three sources of mixed provenance (hashtag labels, an unverified ISEAR copy, utterances without context). GoEmotions labels are noisy. The single-label rule keeps items with weaker rater agreement; strict unanimity left 8–29 items per class.
+- **Data.** Human evidence comes from Reddit comments plus three sources of mixed provenance (machine-generated hashtag labels under research-only terms; an ISEAR copy whose original terms we could not read; utterances without context). GoEmotions labels are noisy. The single-label rule keeps items with weaker rater agreement; strict unanimity left 8–29 items per class.
 - **Comparability.** Class sets differ across sources, so macro-F1 values are not comparable across sources.
 - **Blinding.** A hand-written test set we used early was accidentally committed to the public repository. We treat all results on it as non-blind and base conclusions on the frozen and external sets.
 - **Multiplicity.** We report 16–20 paired comparisons per model per experiment with unadjusted intervals. The ≥ 3-of-4 consistency rules are the guard, and some results (prompted read-out, geometry on Mistral) did not replicate.
@@ -192,8 +192,8 @@ Code, tests (22 model-free synthetic test files, all passing on 2026-11-20 (19 o
 
 Third-party data stay outside the repository and are rebuilt locally from hash-checked manifests:
 - GoEmotions: not stored in the repository since 2026-11-19 (only ids, manifests and hashes); `rebuild_human_data.sh` rebuilds every GoEmotions-derived file from the original release and checks each against `data/DATA_HASHES.json` (verified byte-identical). Earlier commits still contain the subsets. Checked against the original release (2026-11-18): the `google-research` repository that hosts it is Apache-2.0 (top-level `LICENSE`), but the GoEmotions README states no separate data license, and the text is Reddit user content, so Reddit's terms and the authors' rights may also apply; we use it for non-commercial research;
-- dair-ai/emotion: license "other", no terms stated;
-- ISEAR: Hub copy, original host unreachable, uploader's license tag unverified;
+- dair-ai/emotion (Saravia et al., 2018): Hub license "other"; the card states it "should be used for educational and research purposes only" (the GitHub README says the same; no license file); labels are machine-generated from hashtags; the tweets are subject to Twitter's terms (checked 2026-11-20);
+- ISEAR (Scherer & Wallbott, 1994): Hub copy `savalera/isear-from-original`, a processed version tagged Apache-2.0 by its uploader; the card names the Geneva Emotion Research Group page as the official source, which we could not read (HTTP 403), so the original authors' terms are unverified; the card also says it should not be used for commercial emotion categorization systems inferring emotions of a natural person (checked 2026-11-20);
 - DailyDialog: CC-BY-NC-SA-4.0;
 - NRC EmoLex and VAD lexicons: non-commercial research use, no redistribution; used locally and never committed.
 
@@ -212,7 +212,7 @@ The first pre-registered run trained on the merged2 training rows (LLM-written a
 Probe − TF-IDF: −0.088, −0.085, −0.083 (all intervals exclude 0). Probe − bag of embeddings: +0.107, +0.112, +0.121 (all exclude 0). TF-IDF does not use the model, so it is identical across models. The TF-IDF advantage is larger on items with high rater agreement (Llama: 0.594 vs 0.749 at agreement ≥ 0.67, n=244), so label noise does not explain it.
 
 ## 7. References
-*Section A was checked against the papers' own pages on 2026-11-18. In section B, title, authors and year of the items with an arXiv id were checked against the arXiv API on 2026-11-19; venues, and the four items without an arXiv id (listed under "Still to check" below), were not checked and are from memory.*
+*Section A was checked against the papers' own pages on 2026-11-18. Section B was checked on 2026-11-20: arXiv items against the arXiv API; venues, volumes and pages against the ACL Anthology, Crossref and arXiv comment fields; the Llama 3.2 model card against Meta's repository. Where no venue could be confirmed the entry is given as an arXiv preprint.*
 
 **A. Checked**
 - Fang, T., Guibon, G., & Buscaldi, D. (2026). Some Emotions Run Deeper: Layer-wise Probing and Causal Intervention in Large Language Models. *Findings of EMNLP 2026*.
@@ -226,20 +226,32 @@ Probe − TF-IDF: −0.088, −0.085, −0.083 (all intervals exclude 0). Probe 
 - Zhang, J., & Zhong, L. (2025). Decoding Emotion in the Deep: A Systematic Study of How LLMs Represent, Retain, and Express Emotion. arXiv:2510.04064.
 - Keeman, M. (2026). Whether, Not Which: Mechanistic Interpretability Reveals Dissociable Affect Reception and Emotion Categorization in LLMs. arXiv:2603.22295 (checked 2026-11-19; abstract read).
 
-**B. To check**
-Checked on arXiv (title, authors, year; venue from memory): Alain & Bengio (2016), Understanding intermediate layers using linear classifier probes, arXiv:1610.01644; Hewitt & Liang (2019), Designing and Interpreting Probes with Control Tasks, EMNLP, arXiv:1909.03368; Belinkov (2022), Probing Classifiers: Promises, Shortcomings, and Advances, *Computational Linguistics*, arXiv:2102.12452; Zou et al. (2023), Representation Engineering: A Top-Down Approach to AI Transparency, arXiv:2310.01405; Demszky et al. (2020), GoEmotions: A Dataset of Fine-Grained Emotions, ACL, arXiv:2005.00547; Li et al. (2017), DailyDialog: A Manually Labelled Multi-turn Dialogue Dataset, IJCNLP, arXiv:1710.03957; Reimers & Gurevych (2019), Sentence-BERT, EMNLP, arXiv:1908.10084; Gemma Team (2024), Gemma 2: Improving Open Language Models at a Practical Size, arXiv:2408.00118; Jiang et al. (2023), Mistral 7B, arXiv:2310.06825; Lieberum et al. (2024), Gemma Scope: Open Sparse Autoencoders Everywhere All At Once on Gemma 2, arXiv:2408.05147.
-
-Added for the steering section (title, authors and year checked against the arXiv API on 2026-11-19; venues from memory): Marks & Tegmark (2023), The Geometry of Truth: Emergent Linear Structure in Large Language Model Representations of True/False Datasets, arXiv:2310.06824 (COLM 2024); Turner, Thiergart, Leech, Udell, Vazquez, Mini & MacDiarmid (2023), Steering Language Models With Activation Engineering, arXiv:2308.10248; Panickssery, Gabrieli, Schulz, Tong, Hubinger & Turner (2023), Steering Llama 2 via Contrastive Activation Addition, arXiv:2312.06681 (ACL 2024).
-
-Still to check (no arXiv id): Saravia et al. (2018), CARER, EMNLP; Scherer & Wallbott (1994), ISEAR; Mohammad & Turney (2013), NRC EmoLex, *Computational Intelligence*; Meta (2024), Llama 3.2 model card.
+**B. Checked (2026-11-20)**
+- Alain, G., & Bengio, Y. (2016). Understanding intermediate layers using linear classifier probes. arXiv:1610.01644 (preprint; no venue confirmed).
+- Belinkov, Y. (2022). Probing Classifiers: Promises, Shortcomings, and Advances. *Computational Linguistics*, 48(1), 207–219. doi:10.1162/coli_a_00422; arXiv:2102.12452.
+- Demszky, D., Movshovitz-Attias, D., Ko, J., Cowen, A., Nemade, G., & Ravi, S. (2020). GoEmotions: A Dataset of Fine-Grained Emotions. *Proc. ACL 2020* (aclanthology.org/2020.acl-main.372); arXiv:2005.00547.
+- Gemma Team (2024). Gemma 2: Improving Open Language Models at a Practical Size. arXiv:2408.00118.
+- Hewitt, J., & Liang, P. (2019). Designing and Interpreting Probes with Control Tasks. *Proc. EMNLP-IJCNLP 2019* (aclanthology.org/D19-1275); arXiv:1909.03368.
+- Jiang, A. Q., et al. (2023). Mistral 7B. arXiv:2310.06825.
+- Li, Y., Su, H., Shen, X., Li, W., Cao, Z., & Niu, S. (2017). DailyDialog: A Manually Labelled Multi-turn Dialogue Dataset. *Proc. IJCNLP 2017* (aclanthology.org/I17-1099); arXiv:1710.03957.
+- Lieberum, T., Rajamanoharan, S., Conmy, A., Smith, L., et al. (2024). Gemma Scope: Open Sparse Autoencoders Everywhere All At Once on Gemma 2. *Proc. BlackboxNLP 2024* (aclanthology.org/2024.blackboxnlp-1.19); arXiv:2408.05147.
+- Marks, S., & Tegmark, M. (2024). The Geometry of Truth: Emergent Linear Structure in Large Language Model Representations of True/False Datasets. *COLM 2024* (venue from the arXiv comment field); arXiv:2310.06824 (first posted 2023).
+- Meta (2024). Llama 3.2 model card (release date Oct 24, 2024; Llama 3.2 Community License). github.com/meta-llama/llama-models, `models/llama3_2/MODEL_CARD.md`.
+- Mohammad, S. M., & Turney, P. D. (2013). Crowdsourcing a word–emotion association lexicon. *Computational Intelligence*, 29(3), 436–465 (online 2012). doi:10.1111/j.1467-8640.2012.00460.x.
+- Panickssery (Rimsky), N., Gabrieli, N., Schulz, J., Tong, M., Hubinger, E., & Turner, A. M. (2024). Steering Llama 2 via Contrastive Activation Addition. *Proc. ACL 2024* (aclanthology.org/2024.acl-long.828); arXiv:2312.06681 (first posted 2023).
+- Reimers, N., & Gurevych, I. (2019). Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks. *Proc. EMNLP-IJCNLP 2019* (aclanthology.org/D19-1410); arXiv:1908.10084.
+- Saravia, E., Liu, H.-C. T., Huang, Y.-H., Wu, J., & Chen, Y.-S. (2018). CARER: Contextualized Affect Representations for Emotion Recognition. *Proc. EMNLP 2018*, 3687–3697 (aclanthology.org/D18-1404); doi:10.18653/v1/D18-1404.
+- Scherer, K. R., & Wallbott, H. G. (1994). Evidence for universality and cultural variation of differential emotion response patterning. *Journal of Personality and Social Psychology*, 66(2), 310–328. doi:10.1037/0022-3514.66.2.310.
+- Turner, A. M., Thiergart, L., Leech, G., Udell, D., Vazquez, J. J., Mini, U., & MacDiarmid, M. (2023). Steering Language Models With Activation Engineering. arXiv:2308.10248 (preprint; no venue confirmed).
+- Zou, A., Phan, L., Chen, S., et al. (2023). Representation Engineering: A Top-Down Approach to AI Transparency. arXiv:2310.01405.
 
 ## 8. Open items before release
 - [x] Pre-registrations for H3–H6 committed (`0d74f80`), run, and every placeholder filled from the reports.
 - [x] Figures 1–3 (`docs/figures/`, `make_figures.py`).
 - [x] Abstract variant B (H3 not supported); variant A deleted.
-- [ ] Check the four remaining section 7B references (no arXiv id) and the venues of the others.
+- [x] Section 7B references and venues checked on 2026-11-20 (Alain & Bengio and Turner et al. remain preprints with no confirmed venue).
 - [x] LICENSE file (The Unlicense) and `NOTICE.md` committed.
-- [ ] Check the remaining dataset licenses against primary sources (GoEmotions done, see section 6; dair-ai/emotion and the ISEAR copy unresolved).
+- [x] Dataset licenses checked against primary sources on 2026-11-20 (section 6, `NOTICE.md`). Residual: the ISEAR authors' original terms could not be read (host returned 403); use stays non-commercial research, text not redistributed.
 - [x] README, FINDINGS.md and CLAIMS.md aligned with this draft (hand-written results only in a "non-blind / superseded" section); README in-domain numbers updated to the HUM table on 2026-11-20.
 - [ ] Optional before submission: T5 audit of one published model-written emotion corpus.
 - [ ] Human read-through of the whole draft.
