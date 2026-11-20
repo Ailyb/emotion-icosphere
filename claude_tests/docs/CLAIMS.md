@@ -32,7 +32,7 @@ Each line links to the file that holds the number. Wording rule: say "informatio
 - "The probe beats a lexical baseline on human text" (frozen set, equal training data: it does not).
 - "LLM-written corpora are sufficient for probes that work on human text" (0.305 with no human rows vs 0.51+ with them).
 - Any claim that the probes read the model's "internal emotional state" or feelings.
-- The v1 result (acc 0.860) as evidence of anything: lexical TF-IDF scored 0.953 on that corpus. `docs/FINDINGS.md`.
+- The v1 result (acc 0.860) as evidence of anything: lexical TF-IDF scored macro-F1 0.931 [0.906, 0.953] on that corpus (`data/corpus/corpus_v1_tfidf_gate.md`). `docs/FINDINGS.md`.
 - "Short-text z-scores are valid": the neutral short sentence "The sky is blue." scored sadness z +4.9 (anecdote that motivates T3).
 - Writer-shift-free: leave-one-writer-out with reddit held out gives F1 0.235-0.284. `robustness_*/robustness.md` under `data/eval_merged/...`.
 

@@ -132,20 +132,68 @@ def audit(train, tests, layer, exclude=(), cfg=None, method="lda", min_words_str
     return "\n".join(L), results
 
 
+DEMO_CLASSES = ["joy", "sadness", "fear", "anger", "surprise", "disgust", "love", "neutral"]
+DEMO_LAYER, DEMO_DIM = 5, 48
+
+
+def make_demo(out_dir, seed=0):
+    """Write a small SYNTHETIC audit example (texts + cached 'activations' + meta sidecars) and return the audit arguments.
+    Nothing here comes from a model or from human data: each class has its own direction in a random space, and each class has cue
+    words. The `shifted` test set keeps the directions but replaces the cue words, so lexical features should lose and a hidden-state
+    probe should not: a toy version of the in-domain / cross-domain contrast the audit is built to measure. Numbers mean nothing about real models."""
+    out = Path(out_dir); out.mkdir(parents=True, exist_ok=True); r = np.random.RandomState(seed)
+    cues = {"train": {c: [f"{c[:3]}{k}" for k in range(4)] for c in DEMO_CLASSES}, "in": None, "shifted": {c: [f"{c[:3]}x{k}" for k in range(4)] for c in DEMO_CLASSES}}
+    cues["in"] = cues["train"]
+    fill = [f"w{k}" for k in range(40)]
+
+    def build(name, n_per, with_split):
+        rows, X, E = [], [], []
+        for i, c in enumerate(DEMO_CLASSES):
+            for j in range(n_per):
+                v = r.randn(DEMO_DIM); v[i] += 2.0
+                words = list(r.choice(fill, 8)) + ([str(r.choice(cues[name][c]))] if r.rand() < 0.8 else [])
+                r.shuffle(words)
+                row = {"id": f"{name}-{c}-{j}", "text": " ".join(words), "category": c}
+                if with_split:
+                    row["split"] = "train" if j < int(0.75 * n_per) else "val"
+                rows.append(row); X.append(v); E.append(r.randn(DEMO_DIM) + 0.1 * v)
+        jl = out / f"demo_{name}.jsonl"
+        jl.write_text("\n".join(json.dumps(x) for x in rows) + "\n")
+        npz = out / f"demo_{name}.npz"
+        np.savez(npz, ids=np.array([x["id"] for x in rows]), skip=4, **{f"L{DEMO_LAYER}": np.array(X)}, E=np.array(E))
+        write_meta(npz, "synthetic-demo (no model)", 4, [DEMO_LAYER], [x["id"] for x in rows])
+        return jl, npz
+    tr = build("train", 80, True); te = [("in_domain", *build("in", 40, False)), ("shifted", *build("shifted", 40, False))]
+    return tr, te
+
+
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--train", required=True); ap.add_argument("--train-cache", required=True)
+    ap = argparse.ArgumentParser(description="Audit emotion probes against cheap baselines. `probekit-audit --demo` runs a bundled synthetic example end to end.")
+    ap.add_argument("--demo", action="store_true", help="generate a small synthetic example (no model, no data download) and audit it")
+    ap.add_argument("--demo-dir", default=None, help="keep the generated demo files here (default: a temporary directory)")
+    ap.add_argument("--train"); ap.add_argument("--train-cache")
     ap.add_argument("--train-embed", default=None, help="separate npz with E for the train rows")
-    ap.add_argument("--test", action="append", required=True, help="name=jsonl=cache (repeatable)")
-    ap.add_argument("--layer", type=int, required=True); ap.add_argument("--method", default="lda", choices=["lda", "meandiff", "logreg"])
-    ap.add_argument("--exclude", nargs="*", default=[]); ap.add_argument("--out", required=True)
+    ap.add_argument("--test", action="append", help="name=jsonl=cache (repeatable)")
+    ap.add_argument("--layer", type=int); ap.add_argument("--method", default="lda", choices=["lda", "meandiff", "logreg"])
+    ap.add_argument("--exclude", nargs="*", default=[]); ap.add_argument("--out", default=None)
     a = ap.parse_args()
+    if a.demo:
+        import tempfile
+        d = a.demo_dir or tempfile.mkdtemp(prefix="probekit_demo_")
+        (trj, trc), tests_ = make_demo(d)
+        a.train, a.train_cache, a.layer = str(trj), str(trc), DEMO_LAYER
+        a.test = [f"{n}={j}={c}" for n, j, c in tests_]; a.out = a.out or "audit_demo.md"
+    elif not (a.train and a.train_cache and a.test and a.layer is not None and a.out):
+        ap.error("give --demo, or all of --train --train-cache --test --layer --out")
     rows = load_jsonl(a.train); train = {"rows": rows, "feats": load_cache(a.train_cache, rows, a.train_embed)}
     tests = {}
     for spec in a.test:
         name, jl, cache = spec.split("=", 2); r = load_jsonl(jl); tests[name] = {"rows": r, "feats": load_cache(cache, r)}
     md, _ = audit(train, tests, a.layer, tuple(a.exclude), method=a.method)
-    Path(a.out).write_text(md + "\n"); print(md)
+    if a.demo:
+        md = ("> **SYNTHETIC DEMO.** Random vectors and made-up words, no model and no human data. It shows the report format and the in-domain vs shifted contrast the "
+              "audit measures; the numbers say nothing about real models.\n\n") + md
+    Path(a.out).write_text(md + "\n"); print(md); print(f"\nreport written to {a.out}")
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "probekit"
 version = "0.1.0"
 description = "Audit toolkit for linear emotion-concept probes on LLM hidden states: equal-data lexical baselines, frozen test sets, cross-domain checks, bootstrap CIs."
-readme = "../README.md"
+readme = "docs/AUDIT_QUICKSTART.md"
 license = {text = "The Unlicense"}
 requires-python = ">=3.10"
 dependencies = ["numpy", "scikit-learn"]

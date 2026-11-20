@@ -6,7 +6,7 @@ Probes: 8 emotions (joy, sadness, fear, anger, surprise, disgust, calm, love) + 
 Manual layer loops without a causal mask leak future tokens. Old capture: masked 9.26e-06 vs unmasked 1.74e-01 difference. Capture is now mask-correct (`probekit_capture.py --check`).
 
 ## v1 corpus was lexically solvable
-Test acc 0.860 / F1 0.857 (layer 6; shuffle-null p95 0.110) but TF-IDF lexical baseline 0.953. So v1 proved nothing about "beyond words".
+Test acc 0.860 / F1 0.857 (layer 6; shuffle-null p95 0.110) but a TF-IDF lexical baseline reaches macro-F1 0.931 [0.906, 0.953] (recomputed 2026-11-20, `data/corpus/corpus_v1_tfidf_gate.md`; the 0.953 recorded earlier equals the upper bound of that interval and its original report was not kept; the probe's 0.857 and this figure come from different splits). So v1 proved nothing about "beyond words".
 
 ## Frozen human test set (PLAN_v2 T0c; current primary evidence) — GoEmotions official test, n=840
 Sources: `data/eval_merged2/<model>/frozen_eval.md` (+ `frozen_eval_prereg_run1.md`, the run before post hoc columns were added), `data/testsets/goemotions_test_frozen.manifest.json` (SHA-256 verified on every load). Protocol pre-registered in PLAN_v2 T0c before any result was seen. Test items: official single label, 8 classes (7 emotions + neutral, calm excluded: LLM-only), no length filter, near-duplicates of official train/dev removed; per class n: joy 91, sadness 98, fear 63, anger 128, surprise 84, disgust 74, love 151, neutral 151. Models trained on the pooled merged2 TRAIN (Llama-3.2-3B-written v2, Qwen3.8-27B-written, human GoEmotions-train rows; no calm), layer 16 / lda chosen on VAL-hard only. 8-way macro-F1 [95% bootstrap CI over test items], shuffle-null p95 about 0.14:

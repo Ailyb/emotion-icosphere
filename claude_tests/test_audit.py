@@ -45,4 +45,13 @@ with tempfile.TemporaryDirectory() as d:
         pa.load_cache(d / "c.npz", rows[::-1]); raise AssertionError("expected ValueError")
     except ValueError as e:
         assert "do not match" in str(e)
+# bundled synthetic demo: runs end to end, TF-IDF wins in-domain and loses on the shifted set
+with tempfile.TemporaryDirectory() as d:
+    (trj, trc), tes = pa.make_demo(d)
+    rows = pa.load_jsonl(str(trj)); trn = {"rows": rows, "feats": pa.load_cache(trc, rows)}
+    tst = {}
+    for n, j, c in tes:
+        r = pa.load_jsonl(str(j)); tst[n] = {"rows": r, "feats": pa.load_cache(c, r)}
+    mdd, rd = pa.audit(trn, tst, pa.DEMO_LAYER)
+    assert rd["in_domain"]["f1"]["tfidf"] > rd["in_domain"]["f1"]["probe"] and rd["shifted"]["f1"]["probe"] > rd["shifted"]["f1"]["tfidf"]
 print("AUDIT TESTS PASSED")

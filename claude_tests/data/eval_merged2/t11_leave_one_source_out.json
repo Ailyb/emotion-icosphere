@@ -1,0 +1,170 @@
+{
+ "dair": {
+  "Llama-3.2-3B-Instruct": {
+   "h1": true,
+   "h3": false,
+   "enc_means": {
+    "isear": -0.0902256009633042,
+    "dailydialog": -0.037680444253965724
+   },
+   "enc_ci_hi": {
+    "isear": -0.06269020416867607,
+    "dailydialog": -0.006998494831225311
+   },
+   "tfidf_means": {
+    "isear": 0.13220053138768412,
+    "dailydialog": 0.10320828907900621
+   },
+   "stable_tfidf": true,
+   "stable_enc": true
+  },
+  "Mistral-7B-Instruct-v0.3-4bit": {
+   "h1": true,
+   "h3": false,
+   "enc_means": {
+    "isear": -0.0952595505554525,
+    "dailydialog": -0.08698969125820749
+   },
+   "enc_ci_hi": {
+    "isear": -0.06668229030756273,
+    "dailydialog": -0.05609388139075693
+   },
+   "tfidf_means": {
+    "isear": 0.12716658179553586,
+    "dailydialog": 0.053899042074764446
+   },
+   "stable_tfidf": true,
+   "stable_enc": true
+  },
+  "gemma-2-2b-it-4bit": {
+   "h1": true,
+   "h3": false,
+   "enc_means": {
+    "isear": -0.03220504173649748,
+    "dailydialog": -0.04557537335434756
+   },
+   "enc_ci_hi": {
+    "isear": -0.00372942740769099,
+    "dailydialog": -0.016572117400033868
+   },
+   "tfidf_means": {
+    "isear": 0.19022109061449086,
+    "dailydialog": 0.09531335997862436
+   },
+   "stable_tfidf": true,
+   "stable_enc": true
+  }
+ },
+ "isear": {
+  "Llama-3.2-3B-Instruct": {
+   "h1": true,
+   "h3": false,
+   "enc_means": {
+    "dair": 0.003010386894736234,
+    "dailydialog": -0.037680444253965724
+   },
+   "enc_ci_hi": {
+    "dair": 0.029671874517657647,
+    "dailydialog": -0.006998494831225311
+   },
+   "tfidf_means": {
+    "dair": 0.15065404578441377,
+    "dailydialog": 0.10320828907900621
+   },
+   "stable_tfidf": true,
+   "stable_enc": false
+  },
+  "Mistral-7B-Instruct-v0.3-4bit": {
+   "h1": true,
+   "h3": false,
+   "enc_means": {
+    "dair": 0.004414482556286499,
+    "dailydialog": -0.08698969125820749
+   },
+   "enc_ci_hi": {
+    "dair": 0.03404259656812231,
+    "dailydialog": -0.05609388139075693
+   },
+   "tfidf_means": {
+    "dair": 0.15205814144596405,
+    "dailydialog": 0.053899042074764446
+   },
+   "stable_tfidf": true,
+   "stable_enc": false
+  },
+  "gemma-2-2b-it-4bit": {
+   "h1": true,
+   "h3": false,
+   "enc_means": {
+    "dair": -0.010668197790852645,
+    "dailydialog": -0.04557537335434756
+   },
+   "enc_ci_hi": {
+    "dair": 0.01788558751259243,
+    "dailydialog": -0.016572117400033868
+   },
+   "tfidf_means": {
+    "dair": 0.13697546109882489,
+    "dailydialog": 0.09531335997862436
+   },
+   "stable_tfidf": true,
+   "stable_enc": true
+  }
+ },
+ "dailydialog": {
+  "Llama-3.2-3B-Instruct": {
+   "h1": true,
+   "h3": false,
+   "enc_means": {
+    "dair": 0.003010386894736234,
+    "isear": -0.0902256009633042
+   },
+   "enc_ci_hi": {
+    "dair": 0.029671874517657647,
+    "isear": -0.06269020416867607
+   },
+   "tfidf_means": {
+    "dair": 0.15065404578441377,
+    "isear": 0.13220053138768412
+   },
+   "stable_tfidf": true,
+   "stable_enc": false
+  },
+  "Mistral-7B-Instruct-v0.3-4bit": {
+   "h1": true,
+   "h3": false,
+   "enc_means": {
+    "dair": 0.004414482556286499,
+    "isear": -0.0952595505554525
+   },
+   "enc_ci_hi": {
+    "dair": 0.03404259656812231,
+    "isear": -0.06668229030756273
+   },
+   "tfidf_means": {
+    "dair": 0.15205814144596405,
+    "isear": 0.12716658179553586
+   },
+   "stable_tfidf": true,
+   "stable_enc": false
+  },
+  "gemma-2-2b-it-4bit": {
+   "h1": true,
+   "h3": false,
+   "enc_means": {
+    "dair": -0.010668197790852645,
+    "isear": -0.03220504173649748
+   },
+   "enc_ci_hi": {
+    "dair": 0.01788558751259243,
+    "isear": -0.00372942740769099
+   },
+   "tfidf_means": {
+    "dair": 0.13697546109882489,
+    "isear": 0.19022109061449086
+   },
+   "stable_tfidf": true,
+   "stable_enc": true
+  }
+ }
+}
