@@ -210,7 +210,7 @@ The first pre-registered run trained on the merged2 training rows (LLM-written a
 Probe − TF-IDF: −0.088, −0.085, −0.083 (all intervals exclude 0). Probe − bag of embeddings: +0.107, +0.112, +0.121 (all exclude 0). TF-IDF does not use the model, so it is identical across models. The TF-IDF advantage is larger on items with high rater agreement (Llama: 0.594 vs 0.749 at agreement ≥ 0.67, n=244), so label noise does not explain it.
 
 ## 7. References
-*Section A was checked against the papers' own pages on 2026-11-18. In section B, title, authors and year of the items with an arXiv id were checked against the arXiv API on 2026-11-19; venues, and the three items without an arXiv id, were not checked and are from memory.*
+*Section A was checked against the papers' own pages on 2026-11-18. In section B, title, authors and year of the items with an arXiv id were checked against the arXiv API on 2026-11-19; venues, and the four items without an arXiv id (listed under "Still to check" below), were not checked and are from memory.*
 
 **A. Checked**
 - Fang, T., Guibon, G., & Buscaldi, D. (2026). Some Emotions Run Deeper: Layer-wise Probing and Causal Intervention in Large Language Models. *Findings of EMNLP 2026*.
@@ -238,6 +238,6 @@ Still to check (no arXiv id): Saravia et al. (2018), CARER, EMNLP; Scherer & Wal
 - [ ] Check the four remaining section 7B references (no arXiv id) and the venues of the others.
 - [x] LICENSE file (The Unlicense) and `NOTICE.md` committed.
 - [ ] Check the remaining dataset licenses against primary sources (GoEmotions done, see section 6; dair-ai/emotion and the ISEAR copy unresolved).
-- [ ] Align README, FINDINGS.md and CLAIMS.md with this draft (hand-written results only in a "non-blind" section).
+- [x] README, FINDINGS.md and CLAIMS.md aligned with this draft (hand-written results only in a "non-blind / superseded" section); README in-domain numbers updated to the HUM table on 2026-11-20.
 - [ ] Optional before submission: T5 audit of one published model-written emotion corpus.
 - [ ] Human read-through of the whole draft.
