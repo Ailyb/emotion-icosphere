@@ -1,6 +1,6 @@
 # Steering diagnostic: effect per unit norm (POST HOC; not pre-registered; REVIEW_v3 A3.3)
 
-Llama-3.2-3B, layer 16, mean-pooled states of merged2 TRAIN rows (n=1654, calm excluded). m_e = mean(e) - mean(neutral), unit length. cos = cosine of the unit steering direction with m_e (shift of the projection onto m_e per unit norm); sd = standard deviation of the pooled states along the direction; shift/sd = cos / sd. Random = mean over 20 random unit directions.
+mlx-community/Llama-3.2-3B-Instruct, layer 16, mean-pooled states of merged2 TRAIN rows (n=1654, calm excluded). m_e = mean(e) - mean(neutral), unit length. cos = cosine of the unit steering direction with m_e (shift of the projection onto m_e per unit norm); sd = standard deviation of the pooled states along the direction; shift/sd = cos / sd. Random = mean over 20 random unit directions.
 
 | emotion | cos probe | cos v1 | cos random | sd probe | sd v1 | sd random | shift/sd probe | shift/sd v1 | shift/sd random |
 |---|---|---|---|---|---|---|---|---|---|

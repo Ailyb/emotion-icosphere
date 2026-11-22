@@ -80,7 +80,11 @@ def h7(rows, s_star, s_f):
     regime_n = {KEY(s_star / 4), KEY(s_star / 2), KEY(s_star)}; regime_f_md = {KEY(s_f["v1"] / 2), KEY(s_f["v1"])}
     desc = {e: {"N": any(md_specific(e, s) for s in regime_n), "F": any(md_specific(e, s) for s in regime_f_md)} for e in ("joy", "anger")}
     md_at_sf = {e: md_specific(e, sf_m) for e in pairs}
-    return {"md_specific_at_sF": md_at_sf, "H7a_steerable": a["steerable"], "H7a_claim": len(a["steerable"]) >= 4, "H7b_pairs": {e: list(v) for e, v in pairs.items()},
+    spec_in = lambda res, e, ss: any(bool(res["emotions"].get(e, {}).get(x, {}).get("specific")) for x in ss)
+    regime_f_probe = {KEY(s_f["probe"] / 2), KEY(s_f["probe"])}
+    sensitivity = {"probe_N_only": [e for e in S.EMOTIONS if spec_in(a, e, regime_n)], "probe_F_only": [e for e in S.EMOTIONS if spec_in(a, e, regime_f_probe)],
+                   "v1_N_only": [e for e in S.EMOTIONS if spec_in(b, e, regime_n)], "v1_F_only": [e for e in S.EMOTIONS if spec_in(b, e, regime_f_md)]}
+    return {"sensitivity": sensitivity, "md_specific_at_sF": md_at_sf, "H7a_steerable": a["steerable"], "H7a_claim": len(a["steerable"]) >= 4, "H7b_pairs": {e: list(v) for e, v in pairs.items()},
             "H7b_above": above, "H7b_above_and_md_specific": above_and_specific, "H7b_claim": len(above) >= 3 and len(above_and_specific) >= 2,
             "md_steerable": b["steerable"], "replication_joy_anger": desc, "analysis_probe": a, "analysis_v1": b, "n_strengths": sorted(n_strengths)}
 
@@ -98,7 +102,9 @@ def render_h7(res, s_star, s_f):
     L += ["", f"Emotions with the interval above 0: {res['H7b_above'] or 'none'} ({len(res['H7b_above'])}/7; need >= 3); of those, mean-difference specifically steerable: "
               f"{res['H7b_above_and_md_specific'] or 'none'} (need >= 2) -> **{'claim holds' if res['H7b_claim'] else 'not established'}**.",
           f"- Descriptive replication (mean-difference specific for joy / anger): {json.dumps(res['replication_joy_anger'])}.",
-          f"- Mean-difference directions specifically steerable at any fluent strength (descriptive): {res['md_steerable'] or 'none'}.", ""]
+          f"- Mean-difference directions specifically steerable at any fluent strength (descriptive): {res['md_steerable'] or 'none'}.",
+          "- Sensitivity by regime (post hoc, descriptive; specifically steerable at some strength of the regime): " +
+          "; ".join(f"{k}: {v or 'none'} ({len(v)}/7)" for k, v in res["sensitivity"].items()) + ".", ""]
     return "\n".join(L)
 
 
@@ -202,6 +208,10 @@ def cmd_analyze(a):
           S.render(res["analysis_probe"], "T12/C1 LDA probe directions (T10 rule)"), "",
           S.render(res["analysis_v1"], "T12/C1 mean-difference directions (T10 rule)"), ""]
     unparsed = sum(r["label"] == "unparsed" for r in rows); base = [r["label"] for r in rows if r["cond"] == "base"]
+    ur = {}
+    for r in rows:
+        k = (r["cond"], r["strength"]); ur.setdefault(k, [0, 0]); ur[k][0] += r["label"] == "unparsed"; ur[k][1] += 1
+    md.append("Unparsed judge labels by condition (post hoc): " + "; ".join(f"{c}@{x:g}: {u}/{n}" for (c, x), (u, n) in sorted(ur.items())) + "\n")
     md.append(f"Judge: granite4.2:8b; unparsed labels {unparsed}/{len(rows)}. Unsteered label distribution: " + ", ".join(f"{l} {base.count(l)}" for l in sorted(set(base))) + "\n")
     Path(a.out).write_text("\n".join(md)); Path(a.out).with_suffix(".json").write_text(json.dumps(res, indent=1, default=float)); print("\n".join(md))
 

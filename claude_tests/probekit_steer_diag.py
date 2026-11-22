@@ -45,7 +45,7 @@ def main():
     emotions = [str(e) for e in z["emotions"]]
     res = diagnose(X[tr], cat[tr], {"probe (LDA)": z["probe"], "v1 mean-difference": z["v1"], "random": z["random"]}, emotions)
     L = ["# Steering diagnostic: effect per unit norm (POST HOC; not pre-registered; REVIEW_v3 A3.3)", "",
-         f"Llama-3.2-3B, layer {a.layer}, mean-pooled states of merged2 TRAIN rows (n={int(tr.sum())}, calm excluded). m_e = mean(e) - mean(neutral), unit length. "
+         f"{a.model}, layer {a.layer}, mean-pooled states of merged2 TRAIN rows (n={int(tr.sum())}, calm excluded). m_e = mean(e) - mean(neutral), unit length. "
          "cos = cosine of the unit steering direction with m_e (shift of the projection onto m_e per unit norm); sd = standard deviation of the pooled states along the direction; "
          "shift/sd = cos / sd. Random = mean over 20 random unit directions.", "",
          "| emotion | cos probe | cos v1 | cos random | sd probe | sd v1 | sd random | shift/sd probe | shift/sd v1 | shift/sd random |", "|---|---|---|---|---|---|---|---|---|---|"]

@@ -193,3 +193,11 @@ Sources: `data/eval_merged2/<model>/t11_posthoc.md/.json`, `.../steering_diagnos
 - Probe - trained classifier: frozen -0.053 / -0.066 / -0.106; DailyDialog -0.067 / -0.098 / -0.105; dair ~0; ISEAR -0.008 / +0.029 / -0.035.
 - tau_h per-class recall (frozen): all seven emotion classes lose 0.23-0.43; neutral gains 0.66-0.79; 59-61% of emotional items move to neutral.
 - Steering diagnostic (Llama layer 16): cosine of the unit direction with the class mean-difference axis 0.270 (probe) vs 0.274 (mean-difference) vs 0.002 (random); sd of states along the direction 0.21 / 0.59 / 0.10; perplexity ratio at 0.4 is 1.10-1.14 (probe) vs 1.37-1.68 (mean-difference). The null for the probe directions is not explained by a smaller class-axis shift per unit norm.
+
+## T12 / C1 steering replication on Gemma-2-2B (2026-11-22; pre-registered in a2da166 before any Gemma generation)
+Sources: `data/eval_merged2/mlx-community__gemma-2-2b-it-4bit/steering_c1_results.md/.json`, `steering_c1_pilot.json`, `steering_c1_diagnostic.md`; code `probekit_steer_c1.py`. Gemma-2-2B-it 4-bit, layer 14, 40 prompts, 6,280 generations, judge granite4.2:8b (13.9% unparsed).
+- Pilot (perplexity only): regime N S* = 0.2 (strengths 0.05, 0.1, 0.2); regime F s_F = 0.3 (LDA) and 0.1 (mean-difference).
+- **H7a holds at the threshold:** LDA probe directions specifically steerable (T10 rule) for joy, sadness, fear, surprise (4/7); three of them only at 0.3 (the largest fluent LDA strength); regime N alone: joy only. Joy +0.375 [+0.225, +0.525] at 0.3 (ratio 1.26, random max +0.075).
+- **H7b not established:** mean-difference minus LDA at matched fluency is <= 0 or near 0 for every emotion; 0/7 intervals above 0.
+- Post hoc: mean-difference directions specifically steerable for joy, sadness, fear, anger, love at 0.05-0.2 (more effect per unit norm, fluency-limited).
+- The Llama null (T10) is not general; a fluency-matched Llama strength was never tried.

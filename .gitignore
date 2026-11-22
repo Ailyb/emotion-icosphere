@@ -71,3 +71,6 @@ claude_tests/data/corpus/corpus_merged.jsonl
 claude_tests/data/corpus/corpus_merged_scored.jsonl
 claude_tests/data/corpus/corpus_merged2.jsonl
 claude_tests/data/corpus/corpus_merged2_scored.jsonl
+claude_tests/data/steering_gemma/*.jsonl
+claude_tests/data/steering_gemma/*.npz
+claude_tests/data/steering_gemma/*.log
