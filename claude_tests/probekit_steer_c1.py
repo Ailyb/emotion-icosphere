@@ -113,7 +113,7 @@ def cmd_selftest(a):
     import mlx.core as mx
     from probekit_capture import Extractor
     ex = Extractor(a.model); sb = S.install(ex.model, LAYER); d = S.load_dirs()
-    f = ex.fidelity_check() if hasattr(ex, "fidelity_check") else None
+    f = ex.fidelity_check("The bus arrived at noon and everyone got on.")
     ids = mx.array([ex.encode("The bus arrived at noon and everyone got on.")]); sb.capture = True
     S.set_vec(sb, None); ex.model(ids); base = np.array(sb.last.astype(mx.float32))
     S.set_vec(sb, None); ex.model(ids); again = np.array(sb.last.astype(mx.float32))
