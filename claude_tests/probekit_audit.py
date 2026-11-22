@@ -128,7 +128,7 @@ def audit(train, tests, layer, exclude=(), cfg=None, method="lda", min_words_str
         for nm, mask in ((f"<= {min_words_strata} words", nw <= min_words_strata), (f"> {min_words_strata} words", nw > min_words_strata)):
             L.append(f"- stratum {nm} (n={int(mask.sum())}): " + (", ".join(f"{s} {f1_9(y[mask], p[mask]):.3f}" for s, p in preds.items()) if mask.sum() >= 20 else "n < 20, not reported"))
         L.append("")
-        results[name] = {"f1": {s: f1_9(y, p) for s, p in preds.items()}, "diffs": diffs, "n": int(len(y)), "classes": classes}
+        results[name] = {"f1": {s: f1_9(y, p) for s, p in preds.items()}, "diffs": diffs, "n": int(len(y)), "classes": classes, "y": y, "preds": preds}
     return "\n".join(L), results
 
 

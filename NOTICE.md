@@ -22,3 +22,4 @@ The Unlicense does **not** change the terms of third-party material. Where this 
 
 ## No warranty
 Nothing here is legal advice. The research claims are in `claude_tests/docs/`; they describe linear read-outs on text and say nothing about model feelings or internal states.
+- ryancodrai/emotion-probes (Hugging Face; CC-BY-4.0; DOI 10.57967/hf/8303): 205,200 stories written by Gemini 3.1 Pro Preview. Used only in the T5 audit (`probekit_t5.py`); raw text is downloaded into the git-ignored `data/external/emotion_probes/`, only story ids and a hash are committed (`data/corpus/t5_manifest.json`). Checked 2026-11-22 from the dataset card; attribution: Codrai, R., emotion-probes dataset, Hugging Face. Generator terms (Gemini) were not independently checked.
