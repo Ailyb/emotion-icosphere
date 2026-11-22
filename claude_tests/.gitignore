@@ -1,3 +1,6 @@
 data/steering_llama_f/*.jsonl
 data/steering_llama_f/*.npz
 data/steering_llama_f/*.log
+data/steering_gemma_md/*.jsonl
+data/steering_gemma_md/*.npz
+data/steering_gemma_md/*.log
