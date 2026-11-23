@@ -73,3 +73,9 @@ Monitoring, "inner thoughts" or distress dashboards, and anything served to thir
 1. Option 1, static then live: agent, a few days; Justin reviews copy and look.
 2. Option 2: agent builds, Justin decides look and feel; stream-check redesign first.
 3. Option 3: run the prerequisites as a pre-registered experiment, then build.
+
+## Status (2026-11-23)
+- **Option 1 static: built** (`probekit_viz_static.py`, `docs/viz/static.html`, `test_viz_static.py`). 1,559 model-written synthetic passages (`data/viz/synth.jsonl`; writer granite4.2:8b; 120 neutral per length bucket, about 20 per emotion per bucket; generator pre-registered in `probekit_viz_gen.py`, with one documented neutral top-up deviation) are scored in `docs/viz/synth_summary.json`.
+- **Acceptance (neutral false alarms <= ~5% per bucket, n >= 100): met on the synthetic set** for the probe (0-2% in every bucket). Caveat: model-written neutral text is easier than human neutral text; the human-text check is `length_calibration.md` (recalibrated passage false-alarm rate 6-7% in the shortest buckets, so those are marked low confidence).
+- **Finding shown on the page:** the probe's threshold is conservative: it misses 66-71% of short (1-4 word) emotional passages and 19-22% of passages of 12+ words; native-state LR and the encoder have higher hit rates but no false-alarm control.
+- Not done: live local mode, CLAIMS.md copy review, Options 2-3.

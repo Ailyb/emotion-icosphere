@@ -47,9 +47,9 @@ def call(p, tries=4):
 def parse(ans):
     m = re.search(r"\[.*\]", ans or "", re.S)
     try:
-        return [s.strip() for s in json.loads(m.group(0)) if isinstance(s, str)] if m else []
-    except Exception:
-        return []
+        return [s.strip() for s in json.loads(m.group(0)) if isinstance(s, str)] if m else [x.strip() for x in re.findall(r'^\s*"(.+?)"\s*,?\s*$', ans or "", re.M)]
+    except Exception:                                          # the writer sometimes omits commas: fall back to one quoted string per line
+        return [x.strip() for x in re.findall(r'^\s*"(.+?)"\s*,?\s*$', ans or "", re.M)]
 
 
 def collect(cat, bi, want, seen):
