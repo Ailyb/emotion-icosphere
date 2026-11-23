@@ -219,3 +219,6 @@ Motivation (REVIEW_v3 A3, C1): on Llama the audited LDA directions did not steer
 
 ## Deferred beyond v1.1
 Behavioural steering (decisions, not expressed emotion); stream check redesign; backend/visualizer integration; monitoring.
+
+
+**T14 result (2026-11-23):** H9 not established: 0/7 paired intervals above 0 (md-same minus LDA at matched fluency); see `data/eval_merged2/mlx-community__gemma-2-2b-it-4bit/steering_c3_results.md`.

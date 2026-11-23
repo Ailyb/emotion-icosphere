@@ -844,7 +844,21 @@ directions already reach ratio 1.25 at 0.4).
   corpus without nuisance removal. A difference between them mixes
   estimator with training data, so "mean-difference versus LDA" here
   does not isolate the estimator; a run with both fitted on the same
-  data (T14) was added to separate them (below if run).
+  data (T14/C3; below) was added to separate them.
+\item
+  \textbf{Same-data check on Gemma (T14/C3; pre-registered in
+  \texttt{PLAN\_v2.md}, \texttt{f4cabfe};
+  \texttt{steering\_c3\_results.md}).} Mean-difference directions
+  refitted on the merged2 TRAIN states used for the LDA directions
+  (cosine with the LDA directions 0.43--0.59). Rule H9: at least 3 of 7
+  paired intervals (md-same minus LDA at matched fluency) above 0, and
+  md-same specifically steerable for at least 2 of them. Result: 0 of 7
+  intervals above 0, so \textbf{H9 is not established}; with the same
+  training data, mean-difference directions are not better than LDA
+  ones. The earlier descriptive advantage of mean-difference directions
+  therefore cannot be attributed to the estimator on this model (it may
+  reflect the training corpus), and the Llama contrast remains
+  confounded. Judge unparsed labels: 869 of 6,280.
 \item
   \textbf{Reading across the two models.} A direction fitted to read
   emotion can also write it, but whether it does at a fluent strength
