@@ -13,7 +13,7 @@ from scipy.stats import beta
 R = Path("data/eval_merged2"); OUT = Path("docs/figures"); OUT.mkdir(parents=True, exist_ok=True)
 MODELS = {"Llama-3.2-3B": "mlx-community__Llama-3.2-3B-Instruct", "Gemma-2-2B": "mlx-community__gemma-2-2b-it-4bit", "Mistral-7B": "mlx-community__Mistral-7B-Instruct-v0.3-4bit"}
 C = {"a": "#0072B2", "b": "#E69F00", "c": "#009E73", "ink": "#222222", "mute": "#777777"}      # Okabe-Ito subset (colour-vision safe)
-plt.rcParams.update({"font.size": 9, "axes.spines.top": False, "axes.spines.right": False, "svg.fonttype": "none"})
+plt.rcParams.update({"font.size": 9, "axes.spines.top": False, "axes.spines.right": False, "svg.fonttype": "none", "pdf.fonttype": 42})
 
 
 def fig1():
@@ -34,7 +34,7 @@ def fig1():
         ax.axvline(0, color=C["ink"], lw=0.8); ax.set_ylim(3.6, -0.5); ax.set_title(mn); ax.set_yticks(range(4)); ax.set_yticklabels(lab); 
         ax.set_xlabel("probe − baseline, macro-F1 (95% CI)"); ax.grid(axis="x", color="#e5e5e5", lw=0.6)
     h, l = axs[0].get_legend_handles_labels(); fig.legend(h, l, loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, -0.02))
-    fig.tight_layout(rect=(0, 0.07, 1, 1)); fig.savefig(OUT / "fig1_forest.svg"); plt.close(fig)
+    fig.tight_layout(rect=(0, 0.07, 1, 1)); fig.savefig(OUT / "fig1_forest.svg"); fig.savefig(OUT / "fig1_forest.pdf"); plt.close(fig)
 
 
 def fig2():
@@ -52,7 +52,7 @@ def fig2():
         ax.set_title(mn); ax.set_xlabel("human rows per class"); ax.grid(color="#e5e5e5", lw=0.6)
     axs[0].set_ylabel("frozen GoEmotions macro-F1"); h, l = axs[0].get_legend_handles_labels()
     fig.legend(h, l, loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, -0.06)); fig.tight_layout(rect=(0, 0.16, 1, 1))
-    fig.savefig(OUT / "fig2_learning_curve.svg"); plt.close(fig)
+    fig.savefig(OUT / "fig2_learning_curve.svg"); fig.savefig(OUT / "fig2_learning_curve.pdf"); plt.close(fig)
 
 
 def cp(k, n):
@@ -72,7 +72,7 @@ def fig3():
     axs[0].set_ylabel("neutral passages with any |z| > 3"); h, l = axs[0].get_legend_handles_labels()
     axs[0].annotate("5% bound", (2.6, 0.095), color=C["mute"], fontsize=8)
     fig.legend(h, l, loc="lower center", ncol=2, frameon=False, bbox_to_anchor=(0.5, -0.03)); fig.tight_layout(rect=(0, 0.08, 1, 1))
-    fig.savefig(OUT / "fig3_neutral_false_alarm.svg"); plt.close(fig)
+    fig.savefig(OUT / "fig3_neutral_false_alarm.svg"); fig.savefig(OUT / "fig3_neutral_false_alarm.pdf"); plt.close(fig)
 
 
 if __name__ == "__main__":
