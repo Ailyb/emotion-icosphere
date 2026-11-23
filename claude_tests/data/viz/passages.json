@@ -1,0 +1,165 @@
+{
+ "note": "SYNTHETIC passages written for the demo (2026-11-23). Not drawn from any dataset; never used to tune or select anything.",
+ "passages": [
+  {
+   "id": "viz00",
+   "intended": "joy",
+   "text": "They called at six: the offer is ours, we got the house!"
+  },
+  {
+   "id": "viz01",
+   "intended": "joy",
+   "text": "I can't stop smiling. Best day I've had all year."
+  },
+  {
+   "id": "viz02",
+   "intended": "joy",
+   "text": "Yes!"
+  },
+  {
+   "id": "viz03",
+   "intended": "joy",
+   "text": "After three years of trying, the whole team finally shipped the project, and we celebrated with cake in the kitchen until the lights went out."
+  },
+  {
+   "id": "viz04",
+   "intended": "sadness",
+   "text": "I miss her more every week, and the apartment feels far too quiet now."
+  },
+  {
+   "id": "viz05",
+   "intended": "sadness",
+   "text": "Nobody came."
+  },
+  {
+   "id": "viz06",
+   "intended": "sadness",
+   "text": "He packed the last box, looked around the empty room where the children had grown up, and quietly cried in the hallway before locking the door for good."
+  },
+  {
+   "id": "viz07",
+   "intended": "fear",
+   "text": "I heard the back door open and I was alone in the house."
+  },
+  {
+   "id": "viz08",
+   "intended": "fear",
+   "text": "Something is wrong with the scan results, and the doctor will not look at me."
+  },
+  {
+   "id": "viz09",
+   "intended": "fear",
+   "text": "Help!"
+  },
+  {
+   "id": "viz10",
+   "intended": "anger",
+   "text": "You lied to me again, and I am done putting up with it."
+  },
+  {
+   "id": "viz11",
+   "intended": "anger",
+   "text": "This is outrageous. They charged us twice and then hung up on me."
+  },
+  {
+   "id": "viz12",
+   "intended": "anger",
+   "text": "Unacceptable."
+  },
+  {
+   "id": "viz13",
+   "intended": "surprise",
+   "text": "Wait, you two are married? Since when?"
+  },
+  {
+   "id": "viz14",
+   "intended": "surprise",
+   "text": "I opened the box and there was a puppy inside, which was the last thing I expected."
+  },
+  {
+   "id": "viz15",
+   "intended": "surprise",
+   "text": "No way!"
+  },
+  {
+   "id": "viz16",
+   "intended": "disgust",
+   "text": "The milk had curdled and the whole fridge smelled rotten."
+  },
+  {
+   "id": "viz17",
+   "intended": "disgust",
+   "text": "That was a vile thing to say about her."
+  },
+  {
+   "id": "viz18",
+   "intended": "love",
+   "text": "I adore you, and I always will."
+  },
+  {
+   "id": "viz19",
+   "intended": "love",
+   "text": "She held his hand through the whole night, grateful beyond words that he was hers."
+  },
+  {
+   "id": "viz20",
+   "intended": "love",
+   "text": "Love you."
+  },
+  {
+   "id": "viz21",
+   "intended": "neutral",
+   "text": "The meeting is on Tuesday at ten in the second floor conference room."
+  },
+  {
+   "id": "viz22",
+   "intended": "neutral",
+   "text": "Please remember to submit the form before the end of the month."
+  },
+  {
+   "id": "viz23",
+   "intended": "neutral",
+   "text": "The train leaves from platform four."
+  },
+  {
+   "id": "viz24",
+   "intended": "neutral",
+   "text": "Okay."
+  },
+  {
+   "id": "viz25",
+   "intended": "neutral",
+   "text": "Water boils at a lower temperature at high altitude because the air pressure is lower, so cooking times on a mountain are usually longer than at sea level."
+  },
+  {
+   "id": "viz26",
+   "intended": "neutral",
+   "text": "The library opens at nine and closes at five on weekdays, and it is closed on public holidays."
+  },
+  {
+   "id": "viz27",
+   "intended": "neutral",
+   "text": "I bought bread, milk and a couple of tomatoes on the way home."
+  },
+  {
+   "id": "viz28",
+   "intended": "neutral",
+   "text": "The report has four sections and an appendix with the tables."
+  },
+  {
+   "id": "viz29",
+   "intended": "neutral",
+   "text": "He parked the car on the left side of the street."
+  },
+  {
+   "id": "viz30",
+   "intended": "neutral",
+   "text": "Turn the second valve a quarter turn clockwise and wait for the pressure gauge to settle before opening the main line."
+  },
+  {
+   "id": "viz31",
+   "intended": "neutral",
+   "text": "Tomorrow's forecast is cloudy with a light wind from the west."
+  }
+ ]
+}
