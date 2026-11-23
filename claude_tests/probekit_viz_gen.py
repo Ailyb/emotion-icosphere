@@ -64,8 +64,33 @@ def collect(cat, bi, want, seen):
     return out
 
 
+TOPICS = ["weather", "trains", "cooking", "office supplies", "geography", "chemistry", "football scores", "parking", "libraries", "recipes", "software updates", "maps",
+          "banking forms", "gardening", "furniture assembly", "time zones", "bus routes", "elevators", "calendars", "laundry", "traffic", "museum hours", "plumbing",
+          "tax deadlines", "shipping", "hotel check-in", "car maintenance", "astronomy", "grocery lists", "printers", "bicycles", "road signs", "packaging", "math facts",
+          "city history", "paint colours", "shelving", "pharmacy hours", "airport gates", "meeting rooms"]
+
+
+def topup(a):
+    """Deviation from the pre-registered loop (documented in the commit): short NEUTRAL buckets fell short of 120 (the writer repeats itself), so top them up
+    with topic-seeded prompts. Same filters (bucket range, exact-duplicate drop); no use of probe output."""
+    rows = [json.loads(l) for l in open(a.out) if l.strip()]; seen = {r["text"].lower() for r in rows}
+    for bi in range(len(BUCKETS)):
+        bn = bucket_name(bi); have = sum(1 for r in rows if r["intended"] == "neutral" and r["bucket"] == bn)
+        for t in TOPICS:
+            if have >= NEUTRAL_N:
+                break
+            for s in parse(call(prompt("neutral", bi, 20, 0) + f" Every passage must be about: {t}.")):
+                if bucket_of(n_words(s)) == bi and s.lower() not in seen and have < NEUTRAL_N:
+                    seen.add(s.lower()); have += 1
+                    rows.append({"id": f"synth{len(rows):05d}", "intended": "neutral", "text": s, "n_words": n_words(s), "bucket": bn})
+        print(f"topup neutral {bn}: {have}", flush=True)
+    Path(a.out).write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+
+
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--out", default="data/viz/synth.jsonl"); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("--out", default="data/viz/synth.jsonl"); ap.add_argument("--topup", action="store_true"); a = ap.parse_args()
+    if a.topup:
+        return topup(a)
     jobs = [(c, bi, NEUTRAL_N if c == "neutral" else EMO_N) for bi in range(len(BUCKETS)) for c in ["neutral"] + EMO]
     seen = set(); rows = []
     def run(j):
