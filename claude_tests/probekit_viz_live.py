@@ -14,7 +14,6 @@ from pathlib import Path
 from types import SimpleNamespace
 
 MAX_CHARS = 2000
-NOT = "What this is not: a reading of what the model feels. These are linear read-outs of emotion-concept text patterns; a TF-IDF classifier often does as well in-domain. Grey (neutral) is the default."
 
 
 def handle_score(payload, extract, scorer):
@@ -29,7 +28,12 @@ def handle_score(payload, extract, scorer):
     return 200, {k: row[k] for k in ("n_words", "bucket", "z_recal", "threshold", "low_confidence", "probe", "tfidf", "native_lr", "encoder")}
 
 
-PAGE = """<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+def _page():
+    from probekit_viz_static import NOT
+    return _TEMPLATE.replace("__NOT__", NOT)
+
+
+_TEMPLATE = """<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Reading the probe honestly (live, local)</title>
 <style>:root{--bg:#fff;--ink:#222;--mute:#666;--line:#ddd;--e:#0072B2;--hi:#E69F00}@media(prefers-color-scheme:dark){:root{--bg:#16181c;--ink:#e6e6e6;--mute:#9aa;--line:#333;--e:#56B4E9;--hi:#F0C060}}
 body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,sans-serif;margin:0;padding:1rem 1rem 3rem}main{max-width:820px;margin:auto}
@@ -41,18 +45,18 @@ button{font:inherit;padding:.4rem 1rem;margin:.5rem 0}.note{border-left:4px soli
 <div class="note"><b>__NOT__</b> Your text is scored on this computer and is not stored or logged.</div>
 <textarea id="t" maxlength="2000" placeholder="Type or paste a passage (up to 2000 characters)"></textarea><br><button id="go">Score</button> <span id="st" class="m"></span>
 <div id="out" hidden><h2 id="verdict"></h2><p class="m" id="meta"></p><div id="bars"></div><h3>Other labels, trained on the same data</h3><p class="cmp" id="cmp"></p>
-<p class="m">Bars show recalibrated z per emotion; the vertical position of the threshold is the label cut-off for this length. The probe says "neutral" unless the largest z exceeds the threshold. Reading is not writing: probe directions did not reliably steer a model's output (paper section 2.8).</p></div></main>
+<p class="m">Bars show recalibrated z per emotion; the vertical position of the threshold is the label cut-off for this length. The probe says "neutral" unless the largest z exceeds the threshold. Reading is not writing: whether probe directions steer a model's output depends on the model (0 of 7 emotions on Llama-3.2-3B, 4 of 7 on Gemma-2-2B; paper section 2.8). Scores come from one model and one layer.</p></div></main>
 <script>
 const $=id=>document.getElementById(id), cls=l=>l==="neutral"?"n":"e";
 $("go").onclick=async()=>{const t=$("t").value;$("st").textContent="scoring...";
  try{const r=await fetch("/score",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:t})});const d=await r.json();
   if(!r.ok){$("st").textContent=d.error;return}$("st").textContent="";$("out").hidden=false;
   $("verdict").innerHTML=`Probe: <span class="${cls(d.probe)}">${d.probe}</span>`;
-  $("meta").innerHTML=`${d.n_words} words (length bucket ${d.bucket}); threshold: largest z above ${d.threshold.toFixed(1)}`+(d.low_confidence?' <span class="lc">low confidence: very short text, false alarms are above 5% here</span>':"");
+  $("meta").innerHTML=`${d.n_words} words (length bucket ${d.bucket}); threshold: largest z above ${d.threshold.toFixed(1)}`+(d.low_confidence?' <span class="lc">low confidence: very short text; on human neutral text this length had more than 5% false alarms</span>':"");
   const mx=Math.max(8,...Object.values(d.z_recal));$("bars").innerHTML=Object.entries(d.z_recal).map(([e,v])=>`<div class="row"><span class="lab">${e}</span><span class="bar ${v>d.threshold?"hi":""}" style="width:${Math.max(0,v)/mx*60}%"></span><span class="m">${v>=0?"+":""}${v.toFixed(1)}</span></div>`).join("");
   $("cmp").innerHTML=["tfidf","native_lr","encoder"].map(k=>`<span>${k}: <span class="${cls(d[k])}">${d[k]}</span></span>`).join("")}
  catch(e){$("st").textContent="request failed"}};
-</script></html>""".replace("__NOT__", NOT)
+</script></html>"""
 
 
 def make_handler(extract, scorer):
@@ -65,7 +69,7 @@ def make_handler(extract, scorer):
             self.send_response(code); self.send_header("Content-Type", ctype); self.send_header("Content-Length", str(len(b))); self.end_headers(); self.wfile.write(b)
 
         def do_GET(self):
-            self._send(200, PAGE.encode(), "text/html; charset=utf-8") if self.path in ("/", "/index.html") else self._send(404, {"error": "not found"})
+            self._send(200, _page().encode(), "text/html; charset=utf-8") if self.path in ("/", "/index.html") else self._send(404, {"error": "not found"})
 
         def do_POST(self):
             if self.path != "/score":

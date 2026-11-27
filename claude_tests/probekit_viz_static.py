@@ -22,7 +22,7 @@ from probekit_frozen_eval import EXTRACT_LAYERS, extract_cached
 from probekit_length_calibration import bucket_of, bucket_name
 from probekit_testset import n_words
 
-NOT = "What this is not: a reading of what the model feels. These are linear read-outs of emotion-concept text patterns, and the paper finds a TF-IDF classifier often does as well in-domain."
+NOT = "What this is not: a reading of what the model feels. These are linear read-outs of emotion-concept text patterns, and the paper finds on GoEmotions text a TF-IDF classifier trained on the same data scored higher than the probe."
 
 
 def recal_params(Zc, wc):
@@ -118,7 +118,7 @@ def page(rows, meta, rate, summ=None):
             h = "".join(f"<tr><th>{b} words</th>" + "".join(f"<td>{fmt(summ[b][sy][metric])}</td>" for sy in SYS) + "</tr>" for b in order if b in summ)
             return f"<h3>{title}</h3><p class=m>{note}</p><div class=scroll><table><thead><tr><th></th><th>Probe</th><th>TF-IDF</th><th>Native LR</th><th>Encoder</th></tr></thead><tbody>{h}</tbody></table></div>"
         sm = ("<h2>Summary on a larger synthetic set</h2><p>Passages written by a local language model (not the probe model), about 120 neutral and 20 per emotion in each length bucket. "
-              "Intended labels are the writer's request and were not validated, so hit rates are approximate. 95% Clopper-Pearson intervals. Two cautions: "
+              "Intended labels are the writer's request and were not validated, so hit rates are approximate, and they are about model-written text only: the paper found that models trained on model-written text transfer to human text at low accuracy, so these rates do not predict performance on human text. 95% Clopper-Pearson intervals. Two cautions: "
               "(1) only the probe has a threshold set for a false-alarm rate (5% on human neutral text); the baselines pick the most likely label with no such control, so their hit rates are not like for like. "
               "(2) Model-written neutral text (schedules, facts) is easier than human neutral text, so the probe's false-alarm rate here is lower than the 5% it targets.</p>"
               + tab("fa", "Neutral passages labelled as an emotion (false alarms)", "Lower is better. The probe's threshold targets about 5% on human neutral text.")
@@ -138,11 +138,11 @@ th,td{{border-bottom:1px solid var(--line);padding:.45rem;text-align:left;vertic
 {sm}<h2>Examples</h2><p class="m">{len(rows)} hand-written synthetic passages, shown in full. Grey is neutral; orange \"missed\" means the passage was written to be emotional but labelled neutral.</p><div class="scroll"><table><thead><tr><th>Passage</th><th>Probe z (per-length recalibrated)</th><th>Probe</th><th>TF-IDF</th><th>Native LR</th><th>Encoder</th></tr></thead><tbody>
 {"".join(body)}</tbody></table></div>
 <h2>How to read this</h2><ul>
-<li><b>Threshold.</b> A passage is called emotional only if its largest recalibrated z exceeds the out-of-fold 95th percentile of max|z| on human neutral text of the same length (so about 5% of neutral human text is flagged by construction). Rule fixed before scoring these passages.</li>
-<li><b>Short text.</b> A bucket is marked low confidence when the observed recalibrated false-alarm rate on human neutral text exceeds 5% (the shortest buckets). The paper's strict upper-bound criterion fails in every bucket, so even unmarked rows are approximate.</li>
+<li><b>Threshold.</b> A passage is called emotional only if its largest recalibrated z exceeds the out-of-fold 95th percentile of max|z| on human neutral text of the same length (so about 5% of the neutral human calibration text is flagged by construction; this is a descriptive, post hoc threshold, not a calibrated one). Rule fixed before scoring these passages.</li>
+<li><b>Short text.</b> A bucket is marked low confidence when the observed recalibrated false-alarm rate on human neutral text exceeds 5% (the shortest buckets). The paper's strict upper-bound criterion fails in every bucket, so even unmarked rows are approximate. Scores and thresholds come from one model (Llama-3.2-3B, 4-bit, one layer); the paper reports three models and they differ in detail.</li>
 <li><b>Baselines.</b> TF-IDF, native-state LR and a frozen sentence encoder are trained on the same data as the probe. Where they disagree with the probe, no one of them is ground truth.</li>
 <li><b>Bundled neutral passages shown as emotional (small n, descriptive, by length bucket):</b> {rt}. This is not the acceptance test; the reserved human neutral set in <code>length_calibration.md</code> is.</li>
-<li><b>Steering is a separate question.</b> Reading emotion text is not writing it: probe directions steered 0 of 7 emotions on Llama-3.2-3B and 4 of 7 (threshold pass) on Gemma-2-2B.</li></ul>
+<li><b>Steering is a separate question.</b> Reading emotion text is not writing it, and steering results depend on the model: probe directions steered 0 of 7 emotions on Llama-3.2-3B and 4 of 7 (a threshold pass) on Gemma-2-2B; Mistral-7B was not tested.</li></ul>
 <p class="m">Numbers regenerate with <code>python probekit_viz_static.py</code>; source: docs/viz/static_scores.json.</p></main></html>"""
 
 

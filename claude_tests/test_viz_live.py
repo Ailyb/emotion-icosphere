@@ -7,6 +7,7 @@ from http.server import HTTPServer
 
 import numpy as np
 import probekit_viz_live as L
+import probekit_viz_static as V
 
 row = dict(n_words=3, bucket="3-4", z_recal={"joy": 1.0}, threshold=3.0, low_confidence=True, probe="neutral", tfidf="joy", native_lr="joy", encoder="joy", text="SECRET", id="live", intended="unknown")
 seen = []
@@ -29,4 +30,5 @@ try:
     urllib.request.urlopen(urllib.request.Request(f"http://127.0.0.1:{port}/score", data=b"{}", headers={"Content-Type": "application/json"})); raise SystemExit("expected 400")
 except urllib.error.HTTPError as e:
     assert e.code == 400
+assert V.NOT in L._page()
 print("PASS test_viz_live")
