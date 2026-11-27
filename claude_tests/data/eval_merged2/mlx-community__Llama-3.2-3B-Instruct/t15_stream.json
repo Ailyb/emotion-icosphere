@@ -1,0 +1,41 @@
+{
+ "val_selected": 8,
+ "test": {
+  "n": 140,
+  "hit": 0.7,
+  "onset_median": 8.0,
+  "offset_median": 2.0,
+  "offset_run_median": 1.0,
+  "fa_share": 0.017690169320192066
+ },
+ "ci": {
+  "hit": [
+   0.6214285714285714,
+   0.7857142857142857
+  ],
+  "onset": [
+   7.0,
+   8.0
+  ],
+  "offset": [
+   1.0,
+   2.0
+  ],
+  "offset_run": [
+   0.0,
+   2.0
+  ]
+ },
+ "chance_mean": 0.11471428571428571,
+ "per_emotion": {
+  "joy": 0.75,
+  "sadness": 0.45,
+  "fear": 0.85,
+  "anger": 0.9,
+  "surprise": 0.3,
+  "disgust": 0.95,
+  "love": 0.7
+ },
+ "thr": 3.4762468338012695,
+ "usable": true
+}
