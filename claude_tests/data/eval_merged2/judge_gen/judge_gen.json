@@ -1,0 +1,23 @@
+{
+ "synthetic": {
+  "n": 1559,
+  "granite_f1": 0.8577205676310465,
+  "qwen_f1": 0.9240661170669637,
+  "granite_unparsed": 0,
+  "qwen_unparsed": 0,
+  "kappa_granite_qwen": 0.908357976794451
+ },
+ "kappas": {
+  "llama|all": 0.6417570274190206,
+  "llama|base": 0.6850393700787403,
+  "llama|probe_max": 0.6458723685660752,
+  "llama|random_max": 0.5321637426900584,
+  "llama|probe_other": 0.7335997335997336,
+  "gemma|all": 0.5558856782268029,
+  "gemma|base": 0.4710669077757686,
+  "gemma|probe_max": 0.529546758462421,
+  "gemma|random_max": 0.5402298850574712,
+  "gemma|probe_other": 0.6272520190515635
+ },
+ "rule_met": false
+}
