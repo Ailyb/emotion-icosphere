@@ -78,7 +78,7 @@
 \makeatother
 \hypersetup{
   pdftitle={What linear emotion probes on LLM hidden states do and do not buy you: an audit},
-  pdfauthor={{[}AUTHOR NAME{]}},
+  pdfauthor={Justin Van Wart},
   colorlinks=true,
   linkcolor={Maroon},
   filecolor={Maroon},
@@ -88,7 +88,7 @@
 
 \title{What linear emotion probes on LLM hidden states do and do not buy
 you: an audit}
-\author{{[}AUTHOR NAME{]}}
+\author{Justin Van Wart}
 \date{2026}
 
 \begin{document}
@@ -100,62 +100,27 @@ you: an audit}
 }
 \subsection{Abstract}\label{abstract}
 
-Linear "emotion probes" read emotion-concept directions out of an
-open-weight language model\textquotesingle s residual stream and are a
-common basis for visualisations and proposed monitors. We ask a narrow
-question: what do such probes carry beyond cheap and standard baselines,
-and where? We audit probes on three small instruction-tuned models
-(Llama-3.2-3B, Gemma-2-2B, Mistral-7B; all 4-bit). Evaluation uses a
-frozen, hash-verified human test set (GoEmotions, n=840), three further
-human-labelled sources (tweets, event descriptions, dialogue),
-pre-registered hypotheses and decision rules, and paired bootstrap
-intervals. Baselines are trained on the \emph{same} data: TF-IDF, a
-zero-training emotion lexicon, a bag of the model\textquotesingle s own
-input embeddings, a frozen sentence encoder, and a trained classifier on
-the same hidden states. The results hold on all three models. (1)
-In-domain, TF-IDF beats the probe by 0.09--0.13 macro-F1 (−0.086,
-−0.106, −0.126), and the 7B model\textquotesingle s gap is the largest.
-(2) Across domains the order reverses: the probe beats TF-IDF on all
-three external sources (+0.054 to +0.190) but does no better than a
-frozen 110M-parameter sentence encoder trained on the same data (probe −
-encoder −0.095 to +0.004 across 9 model × source cells; the encoder is
-better on ISEAR and DailyDialog for all three models and tied on dair).
-A trained classifier on the same hidden states does beat that encoder
-in-domain (+0.071 to +0.091, post hoc), so the states hold more than the
-encoder offers there, but one direction per emotion does not extract it.
-(3) Probes trained only on LLM-written emotional text, the recipe used
-by most emotion-vector studies, reach about 0.31 macro-F1 on human text,
-against 0.55--0.59 with human training data. Once human data are
-present, LLM-written data add nothing measurable. (4) The
-probes\textquotesingle{} z-scores are not comparable across text length
-(15--83\% of neutral human passages raise some
-\textbar z\textbar\textgreater3, depending on length), and the probe
-labels 56--81\% of neutral human text as emotional when its neutral
-threshold is set on LLM-written validation text (HUM-trained probe);
-refitting that threshold on human neutral text restores neutral recall
-to 0.90 but costs 0.13--0.17 macro-F1, because about 63\% of emotional
-comments then move to neutral. (5) Whether a probe direction also
-changes what the model writes is model-dependent. Adding the audited
-probe directions to the residual stream did not change the emotion
-Llama-3.2-3B expressed more than random directions did (0 of 7 emotions,
-pre-registered), but on Gemma-2-2B (pre-registered replication) it did
-for 4 of 7 emotions at the largest fluent strength (1 of 7 at the
-norm-matched strengths). A fluency-matched re-run on Llama
-(pre-registered) again found 0 of 7. Plain mean-difference directions
-move the output more per unit norm but, at matched fluency, are not
-better than the probe directions (not established; the two direction
-types were fitted on different corpora, so this compares estimator and
-training data together). (6) A corpus audit of one published
-model-written emotion corpus (205,200 Gemini-written stories, CC-BY-4.0;
-a topic-disjoint subsample of 1,600) found it lexically solvable: TF-IDF
-0.930 against the probe\textquotesingle s 0.861 in-corpus; a probe
-trained on it reaches 0.236 on GoEmotions (above same-data TF-IDF,
-0.120), and a probe trained on our merged corpus is 0.319 lower than the
-story-trained probe on its held-out stories. A linear read-out is
-sufficient, mean-pooling is a sound default, and probe geometry
-correlates with human valence--arousal--dominance norms on two of three
-models. We release the audit tool, the frozen test-set manifests, and
-all pre-registrations.
+Linear emotion probes read emotion-concept directions from a language
+model\textquotesingle s residual stream and are a common basis for
+visualisations and proposed monitors. We audit them on three small open
+models (Llama-3.2-3B, Gemma-2-2B, Mistral-7B; 4-bit) against baselines
+trained on the same data, using a frozen, hash-verified human test set
+(GoEmotions, n=840), three further human-labelled sources,
+pre-registered decision rules and paired bootstrap intervals. In-domain,
+TF-IDF beats the probe by 0.09--0.13 macro-F1 on all three models.
+Across domains the probe beats TF-IDF on every external source, but not
+a frozen 110M-parameter sentence encoder, which ties or wins in every
+model--source cell. Probes trained only on LLM-written text, the usual
+recipe, reach about 0.31 macro-F1 on human text against 0.55--0.59 with
+human training data, and a published 205,200-story model-written corpus
+is lexically solvable (TF-IDF 0.930 vs probe 0.861). Probe z-scores
+depend strongly on text length; with a threshold set on LLM-written text
+the probe labels 56--81\% of neutral human text as emotional, and a
+human-calibrated threshold restores neutral recall at a cost of
+0.13--0.17 macro-F1. Adding probe directions to the residual stream
+changed expressed emotion beyond random controls for 0 of 7 emotions on
+Llama and 4 of 7, a threshold pass, on Gemma. We release the audit tool,
+test-set manifests and all pre-registrations.
 
 \subsection{1. Question, position and
 design}\label{1-question-position-and-design}
@@ -232,8 +197,9 @@ such, or for the valence geometry.
   4 of 7 emotions at the largest fluent strength (pre-registered
   replication, H7a). A fluency-matched Llama re-run again gives 0 of 7.
   Mean-difference directions are not better than probe directions at
-  matched fluency (H7b, H8b not established), though the two were fitted
-  on different corpora.
+  matched fluency (H7b, H8b not established); on Gemma this holds when
+  both are fitted on the same data (H9, 0 of 7), while on Llama the two
+  were fitted on different corpora.
 \item
   \textbf{A model-written corpus is a weak yardstick (audit of a
   published corpus).} On a subsample of a published 205,200-story
@@ -858,7 +824,10 @@ directions already reach ratio 1.25 at 0.4).
   ones. The earlier descriptive advantage of mean-difference directions
   therefore cannot be attributed to the estimator on this model (it may
   reflect the training corpus), and the Llama contrast remains
-  confounded. Judge unparsed labels: 869 of 6,280.
+  confounded. The LDA, random and unsteered generations of T12 were
+  reused rather than regenerated (greedy decoding makes them identical);
+  only the mean-difference arm and its fluency pilot were new. Judge
+  unparsed labels: 869 of 6,280.
 \item
   \textbf{Reading across the two models.} A direction fitted to read
   emotion can also write it, but whether it does at a fluent strength
@@ -1005,7 +974,8 @@ show}\label{3-what-this-does-and-does-not-show}
   on Llama-3.2-3B, 4 of 7 (a threshold pass at the largest fluent
   strength) on Gemma-2-2B (section 2.8); and that mean-difference
   directions steer better than probe directions at matched fluency (H7b
-  not established).
+  and H8b not established; on Gemma also not with both fitted on the
+  same data, H9).
 \end{itemize}
 
 These experiments classify \emph{input text}. They test whether probes
@@ -1060,13 +1030,26 @@ are linear read-outs correlated with emotion-concept text.
   a fluency-matched run (T13/C1b) gave the same 0/7 for the probe
   directions.
 \item
-  \textbf{Steering confound.} The probe (LDA) and mean-difference
-  directions were fitted on different corpora (merged2 training set
-  versus the v1 corpus), so the H7b/H8b contrast mixes estimator and
-  training data. A same-data run on Gemma (T14, H9) found no advantage
-  for mean-difference directions (0 of 7), so the earlier advantage is
-  not attributable to the estimator there; the Llama contrast is
-  untested.
+  \textbf{The steering judge is not validated on generated text (T16).}
+  The judge (granite4.2:8b) passed its gate on human GoEmotions
+  comments, but steered continuations are a different kind of text. On
+  stratified samples of 400 generations per model, agreement with a
+  second judge (qwen3.8:27b) was Cohen\textquotesingle s kappa 0.642
+  {[}0.582, 0.696{]} for Llama and 0.556 {[}0.499, 0.610{]} for Gemma
+  (probe-steered strata 0.646 and 0.530). The pre-registered bar (kappa
+  \textgreater= 0.60 overall and in the probe-steered strata of both
+  models) was not met
+  (\texttt{data/eval\_merged2/judge\_gen/judge\_gen.md}; viz\_plan T16).
+  Agreement between the two models on clear synthetic emotional text is
+  high (0.908), so the weakness is on ambiguous continuations. Agreement
+  is not accuracy, and no human labels exist yet: every steering count
+  above rests on this judge.
+\item
+  \textbf{Steering confound.} In T10, T12 and T13 the probe (LDA) and
+  mean-difference directions were fitted on different corpora (merged2
+  training set versus the v1 corpus), so the H7b/H8b contrast mixes
+  estimator and training data. The same-data check (T14, H9) removes
+  this confound for Gemma only; on Llama it remains.
 \item
   \textbf{Post hoc analyses} (fusion with TF-IDF, lexicon strata, alarm
   thresholds) are labelled as such where reported.
@@ -1162,6 +1145,27 @@ from hash-checked manifests:
 License: The Unlicense (public domain) for our code and documents
 (\texttt{LICENSE} is committed); \texttt{NOTICE.md} lists the
 third-party terms that remain.
+
+\subsection{Acknowledgments and use of AI
+tools}\label{acknowledgments-and-use-of-ai-tools}
+
+The author used AI assistants throughout this project and takes full
+responsibility for all content. Claude (Anthropic), used through
+claude.ai, served as a research advisor: it proposed the audit framing
+and the baselines, helped write the pre-registered decision rules,
+searched and checked related work, reviewed the results and drafts at
+each stage, and drafted and edited parts of this text. Claude Code
+(Anthropic) implemented the code and tests, ran the model-free analyses,
+produced the reports and figures, and drafted results text from those
+reports; the long model runs (extraction, generation, judging) were run
+by the author on local hardware. ChatGPT (OpenAI) provided one
+independent review of the study plan. The language models used as
+experimental instruments (the corpus writers and the steering judge) are
+described in sections 1.4 and 2.8. All AI-written text and code were
+checked by the author: every number in the paper is traceable to a
+committed report generated by the code, and every reference was checked
+against its primary source (section 7). In line with arXiv policy, no AI
+system is listed as an author.
 
 \subsection{Appendix A. First pre-registered run (T0c, merged2 training
 set)}\label{appendix-a-first-pre-registered-run-t0c-merged2-training-set}

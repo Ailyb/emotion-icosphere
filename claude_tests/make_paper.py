@@ -15,7 +15,7 @@ fig = {"1": "fig1_forest", "2": "fig2_learning_curve", "3": "fig3_neutral_false_
 def add_fig(m):
     n = m.group(1); return m.group(0) + f"\n\n![](../figures/{fig[n]}.pdf)\n"
 body = re.sub(r"^\*\*Figure (\d)\*\*[^\n]*$", add_fig, body, flags=re.M)
-(OUT / "paper.md").write_text(f"---\ntitle: \"{title}\"\nauthor: \"[AUTHOR NAME]\"\ndate: \"2026\"\n---\n\n" + body)
+(OUT / "paper.md").write_text(f"---\ntitle: \"{title}\"\nauthor: \"Justin Van Wart\"\ndate: \"2026\"\n---\n\n" + body)
 common = ["pandoc", "paper.md", "--from=gfm+tex_math_dollars-yaml_metadata_block+yaml_metadata_block", "-V", "geometry:margin=1in", "-V", "fontsize=10pt",
           "-V", "mainfont=Times New Roman", "-V", "monofont=Menlo", "-V", "colorlinks=true", "--toc", "--toc-depth=2"]
 subprocess.run(common + ["--pdf-engine=tectonic", "-o", "paper.pdf"], check=True, cwd=OUT, stderr=subprocess.DEVNULL)
