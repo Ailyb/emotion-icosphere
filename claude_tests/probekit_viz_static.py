@@ -32,9 +32,8 @@ def recal_params(Zc, wc):
     return out
 
 
-def score(passages, c, lc, cache, model):
-    items = [{"id": p["id"], "text": p["text"]} for p in passages]
-    X = extract_cached(items, cache, EXTRACT_LAYERS, c["skip"], model)[c["layer"]]
+def make_scorer(c, lc):
+    """Fit everything once; returns fn(X, passages) -> rows, where X = layer states of the passages (same pooling as the audit)."""
     X_h, T_h, y_h = T.hum_training(c)
     ps = fit_directions(X_h, y_h, T.EMOTIONS, c["layer"], method=c["method"], **c["cfg"]); calibrate_pooled(ps, c["Xc"][c["cal"]])
     systems, enc, _ = T.fit_all(c, X_h, T_h, y_h)
@@ -42,17 +41,26 @@ def score(passages, c, lc, cache, model):
     Zc = ps.score(c["calib"]["X"], "pooled"); par = recal_params(Zc, c["calib"]["n_words"])
     thr = {r["bucket"]: r["recal_q95"] for r in lc["alarm_thresholds"]}
     low = {r["bucket"]: (r["n"] < 500 or r["passage_rate"] > 0.05) for r in lc["recal"] if r["n"] > 0}
-    Z = ps.score(X, "pooled"); texts = np.array([p["text"] for p in passages], dtype=object)
-    base = {k: f(X, None, texts, classes) for k, f in systems.items() if k in ("tfidf", "native_lr")}
-    base["encoder"] = enc(texts, classes)
-    rows = []
-    for i, p in enumerate(passages):
-        nw = n_words(p["text"]); bi = bucket_of(nw); bn = bucket_name(bi); mu, sd = par.get(bi, (Zc.mean(0), Zc.std(0)))
-        z = (Z[i] - mu) / sd; t = thr[bn]; j = int(z.argmax())
-        rows.append(dict(id=p["id"], text=p["text"], intended=p["intended"], n_words=nw, bucket=bn, z_recal=dict(zip(T.EMOTIONS, map(float, z))),
-                         threshold=float(t), low_confidence=bool(low.get(bn, True)), probe="neutral" if z.max() <= t else T.EMOTIONS[j],
-                         tfidf=str(base["tfidf"][i]), native_lr=str(base["native_lr"][i]), encoder=str(base["encoder"][i])))
-    return rows
+
+    def fn(X, passages):
+        Z = ps.score(X, "pooled"); texts = np.array([p["text"] for p in passages], dtype=object)
+        base = {k: f(X, None, texts, classes) for k, f in systems.items() if k in ("tfidf", "native_lr")}
+        base["encoder"] = enc(texts, classes)
+        rows = []
+        for i, p in enumerate(passages):
+            nw = n_words(p["text"]); bi = bucket_of(nw); bn = bucket_name(bi); mu, sd = par.get(bi, (Zc.mean(0), Zc.std(0)))
+            z = (Z[i] - mu) / sd; t = thr[bn]; j = int(z.argmax())
+            rows.append(dict(id=p["id"], text=p["text"], intended=p["intended"], n_words=nw, bucket=bn, z_recal=dict(zip(T.EMOTIONS, map(float, z))),
+                             threshold=float(t), low_confidence=bool(low.get(bn, True)), probe="neutral" if z.max() <= t else T.EMOTIONS[j],
+                             tfidf=str(base["tfidf"][i]), native_lr=str(base["native_lr"][i]), encoder=str(base["encoder"][i])))
+        return rows
+    return fn
+
+
+def score(passages, c, lc, cache, model):
+    items = [{"id": p["id"], "text": p["text"]} for p in passages]
+    X = extract_cached(items, cache, EXTRACT_LAYERS, c["skip"], model)[c["layer"]]
+    return make_scorer(c, lc)(X, passages)
 
 
 SYS = ["probe", "tfidf", "native_lr", "encoder"]
