@@ -2,11 +2,13 @@
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
-%
 \documentclass[
   10pt,
 ]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -39,41 +41,41 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\usepackage[margin=1in]{geometry}
 \usepackage{longtable,booktabs,array}
+\usepackage{caption}
+\captionsetup[table]{skip=6pt}
+\newcounter{none} % for unnumbered tables
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
 \makeatletter
 \patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
 \makeatother
-% Allow footnotes in longtable head/foot
-\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
-\makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
 \hypersetup{
   pdftitle={What linear emotion probes on LLM hidden states do and do not buy you: an audit},
   pdfauthor={Justin Van Wart},
@@ -93,12 +95,10 @@ you: an audit}
 \maketitle
 
 {
-\hypersetup{linkcolor=}
 \setcounter{tocdepth}{2}
 \tableofcontents
 }
-\hypertarget{abstract}{%
-\subsection{Abstract}\label{abstract}}
+\subsection{Abstract}\label{abstract}
 
 Linear emotion probes read emotion-concept directions from a language
 model\textquotesingle s residual stream and are a common basis for
@@ -122,12 +122,10 @@ changed expressed emotion beyond random controls for 0 of 7 emotions on
 Llama and 4 of 7, a threshold pass, on Gemma. We release the audit tool,
 test-set manifests and all pre-registrations.
 
-\hypertarget{1-question-position-and-design}{%
 \subsection{1. Question, position and
-design}\label{1-question-position-and-design}}
+design}\label{1-question-position-and-design}
 
-\hypertarget{11-why-audit}{%
-\subsubsection{1.1 Why audit}\label{11-why-audit}}
+\subsubsection{1.1 Why audit}\label{11-why-audit}
 
 Emotion probes are usually built from LLM-generated emotional passages
 and then shown to separate held-out passages from the same generator.
@@ -140,9 +138,8 @@ splits). The interpretability literature has known since control tasks
 were introduced (Hewitt \& Liang, 2019) that probe accuracy means little
 without baselines. Emotion-probe studies rarely include them.
 
-\hypertarget{12-position-relative-to-recent-work}{%
 \subsubsection{1.2 Position relative to recent
-work}\label{12-position-relative-to-recent-work}}
+work}\label{12-position-relative-to-recent-work}
 
 Sofroniew et al. (2026) extracted 171 emotion-concept vectors from
 Claude Sonnet 4.5 using model-written stories and showed that they
@@ -171,8 +168,7 @@ neutral human text. Those comparisons are our contribution. We do not
 claim novelty for linear emotion probing, for cross-domain transfer as
 such, or for the valence geometry.
 
-\hypertarget{13-contributions}{%
-\subsubsection{1.3 Contributions}\label{13-contributions}}
+\subsubsection{1.3 Contributions}\label{13-contributions}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -216,8 +212,7 @@ such, or for the valence geometry.
   hash-verified human test sets and fetch scripts.
 \end{enumerate}
 
-\hypertarget{14-design}{%
-\subsubsection{1.4 Design}\label{14-design}}
+\subsubsection{1.4 Design}\label{14-design}
 
 \textbf{Baselines.} Each comparison trains the baseline on the same data
 as the probe:
@@ -307,8 +302,7 @@ chosen as a third family at the largest size that runs comfortably on
 the hardware used; it is an older model, and results may differ on newer
 7--9B models.
 
-\hypertarget{2-results}{%
-\subsection{2. Results}\label{2-results}}
+\subsection{2. Results}\label{2-results}
 
 \textbf{Figure 1} (\texttt{docs/figures/fig1\_forest.svg};
 \texttt{make\_figures.py}; data \texttt{t11.json},
@@ -320,12 +314,11 @@ models; a vertical line at 0. All systems are trained on the HUM set
 difference is post hoc (\texttt{t11\_posthoc.json}). This figure carries
 the paper.
 
-\includegraphics{../figures/fig1_forest.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{../figures/fig1_forest.pdf}}
 
-\hypertarget{21-in-domain-lexical-features-win-t11md-t11_posthocmd}{%
 \subsubsection{\texorpdfstring{2.1 In-domain, lexical features win
 {[}\texttt{t11.md},
-\texttt{t11\_posthoc.md}{]}}{2.1 In-domain, lexical features win {[}t11.md, t11\_posthoc.md{]}}}\label{21-in-domain-lexical-features-win-t11md-t11_posthocmd}}
+\texttt{t11\_posthoc.md}{]}}{2.1 In-domain, lexical features win {[}t11.md, t11\_posthoc.md{]}}}\label{21-in-domain-lexical-features-win-t11md-t11_posthocmd}
 
 On the GoEmotions frozen set (8-way, chance 0.125), every system trained
 on the same HUM data (LLM-written rows plus the human GoEmotions-train
@@ -333,6 +326,7 @@ pool, n=4,192). HUM is the training set for all comparisons in 2.1--2.7
 and for Figure 1; the first pre-registered run, on a different training
 set, is Appendix A and reaches the same conclusion.
 
+{\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}llll@{}}
 \toprule\noalign{}
 system & Llama-3.2-3B & Gemma-2-2B & Mistral-7B \\
@@ -362,6 +356,7 @@ probe − bag of embeddings (H2; post hoc on HUM) & +0.098 {[}+0.058,
 probe − trained classifier (post hoc) & −0.053 {[}−0.081, −0.026{]} &
 −0.066 {[}−0.095, −0.037{]} & −0.106 {[}−0.133, −0.080{]} \\
 \end{longtable}
+}
 
 {[}\texttt{t11.md} and \texttt{t11\_posthoc.md} in each
 model\textquotesingle s directory.{]} TF-IDF, EmoLex and the sentence
@@ -373,10 +368,9 @@ trained classifier on the same states is above the probe on all three
 models, so one direction per emotion leaves in-domain performance on the
 table.
 
-\hypertarget{22-across-domains-the-probe-beats-lexical-models-external_evalmd}{%
 \subsubsection{\texorpdfstring{2.2 Across domains, the probe beats
 lexical models
-{[}\texttt{external\_eval.md}{]}}{2.2 Across domains, the probe beats lexical models {[}external\_eval.md{]}}}\label{22-across-domains-the-probe-beats-lexical-models-external_evalmd}}
+{[}\texttt{external\_eval.md}{]}}{2.2 Across domains, the probe beats lexical models {[}external\_eval.md{]}}}\label{22-across-domains-the-probe-beats-lexical-models-external_evalmd}
 
 Trained on the same GoEmotions-derived data and tested on other human
 sources, probe − TF-IDF (macro-F1 {[}95\% CI{]}, H1):
@@ -408,6 +402,7 @@ trained on HUM on dair and DailyDialog (0.254, 0.240), below it on ISEAR
 Against the frozen sentence encoder (H3; probe − encoder, macro-F1
 {[}95\% CI{]}, all trained on HUM; \texttt{t11.md}):
 
+{\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}llll@{}}
 \toprule\noalign{}
 model & dair & ISEAR & DailyDialog \\
@@ -422,6 +417,7 @@ Gemma & −0.011 {[}−0.038, +0.018{]} & −0.032 {[}−0.061, −0.004{]} &
 Mistral & +0.004 {[}−0.024, +0.034{]} & −0.095 {[}−0.123, −0.067{]} &
 −0.087 {[}−0.118, −0.056{]} \\
 \end{longtable}
+}
 
 The probe\textquotesingle s interval is above 0 on 0 of 3 sources for 0
 of 3 models, so \textbf{H3 is not supported} (\texttt{t11\_summary.md}).
@@ -434,6 +430,7 @@ information beyond a generic sentence encoder.
 trained classifier on the same hidden states, native LR minus the
 encoder (HUM training; paired bootstrap):
 
+{\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}lllll@{}}
 \toprule\noalign{}
 model & frozen (in-domain) & dair & ISEAR & DailyDialog \\
@@ -448,6 +445,7 @@ Gemma & +0.071 {[}+0.035, +0.106{]} & +0.004 {[}−0.024, +0.032{]} &
 Mistral & +0.091 {[}+0.053, +0.127{]} & +0.006 {[}−0.024, +0.037{]} &
 −0.061 {[}−0.088, −0.034{]} & +0.018 {[}−0.012, +0.048{]} \\
 \end{longtable}
+}
 
 In-domain the states carry more than the encoder (all three intervals
 above 0). Across domains the classifier ties the encoder on dair, is
@@ -479,10 +477,9 @@ same training rows but the encoder reads whole sentences with a model
 built for sentence similarity; dair labels are hashtag-derived and
 lexical; ISEAR provenance is unverified; sources differ in class sets.
 
-\hypertarget{23-llm-written-training-data-are-not-enough-human-data-are-the-lever-frozen_evalmd}{%
 \subsubsection{\texorpdfstring{2.3 LLM-written training data are not
 enough; human data are the lever
-{[}\texttt{frozen\_eval.md}{]}}{2.3 LLM-written training data are not enough; human data are the lever {[}frozen\_eval.md{]}}}\label{23-llm-written-training-data-are-not-enough-human-data-are-the-lever-frozen_evalmd}}
+{[}\texttt{frozen\_eval.md}{]}}{2.3 LLM-written training data are not enough; human data are the lever {[}frozen\_eval.md{]}}}\label{23-llm-written-training-data-are-not-enough-human-data-are-the-lever-frozen_evalmd}
 
 \begin{itemize}
 \tightlist
@@ -515,7 +512,7 @@ human-only curve starts at k=20. The k=378 point is a single fit without
 seed variance, and the human-only curves dip there for Gemma and
 Mistral; this is not an effect we interpret.
 
-\includegraphics{../figures/fig2_learning_curve.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{../figures/fig2_learning_curve.pdf}}
 
 This bears on the common practice of building emotion vectors from
 model-written stories (Sofroniew et al., 2026, and the replications in
@@ -524,10 +521,9 @@ classifying human text, so our result does not contradict them. It does
 show that a probe built that way should not be assumed to read
 human-written emotion well.
 
-\hypertarget{24-linear-is-enough-geometry-is-human-like-on-two-models-t8_experimentsmd}{%
 \subsubsection{\texorpdfstring{2.4 Linear is enough; geometry is
 human-like on two models
-{[}\texttt{t8\_experiments.md}{]}}{2.4 Linear is enough; geometry is human-like on two models {[}t8\_experiments.md{]}}}\label{24-linear-is-enough-geometry-is-human-like-on-two-models-t8_experimentsmd}}
+{[}\texttt{t8\_experiments.md}{]}}{2.4 Linear is enough; geometry is human-like on two models {[}t8\_experiments.md{]}}}\label{24-linear-is-enough-geometry-is-human-like-on-two-models-t8_experimentsmd}
 
 \begin{itemize}
 \tightlist
@@ -547,9 +543,8 @@ human-like on two models
   nominal.
 \end{itemize}
 
-\hypertarget{25-pooling-and-prompting-variantsmd}{%
 \subsubsection{\texorpdfstring{2.5 Pooling and prompting
-{[}\texttt{variants.md}{]}}{2.5 Pooling and prompting {[}variants.md{]}}}\label{25-pooling-and-prompting-variantsmd}}
+{[}\texttt{variants.md}{]}}{2.5 Pooling and prompting {[}variants.md{]}}}\label{25-pooling-and-prompting-variantsmd}
 
 Mean-pooling is a sound default. Last-token and last-4 pooling are worse
 on most sets (by up to −0.15; last-token is equal on two Llama sets).
@@ -557,15 +552,15 @@ Max-pooling and concatenating plateau layers are equivalent. A prompted
 read-out helped on two of four sets on Llama (ISEAR +0.136, DailyDialog
 +0.072) but on none on Gemma; it does not count as a finding.
 
-\hypertarget{26-calibration-and-neutral-detection-fail-on-human-text-length_calibrationmd-t11md-t11_summarymd}{%
 \subsubsection{\texorpdfstring{2.6 Calibration and neutral detection
 fail on human text {[}\texttt{length\_calibration.md}, \texttt{t11.md},
-\texttt{t11\_summary.md}{]}}{2.6 Calibration and neutral detection fail on human text {[}length\_calibration.md, t11.md, t11\_summary.md{]}}}\label{26-calibration-and-neutral-detection-fail-on-human-text-length_calibrationmd-t11md-t11_summarymd}}
+\texttt{t11\_summary.md}{]}}{2.6 Calibration and neutral detection fail on human text {[}length\_calibration.md, t11.md, t11\_summary.md{]}}}\label{26-calibration-and-neutral-detection-fail-on-human-text-length_calibrationmd-t11md-t11_summarymd}
 
 \textbf{Length.} On 5,014 held-out neutral human comments, the share of
 passages with any \textbar z\textbar\textgreater3 under the original
 calibration ranges with length:
 
+{\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}lll@{}}
 \toprule\noalign{}
 model & 1--2 words & 20+ words \\
@@ -577,6 +572,7 @@ Llama & 76.0\% & 15.3\% \\
 Gemma & 83.4\% & 20.1\% \\
 Mistral & 69.0\% & 15.3\% \\
 \end{longtable}
+}
 
 Per-bucket cross-validated recalibration reduces this to about 1--1.7\%
 per emotion and 4.0--7.4\% per passage. It still misses the
@@ -629,12 +625,11 @@ the original calibration, not the HUM probe.)
 \textbar z\textbar\textgreater3) by length bucket, raw vs recalibrated,
 three models, with Clopper-Pearson intervals.
 
-\includegraphics{../figures/fig3_neutral_false_alarm.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{../figures/fig3_neutral_false_alarm.pdf}}
 
-\hypertarget{27-training-seed-robustness-t11md-t11json-in-each-models-directory}{%
 \subsubsection{\texorpdfstring{2.7 Training-seed robustness
 {[}\texttt{t11.md}, \texttt{t11.json} in each model\textquotesingle s
-directory{]}}{2.7 Training-seed robustness {[}t11.md, t11.json in each model\textquotesingle s directory{]}}}\label{27-training-seed-robustness-t11md-t11json-in-each-models-directory}}
+directory{]}}{2.7 Training-seed robustness {[}t11.md, t11.json in each model\textquotesingle s directory{]}}}\label{27-training-seed-robustness-t11md-t11json-in-each-models-directory}
 
 The intervals in 2.1--2.2 resample test items only. Over 5 training
 subsamples (seeds 0--4; each draws 80\% of the LLM-written rows and 80\%
@@ -650,10 +645,9 @@ the frozen set and on dair, where the difference is near zero, as in
 2.2. The subsamples overlap heavily, so this measures sensitivity to the
 composition of the training set, not independent replication.
 
-\hypertarget{28-steering-does-a-reading-direction-write-steering_resultsmd-steering_c1_resultsmd}{%
 \subsubsection{\texorpdfstring{2.8 Steering: does a reading direction
 write? {[}\texttt{steering\_results.md},
-\texttt{steering\_c1\_results.md}{]}}{2.8 Steering: does a reading direction write? {[}steering\_results.md, steering\_c1\_results.md{]}}}\label{28-steering-does-a-reading-direction-write-steering_resultsmd-steering_c1_resultsmd}}
+\texttt{steering\_c1\_results.md}{]}}{2.8 Steering: does a reading direction write? {[}steering\_results.md, steering\_c1\_results.md{]}}}\label{28-steering-does-a-reading-direction-write-steering_resultsmd-steering_c1_resultsmd}
 
 Pre-registered (PLAN\_v2 T10, committed before any generation). On
 Llama-3.2-3B we added a unit direction, scaled by 0.1, 0.2 or 0.4 times
@@ -857,10 +851,9 @@ directions already reach ratio 1.25 at 0.4).
   zero-shot judge, 40 prompts, interval widths up to 0.25.
 \end{itemize}
 
-\hypertarget{29-audit-of-a-published-model-written-corpus-t5_audit_trained_on_t5md-t5_audit_trained_on_merged2md}{%
 \subsubsection{\texorpdfstring{2.9 Audit of a published model-written
 corpus {[}\texttt{t5\_audit\_trained\_on\_t5.md},
-\texttt{t5\_audit\_trained\_on\_merged2.md}{]}}{2.9 Audit of a published model-written corpus {[}t5\_audit\_trained\_on\_t5.md, t5\_audit\_trained\_on\_merged2.md{]}}}\label{29-audit-of-a-published-model-written-corpus-t5_audit_trained_on_t5md-t5_audit_trained_on_merged2md}}
+\texttt{t5\_audit\_trained\_on\_merged2.md}{]}}{2.9 Audit of a published model-written corpus {[}t5\_audit\_trained\_on\_t5.md, t5\_audit\_trained\_on\_merged2.md{]}}}\label{29-audit-of-a-published-model-written-corpus-t5_audit_trained_on_t5md-t5_audit_trained_on_merged2md}
 
 We applied the audit tool to one published corpus of the kind other
 emotion-vector replications train on: \texttt{ryancodrai/emotion-probes}
@@ -911,9 +904,8 @@ Llama-3.2-3B, layer 16, one run, no layer search.
   probe.
 \end{itemize}
 
-\hypertarget{3-what-this-does-and-does-not-show}{%
 \subsection{3. What this does and does not
-show}\label{3-what-this-does-and-does-not-show}}
+show}\label{3-what-this-does-and-does-not-show}
 
 \textbf{Supported:}
 
@@ -995,8 +987,7 @@ designs (section 5). Nothing here supports statements about a
 model\textquotesingle s feelings or internal emotional state: the probes
 are linear read-outs correlated with emotion-concept text.
 
-\hypertarget{4-limitations}{%
-\subsection{4. Limitations}\label{4-limitations}}
+\subsection{4. Limitations}\label{4-limitations}
 
 \begin{itemize}
 \tightlist
@@ -1039,6 +1030,21 @@ are linear read-outs correlated with emotion-concept text.
   a fluency-matched run (T13/C1b) gave the same 0/7 for the probe
   directions.
 \item
+  \textbf{The steering judge is not validated on generated text (T16).}
+  The judge (granite4.2:8b) passed its gate on human GoEmotions
+  comments, but steered continuations are a different kind of text. On
+  stratified samples of 400 generations per model, agreement with a
+  second judge (qwen3.8:27b) was Cohen\textquotesingle s kappa 0.642
+  {[}0.582, 0.696{]} for Llama and 0.556 {[}0.499, 0.610{]} for Gemma
+  (probe-steered strata 0.646 and 0.530). The pre-registered bar (kappa
+  \textgreater= 0.60 overall and in the probe-steered strata of both
+  models) was not met
+  (\texttt{data/eval\_merged2/judge\_gen/judge\_gen.md}; viz\_plan T16).
+  Agreement between the two models on clear synthetic emotional text is
+  high (0.908), so the weakness is on ambiguous continuations. Agreement
+  is not accuracy, and no human labels exist yet: every steering count
+  above rests on this judge.
+\item
   \textbf{Steering confound.} In T10, T12 and T13 the probe (LDA) and
   mean-difference directions were fitted on different corpora (merged2
   training set versus the v1 corpus), so the H7b/H8b contrast mixes
@@ -1049,8 +1055,7 @@ are linear read-outs correlated with emotion-concept text.
   thresholds) are labelled as such where reported.
 \end{itemize}
 
-\hypertarget{5-future-work}{%
-\subsection{5. Future work}\label{5-future-work}}
+\subsection{5. Future work}\label{5-future-work}
 
 \begin{itemize}
 \tightlist
@@ -1076,9 +1081,8 @@ are linear read-outs correlated with emotion-concept text.
   \textbf{Scale.} Larger and full-precision models.
 \end{itemize}
 
-\hypertarget{6-reproducibility-and-compliance}{%
 \subsection{6. Reproducibility and
-compliance}\label{6-reproducibility-and-compliance}}
+compliance}\label{6-reproducibility-and-compliance}
 
 Code, tests (24 model-free synthetic test files, all passing on
 2026-11-22 (19 of them also from a clean checkout on 2026-11-18)),
@@ -1142,9 +1146,8 @@ License: The Unlicense (public domain) for our code and documents
 (\texttt{LICENSE} is committed); \texttt{NOTICE.md} lists the
 third-party terms that remain.
 
-\hypertarget{acknowledgments-and-use-of-ai-tools}{%
 \subsection{Acknowledgments and use of AI
-tools}\label{acknowledgments-and-use-of-ai-tools}}
+tools}\label{acknowledgments-and-use-of-ai-tools}
 
 The author used AI assistants throughout this project and takes full
 responsibility for all content. Claude (Anthropic), used through
@@ -1164,9 +1167,8 @@ committed report generated by the code, and every reference was checked
 against its primary source (section 7). In line with arXiv policy, no AI
 system is listed as an author.
 
-\hypertarget{appendix-a-first-pre-registered-run-t0c-merged2-training-set}{%
 \subsection{Appendix A. First pre-registered run (T0c, merged2 training
-set)}\label{appendix-a-first-pre-registered-run-t0c-merged2-training-set}}
+set)}\label{appendix-a-first-pre-registered-run-t0c-merged2-training-set}
 
 The first pre-registered run trained on the merged2 training rows
 (LLM-written and human rows from the earlier human corpus) instead of
@@ -1174,6 +1176,7 @@ HUM. Same conclusion: TF-IDF ahead in-domain, probe ahead of the bag of
 embeddings. {[}\texttt{frozen\_eval.md} in each model\textquotesingle s
 directory{]}
 
+{\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}llll@{}}
 \toprule\noalign{}
 system (GoEmotions frozen set) & Llama-3.2-3B & Gemma-2-2B &
@@ -1189,6 +1192,7 @@ TF-IDF & 0.599 {[}0.564, 0.630{]} & 0.599 {[}0.564, 0.630{]} & 0.599
 {[}0.564, 0.630{]} \\
 bag of embeddings & 0.403 & 0.401 & 0.394 \\
 \end{longtable}
+}
 
 Probe − TF-IDF: −0.088, −0.085, −0.083 (all intervals exclude 0). Probe
 − bag of embeddings: +0.107, +0.112, +0.121 (all exclude 0). TF-IDF does
@@ -1196,8 +1200,7 @@ not use the model, so it is identical across models. The TF-IDF
 advantage is larger on items with high rater agreement (Llama: 0.594 vs
 0.749 at agreement ≥ 0.67, n=244), so label noise does not explain it.
 
-\hypertarget{7-references}{%
-\subsection{7. References}\label{7-references}}
+\subsection{7. References}\label{7-references}
 
 \emph{Section A was checked against the papers\textquotesingle{} own
 pages on 2026-11-18. Section B was checked on 2026-11-20: arXiv items
